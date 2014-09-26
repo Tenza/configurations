@@ -3,15 +3,16 @@
 Installation of X11VNC with the graphical environment LXDE.
 
 The configuration files are prepared to be used with a VNC connection through SSH gateway.  
-Just run the command an then use localhost:5900 through ip_address:22  
+Just run the command an then use localhost:5900 through ip_address:22    
+These commands use the root account, change accordingly. 
 
 ### Using files from GitHub
 
 Replace the **PASSWORD** on the last line with the password for the VNC access. 
 
->sudo apt-get update &&  
-sudo apt-get -y dist-upgrade &&  
-sudo apt-get -y install curl xorg lxde x11vnc xserver-xorg-video-dummy &&  
+> apt-get update &&  
+apt-get -y dist-upgrade &&  
+apt-get -y install curl xorg lxde x11vnc xserver-xorg-video-dummy &&  
 curl -o /etc/init.d/x11vncserver https://raw.githubusercontent.com/Tenza/configurations/master/VNC%20for%20Ubuntu%20Headless%20Server/x11vncserver &&   
 curl -o /etc/X11/xorg.conf https://raw.githubusercontent.com/Tenza/configurations/master/VNC%20for%20Ubuntu%20Headless%20Server/xorg.conf &&  
 chmod +xr /etc/init.d/x11vncserver &&  
@@ -27,9 +28,9 @@ With this in mind, just add the file **.dropbox\_uploader** to **/root/** and ma
 
 Replace the **PASSWORD** on the last line with the password for the VNC access.   
 
->sudo apt-get update &&  
-sudo apt-get -y dist-upgrade &&  
-sudo apt-get -y install git xorg lxde x11vnc xserver-xorg-video-dummy &&  
+> apt-get update &&  
+apt-get -y dist-upgrade &&  
+apt-get -y install git xorg lxde x11vnc xserver-xorg-video-dummy &&  
 cd /root/ &&  
 git clone https://github.com/andreafabrizi/Dropbox-Uploader/ &&  
 cd /root/Dropbox-Uploader &&  
