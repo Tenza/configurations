@@ -1,0 +1,48 @@
+#!/bin/bash
+### BEGIN INIT INFO
+# Provides:          AutoStartX11VNC
+# Required-Start:
+# Required-Stop:
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: service x11vncserver start/stop functions
+### END INIT INFO
+
+# Using the lsb functions to perform the operations.
+. /lib/lsb/init-functions
+
+# Configurable user variables
+DISPLAY="1"
+
+# Script
+OPTIONS="-rfbauth /root/.vnc/passwd -forever -bg -q -localhost -sleepin 10 -display :${DISPLAY}"
+OPTIONS_NO_DELAY="-rfbauth /root/.vnc/passwd -forever -bg -q -localhost -display :${DISPLAY}"
+
+case "$1" in
+start)
+	if [ "$(pgrep -c startx)" -gt 0 ]
+	then
+		# startx process was found
+		echo "Running command: x11vnc ${OPTIONS_NO_DELAY}"
+		x11vnc ${OPTIONS_NO_DELAY} &
+	else
+		# startx process not found
+		echo "Running command: x11vnc ${OPTIONS}"
+		echo "Running command: startx -- :1 -config /etc/X11/xorg.conf"
+	  	x11vnc ${OPTIONS} &
+		startx -- :1 -config /etc/X11/xorg.conf &
+	fi
+	;;
+
+stop)
+	echo "Running command: pkill x11vnc"
+	pkill x11vnc
+	;;
+
+*)
+	echo "Usage: x11vncserver {start|stop}"
+    exit 1
+    ;;
+esac
+exit 0
+
