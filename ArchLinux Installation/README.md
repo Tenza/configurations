@@ -8,7 +8,8 @@ The notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration with dualboo
 
 ##### Windows:
 
-*  This will irrevocably destroy all data.  
+*  This will irrevocably destroy all data. 
+
 > Download: [http://sourceforge.net/projects/usbwriter/](http://sourceforge.net/projects/usbwriter/)
 
 <sub><sup>
@@ -33,6 +34,7 @@ References:
 ##### Windows:
 
 *  This will irrevocably destroy all data.  
+
 > Open an elevated command prompt.  
 Run diskpart  
 List disk  
