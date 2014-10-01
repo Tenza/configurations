@@ -8,7 +8,7 @@ The notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration with dualboo
 
 ##### Windows:
 
-*  This will irrevocably destroy all data. 
+* This will irrevocably destroy all data. 
 
 > Download: [http://sourceforge.net/projects/usbwriter/](http://sourceforge.net/projects/usbwriter/)
 
@@ -21,7 +21,8 @@ References:
 
 * This will irrevocably destroy all data on /dev/sdx.
 * Replace sdX with yout drive, do not append partition number
-* Find out the name of your USB drive with `lsblk`. Make sure that it is not mounted.  
+* Find out the name of your USB drive with `lsblk`. Make sure that it is not mounted.
+
 > dd bs=4M if=/path/to/archlinux.iso of=/dev/**sdX** && sync
 
 <sub><sup>
@@ -33,7 +34,7 @@ References:
 
 ##### Windows:
 
-*  This will irrevocably destroy all data.  
+* This will irrevocably destroy all data.  
 
 > Open an elevated command prompt.  
 Run diskpart  
@@ -100,6 +101,7 @@ References:
 * mdadm will use the information generated here to assemble the array on boot.
 * So, later we will have to enable the mdadm module itself, in order to load these configs.  
 * Also, even if the wiki says that that mdraid is used for fake raid systems, Intel advises the use of mdadm for their boards.
+
 > mdadm -I -e imsm /dev/md127  
 > mdadm --examine --scan >> /mnt/etc/mdadm.conf
 
@@ -118,7 +120,7 @@ References:
 
 ##### Check existing partitions:  
 
->> fdisk -l
+> fdisk -l
 
 ##### Change MBR partitions:
 
