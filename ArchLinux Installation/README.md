@@ -10,7 +10,7 @@ The notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration with dualboo
 
 * This will irrevocably destroy all data. 
 
-> Download: [http://sourceforge.net/projects/usbwriter/](http://sourceforge.net/projects/usbwriter/)
+  > Download: [http://sourceforge.net/projects/usbwriter/](http://sourceforge.net/projects/usbwriter/)
 
 <sub><sup>
 References:  
@@ -23,7 +23,7 @@ References:
 * Replace sdX with yout drive, do not append partition number
 * Find out the name of your USB drive with `lsblk`. Make sure that it is not mounted.
 
-> dd bs=4M if=/path/to/archlinux.iso of=/dev/**sdX** && sync
+  > dd bs=4M if=/path/to/archlinux.iso of=/dev/**sdX** && sync
 
 <sub><sup>
 References:  
@@ -36,7 +36,7 @@ References:
 
 * This will irrevocably destroy all data.  
 
-> Open an elevated command prompt.  
+  > Open an elevated command prompt.  
 Run diskpart  
 List disk  
 Find the disk number of the USB drive (it should be obvious going by the size)  
@@ -56,15 +56,17 @@ References:
 
 * This will irrevocably destroy all data on /dev/sdx.
 * First we need to delete the old partitions that remain on the USB key:
-> Open a terminal and type sudo su  
+
+  > Open a terminal and type sudo su  
 Type fdisk -l and note your USB drive letter.  
 Type fdisk /dev/sdx (replacing x with your drive letter)  
 Type d to proceed to delete a partition  
 Type 1 to select the 1st partition and press enter  
 Type d to proceed to delete another partition (fdisk should automatically select the second partition)
 
-* Next we need to create the new partition:  
-> Type n to make a new partition  
+* Next we need to create the new partition:
+
+  > Type n to make a new partition  
 Type p to make this partition primary and press enter  
 Type 1 to make this the first partition and then press enter  
 Press enter to accept the default first cylinder  
@@ -72,8 +74,9 @@ Press enter again to accept the default last cylinder
 Type w to write the new partition information to the USB key  
 Type umount /dev/sdx (replacing x with your drive letter)  
 
-* The last step is to create the fat filesystem:  
-> Type mkfs.vfat -F 32 /dev/sdx1 (replacing x with your USB key drive letter)
+* The last step is to create the fat filesystem:
+
+  > Type mkfs.vfat -F 32 /dev/sdx1 (replacing x with your USB key drive letter)
 
 <sub><sup>
 References:  
@@ -84,16 +87,16 @@ References:
 
 ##### Check avalable keyboard layouts:
 
-> ls /usr/share/kbd/keymaps/i386/qwerty
+  > ls /usr/share/kbd/keymaps/i386/qwerty
 
 ##### Load keyboard layout:
 
-> loadkeys pt-latin9
+  > loadkeys pt-latin9
 
 ###### (Optional) Update mirrorlist:
 
-> Get mirrors:  [https://www.archlinux.org/mirrorlist/ ](https://www.archlinux.org/mirrorlist/)   
-> nano /etc/pacman.d/mirrorlist
+  > Get mirrors:  [https://www.archlinux.org/mirrorlist/ ](https://www.archlinux.org/mirrorlist/)   
+  nano /etc/pacman.d/mirrorlist
 
 ###### (Optional) (RAID) Create file to assembly RAID arrays:
 
@@ -102,8 +105,8 @@ References:
 * So, later we will have to enable the mdadm module itself, in order to load these configs.  
 * Also, even if the wiki says that that mdraid is used for fake raid systems, Intel advises the use of mdadm for their boards.
 
-> mdadm -I -e imsm /dev/md127  
-> mdadm --examine --scan >> /mnt/etc/mdadm.conf
+  > mdadm -I -e imsm /dev/md127  
+  mdadm --examine --scan >> /mnt/etc/mdadm.conf
 
 <sub><sup>
 References:  
@@ -121,15 +124,15 @@ References:
 
 ##### Check existing partitions:  
 
-> fdisk -l
+  > fdisk -l
 
 ##### Change MBR partitions:
 
-> cfdisk /dev/sd**X**
+  > cfdisk /dev/**sdX**
 
 ##### Change GPT partitions:
 
-> cgdisk /dev/sd**X**
+  > cgdisk /dev/**sdX**
 
 ###### (Optional) (RAID) Find out chunk and block size:
 
@@ -137,7 +140,7 @@ References:
 * Use the following command and find out the chunk size (128k in my case).
 * The blocksize is normally 4k, it is used for somewhat large files.
 
-> mdadm -E /dev/md127  
+  > mdadm -E /dev/md127  
 
 * Stride = (chunk size/block size). 
  * Stride = 128 / 4 = 32
@@ -146,11 +149,13 @@ References:
 
 ##### Format Filesystem:
 
-* Dektop:  
-> mkfs.ext4 -v -L Arch -E discard /dev/sda1
+* Dektop:
+
+  > mkfs.ext4 -v -L Arch -E discard /dev/sda1
 
 * Notebook:
-> mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/md125p4
+
+  > mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/md125p4
 
 <sub><sup>
 References:  
@@ -160,14 +165,17 @@ References:
 
 ##### Create folders and mount partitions:
 
-* Dektop:  
-> mount /dev/sda1 /mnt
+* Dektop:
+
+  > mount /dev/sda1 /mnt
 
 * Notebook:
-> mount /dev/md125p4 /mnt
+
+  > mount /dev/md125p4 /mnt
 
 * (Optional) Folders:
-> mkdir /mnt/boot /mnt/home /mnt/var  
+
+  > mkdir /mnt/boot /mnt/home /mnt/var  
 mount /dev/sdaX /mnt/boot  
 mount /dev/sdaX /mnt/home  
 mount /dev/sdaX /mnt/var  
@@ -179,7 +187,8 @@ In this case, I will be using a swap file instead of a partition because it is e
 Note that the file should have at least the same size of the physical RAM, although for me, I do not plan on hibernate with  my RAM full, so I will give less space.
 
 ###### Create SWAP file
-> fallocate -l 6G /mnt/swapfile  
+
+  > fallocate -l 6G /mnt/swapfile  
 chmod 600 /mnt/swapfile  
 mkswap /mnt/swapfile  
 swapon /mnt/swapfile  
@@ -187,12 +196,12 @@ swapon /mnt/swapfile
 
 ###### Create SWAP partition
 
-> mkswap /mnt/sda1	
+  > mkswap /mnt/sda1	
 swapon /mnt/sda1
 
 ###### Check SWAP status
 
-> swapon -s
+  > swapon -s
 
 <sub><sup>
 References:  
