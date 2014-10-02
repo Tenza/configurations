@@ -119,7 +119,7 @@ References:
 
 * Before any change we should get to know the details of each recommended partition.
 
-> [https://wiki.archlinux.org/index.php/partitioning#Partition_scheme](https://wiki.archlinux.org/index.php/partitioning#Partition_scheme)  
+  > [https://wiki.archlinux.org/index.php/partitioning#Partition_scheme](https://wiki.archlinux.org/index.php/partitioning#Partition_scheme)  
 [http://en.wikipedia.org/wiki/Disk_partitioning#Benefits_of_multiple_partitions](http://en.wikipedia.org/wiki/Disk_partitioning#Benefits_of_multiple_partitions)
 
 ##### Check existing partitions:  
