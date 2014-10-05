@@ -186,7 +186,7 @@ A SWAP is used for moving data in memory to disk and to enable the hibernate fun
 In this case, I will be using a swap file instead of a partition because it is easer to resize and having a dedicated partition for this does not seem useful.  
 Note that the file should have at least the same size of the physical RAM, although for me, I do not plan on hibernate with  my RAM full, so I will give less space.
 
-###### Create SWAP file
+##### Create SWAP file
 
 > fallocate -l 6G /mnt/swapfile  
 chmod 600 /mnt/swapfile  
@@ -194,12 +194,12 @@ mkswap /mnt/swapfile
 swapon /mnt/swapfile  
 
 
-###### Create SWAP partition
+##### Create SWAP partition
 
 > mkswap /mnt/sda1	
 swapon /mnt/sda1
 
-###### Check SWAP status
+##### Check SWAP status
 
 > swapon -s
 
@@ -208,8 +208,16 @@ References:
 https://wiki.archlinux.org/index.php/Swap#Swap_file
 </sup></sub>
 
+##### Check network
 
+Before we start with the installation of the base system, we need to make sure that the network is working.
+If we are using a wired connection, DHCP should be activated by default.
 
+> ping -c 3 google.com
+
+###### (Optional) Activate wireless connectivity
+
+> wifi-menu
 
 <sub><sup>
 References:  
