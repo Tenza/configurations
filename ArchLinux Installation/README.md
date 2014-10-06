@@ -8,7 +8,7 @@ The notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration with dualboo
 
 ##### Windows:
 
-* This will irrevocably destroy all data. 
+This will irrevocably destroy all data.  
 
 > Download: http://sourceforge.net/projects/usbwriter/
 
@@ -19,9 +19,9 @@ https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#Using_USBwrite
 
 ##### Linux:
 
-* This will irrevocably destroy all data on /dev/sdx.
-* Replace sdX with yout drive, do not append partition number
-* Find out the name of your USB drive with `lsblk`. Make sure that it is not mounted.
+This will irrevocably destroy all data on /dev/sdX.  
+Replace sdX with your drive, do not append partition number.  
+Find out the name of your USB drive with `lsblk`. Make sure that it is not mounted.  
 
 > dd bs=4M if=/path/to/archlinux.iso of=/dev/**sdX** && sync
 
@@ -34,7 +34,7 @@ https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#In_GNU.2FLinux
 
 ##### Windows:
 
-* This will irrevocably destroy all data.  
+This will irrevocably destroy all data.  
 
 > Open an elevated command prompt.  
 Run diskpart  
@@ -54,8 +54,8 @@ http://superuser.com/questions/536813/how-to-delete-a-partition-on-a-usb-drive
 
 ##### Linux:
 
-* This will irrevocably destroy all data on /dev/sdx.
-* First we need to delete the old partitions that remain on the USB key:
+This will irrevocably destroy all data on /dev/sdX.  
+First we need to delete the old partitions that remain on the USB key:  
 
 > Open a terminal and type sudo su  
 Type fdisk -l and note your USB drive letter.  
@@ -64,7 +64,7 @@ Type d to proceed to delete a partition
 Type 1 to select the 1st partition and press enter  
 Type d to proceed to delete another partition (fdisk should automatically select the second partition)
 
-* Next we need to create the new partition:
+Next we need to create the new partition:  
 
 > Type n to make a new partition  
 Type p to make this partition primary and press enter  
@@ -74,7 +74,7 @@ Press enter again to accept the default last cylinder
 Type w to write the new partition information to the USB key  
 Type umount /dev/sdx (replacing x with your drive letter)  
 
-* The last step is to create the fat filesystem:
+The last step is to create the fat filesystem:  
 
 > Type mkfs.vfat -F 32 /dev/sdx1 (replacing x with your USB key drive letter)
 
@@ -100,10 +100,10 @@ nano /etc/pacman.d/mirrorlist
 
 ###### (Optional) (RAID) Create file to assembly RAID arrays:
 
-* This is required, for the RAID 0 configuration.
-* mdadm will use the information generated here to assemble the array on boot.
-* So, later we will have to enable the mdadm module itself, in order to load these configs.  
-* Also, even if the wiki says that that mdraid is used for fake raid systems, Intel advises the use of mdadm for their boards.
+This is required, for the RAID 0 configuration.  
+`mdadm` will use the information generated here to assemble the array on boot.  
+So, later we will have to enable the `mdadm` module itself, in order to load these configs.  
+Also, even if the wiki says that that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards.  
 
 > mdadm -I -e imsm /dev/md127  
 mdadm --examine --scan >> /mnt/etc/mdadm.conf
@@ -117,7 +117,7 @@ https://forums.gentoo.org/viewtopic-t-888520.html
 
 ###### (Optional) Partition plan:
 
-* Before any change we should get to know the details of each recommended partition.
+Before any change we should get to know the details of each recommended partition.
 
 > https://wiki.archlinux.org/index.php/partitioning#Partition_scheme  
 http://en.wikipedia.org/wiki/Disk_partitioning#Benefits_of_multiple_partitions
@@ -136,9 +136,9 @@ http://en.wikipedia.org/wiki/Disk_partitioning#Benefits_of_multiple_partitions
 
 ###### (Optional) (RAID) Find out chunk and block size:
 
-* This is needed to correctly format the raid array.
-* Use the following command and find out the chunk size (128k in my case).
-* The blocksize is normally 4k, it is used for somewhat large files.
+This is needed to correctly format the raid array.  
+Use the following command and find out the chunk size (128k in my case).  
+The blocksize is normally 4k, it is used for somewhat large files.  
 
 > mdadm -E /dev/md127  
 
@@ -149,11 +149,11 @@ http://en.wikipedia.org/wiki/Disk_partitioning#Benefits_of_multiple_partitions
 
 ##### Format Filesystem:
 
-* Dektop:
+Dektop:  
 
 > mkfs.ext4 -v -L Arch -E discard /dev/sda1
 
-* Notebook:
+Notebook:  
 
 > mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/md125p4
 
@@ -165,15 +165,15 @@ http://blog.nuclex-games.com/2009/12/aligning-an-ssd-on-linux/
 
 ##### Create folders and mount partitions:
 
-* Dektop:
+Dektop:  
 
 > mount /dev/sda1 /mnt
 
-* Notebook:
+Notebook:  
 
 > mount /dev/md125p4 /mnt
 
-* (Optional) Folders:
+(Optional) Folders:  
 
 > mkdir /mnt/boot /mnt/home /mnt/var  
 mount /dev/sdaX /mnt/boot  
@@ -219,9 +219,36 @@ If we are using a wired connection, DHCP should be activated by default.
 
 > wifi-menu
 
+##### Install base system
+
+> pacstrap -i /mnt base base-devel
+
+##### Install bootloader
+
+Using `pacstrap` or for example `pacman -S grub` is the same thing. But the former will get the correct package if the name changes.
+
+##### Install GRUB2 on BIOS system
+
+> pacstrap -i /mnt grub-bios 
+
+##### Install GRUB2 on UEFI system
+
+> pacstrap /mnt grub-efi-x86_64x  
+> pacstrap /mnt grub-efi-i386
+
+##### Install Syslinux on BIOS system
+
+> pacstrap /mnt syslinux
+
+##### Install Syslinux on UEFI system
+
+There are limitations, install GRUB2 instead.  
+https://wiki.archlinux.org/index.php/syslinux#UEFI_Systems
+
 <sub><sup>
 References:  
 [Video - System Installation](https://www.youtube.com/watch?v=kQFzVG4wZEg)  
 [Video - From Post-Install to Xorg](https://www.youtube.com/watch?v=DAmXKDJ3D7M)  
 [Video - Using AUI](https://www.youtube.com/watch?v=TLh44czUea0) 
+[Install script AUI](https://github.com/helmuthdu/aui)
 </sup></sub>
