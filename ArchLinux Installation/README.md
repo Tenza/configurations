@@ -13,7 +13,7 @@ This will irrevocably destroy all data.
 > Download: http://sourceforge.net/projects/usbwriter/
 
 <sub><sup>
-References:  
+References:
 https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#Using_USBwriter
 </sup></sub>
 
@@ -26,11 +26,11 @@ Find out the name of your USB drive with `lsblk`. Make sure that it is not mount
 > dd bs=4M if=/path/to/archlinux.iso of=/dev/**sdX** && sync
 
 <sub><sup>
-References:  
+References:
 https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#In_GNU.2FLinux
 </sup></sub>
 
-### Restore partitions on the USB back to normal
+### Restore partitions on the USB
 
 ##### Windows:
 
@@ -48,7 +48,7 @@ Create partition primary
 Exit
 
 <sub><sup>
-References:  
+References:
 http://superuser.com/questions/536813/how-to-delete-a-partition-on-a-usb-drive
 </sup></sub>
 
@@ -79,7 +79,7 @@ The last step is to create the fat filesystem:
 > Type mkfs.vfat -F 32 /dev/sdx1 (replacing x with your USB key drive letter)
 
 <sub><sup>
-References:  
+References:
 http://dottheslash.wordpress.com/2011/11/29/deleting-all-partitions-on-a-usb-drive/
 </sup></sub>
 
@@ -126,11 +126,11 @@ http://en.wikipedia.org/wiki/Disk_partitioning#Benefits_of_multiple_partitions
 
 > fdisk -l
 
-##### Change MBR partitions:
+##### (1) Change MBR partitions:
 
 > cfdisk /dev/**sdX**
 
-##### Change GPT partitions:
+##### (2) Change GPT partitions:
 
 > cgdisk /dev/**sdX**
 
@@ -173,7 +173,7 @@ Notebook:
 
 > mount /dev/md125p4 /mnt
 
-(Optional) Folders:  
+(Optional) Folders for other partitions:  
 
 > mkdir /mnt/boot /mnt/home /mnt/var  
 mount /dev/sdaX /mnt/boot  
@@ -186,7 +186,12 @@ A SWAP is used for moving data in memory to disk and to enable the hibernate fun
 In this case, I will be using a swap file instead of a partition because it is easer to resize and having a dedicated partition for this does not seem useful.  
 Note that the file should have at least the same size of the physical RAM, although for me, I do not plan on hibernate with  my RAM full, so I will give less space.
 
-##### Create SWAP file
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Swap#Swap_file
+</sup></sub>
+
+##### (1) Create SWAP file
 
 > fallocate -l 6G /mnt/swapfile  
 chmod 600 /mnt/swapfile  
@@ -194,7 +199,7 @@ mkswap /mnt/swapfile
 swapon /mnt/swapfile  
 
 
-##### Create SWAP partition
+##### (2) Create SWAP partition
 
 > mkswap /mnt/sda1	
 swapon /mnt/sda1
@@ -202,11 +207,6 @@ swapon /mnt/sda1
 ##### Check SWAP status
 
 > swapon -s
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Swap#Swap_file
-</sup></sub>
 
 ##### Check network
 
@@ -227,23 +227,60 @@ If we are using a wired connection, DHCP should be activated by default.
 
 Using `pacstrap` or for example `pacman -S grub` is the same thing. But the former will get the correct package if the name changes.
 
-##### Install GRUB2 on BIOS system
+##### (1) Install GRUB2 on BIOS system
 
 > pacstrap -i /mnt grub-bios 
 
-##### Install GRUB2 on UEFI system
+##### (2) Install GRUB2 on UEFI system
 
 > pacstrap /mnt grub-efi-x86_64x  
 > pacstrap /mnt grub-efi-i386
 
-##### Install Syslinux on BIOS system
+##### (3) Install Syslinux on BIOS system
 
 > pacstrap /mnt syslinux
 
-##### Install Syslinux on UEFI system
+##### (4) Install Syslinux on UEFI system
 
 There are limitations, install GRUB2 instead.  
 https://wiki.archlinux.org/index.php/syslinux#UEFI_Systems
+
+###### (Optional) Bootloader notions
+
+The bootloader to be installed depends on the partition style rather than the board firmware type.
+
+Example 1, if we have a board with UEFI, and Windows 7 installed, we can assume that the CMS mode is enabled and the partition style is MBR. Knowing this, we should use a bootloader for a BIOS system.
+
+Example 2, if we have a board with UEFI, and Windows 8 installed, we can assume that the CMS mode is disabled and the partition style is GPT. Knowing this, we should use a bootloader for a UEFI system.
+
+https://wiki.archlinux.org/index.php/Windows_and_Arch_Dual_Boot#Bootloader_UEFI_vs_BIOS_limitations
+
+---
+
+The NT bootloader is located on a 100MB "System Reserved" partition. This cannot be erased even with a diferent bootloader because other bootloaders cannot directly start the OS. They have to chainload with the NT bootloader in order to start Windows.
+
+##### Generate filesystem table
+
+> genfstab -p /mnt >> /mnt/etc/fstab
+
+<sub><sup>
+References:
+http://unix.stackexchange.com/questions/124733/what-does-genfstabs-p-option-do
+</sup></sub>
+
+###### (Optional) Change filesystem table flags for SSD optimization.
+
+> nano /mnt/etc/fstab
+
+Add to the SSD disk parameters: `discard`  
+Update the SSD disk parameters: `realatime` for `noatime`  
+Make sure the SWAP is not on `/mnt` and rather on `/`
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Solid_State_Drives#noatime_Mount_Flag  
+https://wiki.archlinux.org/index.php/Solid_State_Drives#Enable_TRIM_by_Mount_Flags
+</sup></sub>
 
 <sub><sup>
 References:  
