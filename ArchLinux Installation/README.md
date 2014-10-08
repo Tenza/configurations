@@ -153,7 +153,7 @@ The blocksize is normally 4k, it is used for somewhat large files.
 * Stripe-width = (number of physical data disks * stride). 
  * Stripe-width = 2 * 32 = 64
 
-##### Format Filesystem:
+##### Format the filesystem with SSD and RAID optimizations:
 
 Dektop:  
 > mkfs.ext4 -v -L Arch -E discard /dev/**sda1**
@@ -257,7 +257,7 @@ http://unix.stackexchange.com/questions/124733/what-does-genfstabs-p-option-do
 
 ###### (Optional) Change filesystem table flags for SSD optimization.
 
-> nano /mnt/etc/fstab
+> nano /mnt/etc/fstab  
 Add to the SSD disk parameters: `discard`  
 Update the SSD disk parameters: `realatime` for `noatime`  
 Make sure the SWAP is not on `/mnt` and rather on `/`
@@ -274,7 +274,7 @@ https://wiki.archlinux.org/index.php/Solid_State_Drives#Enable_TRIM_by_Mount_Fla
 TODO
 
 
-##### Change root
+##### Enter change-root
 
 Once we change root we will be inside our system.  
 From this moment, We no longer refer to the `/mnt` mount point .
@@ -322,6 +322,24 @@ Desktop:
 
 Notebook:  
 > grub-install --target=i386-pc --recheck /dev/**md125**
+
+##### Change the root password
+
+> passwd
+
+###### (Optional) Install necessary wireless drivers
+
+> pacman -S iw wpa_supplicant dialog wpa_actiond
+
+##### Exit change-root
+
+> exit
+
+##### Reboot
+
+Now we can reboot and remove the USB drive.
+
+> systemctl reboot
 
 <sub><sup>
 References:  
