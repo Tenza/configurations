@@ -1,7 +1,7 @@
 # ArchLinux Instalation notes.
 
 These notes were created for my desktop and notebook installations.  
-The desktop uses a single SSD and the notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration.
+The desktop uses a single SSD and the notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration.  
 Both have dualboot with Windows 7, and since both use SSD drives we will make some recommend optimizations.
 
 ### Create Bootable USB
@@ -37,15 +37,15 @@ https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#In_GNU.2FLinux
 This will irrevocably destroy all data.  
 
 > Open an elevated command prompt.  
-Run diskpart  
-List disk  
+Type `diskpart`  
+Type `List disk`  
 Find the disk number of the USB drive (it should be obvious going by the size)  
-Select disk **X**  
-List partition  
-Select partition **X**  
-Delete partition  
-Create partition primary  
-Exit
+Type `Select disk X`  
+Type `List partition`  
+Type `Select partition X`  
+Type `Delete partition`  
+Type `Create partition primary`  
+Type `Exit`
 
 <sub><sup>
 References:
@@ -242,7 +242,7 @@ The NT bootloader is located on a 100MB "System Reserved" partition. This cannot
 
 Using `pacstrap` or `pacman -S grub` is the same thing. But the former will get the correct package if the name changes.
 
-##### Install GRUB2 on BIOS-MBR system
+##### Install GRUB2 for BIOS-MBR system
 
 > pacstrap -i /mnt grub-bios 
 
