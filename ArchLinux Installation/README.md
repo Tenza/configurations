@@ -1,8 +1,8 @@
 # ArchLinux Instalation notes.
 
-I created these notes for my desktop and notebook installations.  
-The desktop uses a single SSD for the OS, so it will use some recommend SSD optimizations.  
-The notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration with dualboot with Windows 7.
+These notes were created for my desktop and notebook installations.  
+The desktop uses a single SSD and the notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration.
+Both have dualboot with Windows 7, and since both use SSD drives we will make some recommend optimizations.
 
 ### Create Bootable USB
 
@@ -20,8 +20,8 @@ https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#Using_USBwrite
 ##### Linux:
 
 This will irrevocably destroy all data on /dev/sdX.  
-Replace sdX with your drive, do not append partition number.  
-Find out the name of your USB drive with `lsblk`. Make sure that it is not mounted.  
+Find out the name of the USB drive with `lsblk`.  
+Do not append partition a number and make sure the drive is not mounted.  
 
 > dd bs=4M if=/path/to/archlinux.iso of=/dev/**sdX** && sync
 
@@ -40,9 +40,9 @@ This will irrevocably destroy all data.
 Run diskpart  
 List disk  
 Find the disk number of the USB drive (it should be obvious going by the size)  
-Select disk X  
+Select disk **X**  
 List partition  
-Select partition X  
+Select partition **X**  
 Delete partition  
 Create partition primary  
 Exit
@@ -58,25 +58,25 @@ This will irrevocably destroy all data on /dev/sdX.
 First we need to delete the old partitions that remain on the USB key:  
 
 > Open a terminal and type sudo su  
-Type fdisk -l and note your USB drive letter.  
-Type fdisk /dev/sdx (replacing x with your drive letter)  
-Type d to proceed to delete a partition  
-Type 1 to select the 1st partition and press enter  
-Type d to proceed to delete another partition (fdisk should automatically select the second partition)
+Type `fdisk -l` and note your USB drive letter.  
+Type `fdisk /dev/sdX`  
+Type `d` to proceed to delete a partition  
+Type `1` to select the 1st partition and press enter  
+Type `d` to proceed to delete another partition (fdisk should automatically select the second partition)
 
 Next we need to create the new partition:  
 
-> Type n to make a new partition  
-Type p to make this partition primary and press enter  
-Type 1 to make this the first partition and then press enter  
+> Type `n` to make a new partition  
+Type `p` to make this partition primary and press enter  
+Type `1` to make this the first partition and then press enter  
 Press enter to accept the default first cylinder  
 Press enter again to accept the default last cylinder  
-Type w to write the new partition information to the USB key  
-Type umount /dev/sdx (replacing x with your drive letter)  
+Type `w` to write the new partition information to the USB key  
+Type `umount /dev/sdX`
 
 The last step is to create the fat filesystem:  
 
-> Type mkfs.vfat -F 32 /dev/sdx1 (replacing x with your USB key drive letter)
+> Type `mkfs.vfat -F 32 /dev/sdX1`
 
 <sub><sup>
 References:
@@ -102,10 +102,16 @@ nano /etc/pacman.d/mirrorlist
 
 This is required, for the RAID 0 configuration.  
 `mdadm` will use the information generated here to assemble the array on boot.  
-So, later we will have to enable the `mdadm` module itself, in order to load these configs.  
-Also, even if the wiki says that that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards.  
+So, later we will have to enable the `mdadm` module itself, in order to load these configurations.  
+Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards.  
+Find out where your RAID array is located with:
 
-> mdadm -I -e imsm /dev/md127  
+> mdadm --detail-platform  
+mdadm -E /dev/**mdX**
+
+In my case the array is located on md127 and uses Intel Matrix Storage Manager (imsm).  
+
+> mdadm -I -e imsm /dev/**md127**  
 mdadm --examine --scan >> /mnt/etc/mdadm.conf
 
 <sub><sup>
@@ -140,7 +146,7 @@ This is needed to correctly format the raid array.
 Use the following command and find out the chunk size (128k in my case).  
 The blocksize is normally 4k, it is used for somewhat large files.  
 
-> mdadm -E /dev/md127  
+> mdadm -E /dev/**md127**  
 
 * Stride = (chunk size/block size). 
  * Stride = 128 / 4 = 32
@@ -150,12 +156,10 @@ The blocksize is normally 4k, it is used for somewhat large files.
 ##### Format Filesystem:
 
 Dektop:  
-
-> mkfs.ext4 -v -L Arch -E discard /dev/sda1
+> mkfs.ext4 -v -L Arch -E discard /dev/**sda1**
 
 Notebook:  
-
-> mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/md125p4
+> mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/**md125p4**
 
 <sub><sup>
 References:  
@@ -166,25 +170,23 @@ http://blog.nuclex-games.com/2009/12/aligning-an-ssd-on-linux/
 ##### Create folders and mount partitions:
 
 Dektop:  
-
-> mount /dev/sda1 /mnt
+> mount /dev/**sda1** /mnt
 
 Notebook:  
-
-> mount /dev/md125p4 /mnt
+> mount /dev/**md125p4** /mnt
 
 (Optional) Folders for other partitions:  
 
 > mkdir /mnt/boot /mnt/home /mnt/var  
-mount /dev/sdaX /mnt/boot  
-mount /dev/sdaX /mnt/home  
-mount /dev/sdaX /mnt/var  
+mount /dev/**sdaX** /mnt/boot  
+mount /dev/**sdaX** /mnt/home  
+mount /dev/**sdaX** /mnt/var  
 
 ##### SWAP
 
 A SWAP is used for moving data in memory to disk and to enable the hibernate functionality.  
 In this case, I will be using a swap file instead of a partition because it is easer to resize and having a dedicated partition for this does not seem useful.  
-Note that the file should have at least the same size of the physical RAM, although for me, I do not plan on hibernate with  my RAM full, so I will give less space.
+Note that the file should have at least the same size of the physical RAM, although for me, I do not plan on hibernate with my RAM full, so I will give less space.
 
 <sub><sup>
 References:
@@ -198,11 +200,10 @@ chmod 600 /mnt/swapfile
 mkswap /mnt/swapfile  
 swapon /mnt/swapfile  
 
-
 ##### (2) Create SWAP partition
 
-> mkswap /mnt/sda1	
-swapon /mnt/sda1
+> mkswap /mnt/**sda1**	
+swapon /mnt/**sda1**
 
 ##### Check SWAP status
 
@@ -225,29 +226,7 @@ If we are using a wired connection, DHCP should be activated by default.
 
 ##### Install bootloader
 
-Using `pacstrap` or for example `pacman -S grub` is the same thing. But the former will get the correct package if the name changes.
-
-##### (1) Install GRUB2 on BIOS system
-
-> pacstrap -i /mnt grub-bios 
-
-##### (2) Install GRUB2 on UEFI system
-
-> pacstrap /mnt grub-efi-x86_64x  
-> pacstrap /mnt grub-efi-i386
-
-##### (3) Install Syslinux on BIOS system
-
-> pacstrap /mnt syslinux
-
-##### (4) Install Syslinux on UEFI system
-
-There are limitations, install GRUB2 instead.  
-https://wiki.archlinux.org/index.php/syslinux#UEFI_Systems
-
-###### (Optional) Bootloader notions
-
-The bootloader to be installed depends on the partition style rather than the board firmware type.
+The bootloader to be installed depends on the partition style and the board firmware type.
 
 Example 1, if we have a board with UEFI, and Windows 7 installed, we can assume that the CMS mode is enabled and the partition style is MBR. Knowing this, we should use a bootloader for a BIOS system.
 
@@ -258,6 +237,14 @@ https://wiki.archlinux.org/index.php/Windows_and_Arch_Dual_Boot#Bootloader_UEFI_
 ---
 
 The NT bootloader is located on a 100MB "System Reserved" partition. This cannot be erased even with a diferent bootloader because other bootloaders cannot directly start the OS. They have to chainload with the NT bootloader in order to start Windows.
+
+---
+
+Using `pacstrap` or `pacman -S grub` is the same thing. But the former will get the correct package if the name changes.
+
+##### Install GRUB2 on BIOS-MBR system
+
+> pacstrap -i /mnt grub-bios 
 
 ##### Generate filesystem table
 
@@ -271,7 +258,6 @@ http://unix.stackexchange.com/questions/124733/what-does-genfstabs-p-option-do
 ###### (Optional) Change filesystem table flags for SSD optimization.
 
 > nano /mnt/etc/fstab
-
 Add to the SSD disk parameters: `discard`  
 Update the SSD disk parameters: `realatime` for `noatime`  
 Make sure the SWAP is not on `/mnt` and rather on `/`
@@ -281,6 +267,61 @@ References:
 https://wiki.archlinux.org/index.php/Solid_State_Drives#noatime_Mount_Flag  
 https://wiki.archlinux.org/index.php/Solid_State_Drives#Enable_TRIM_by_Mount_Flags
 </sup></sub>
+
+###### (Optional) Change permissions of storage drives
+
+
+TODO
+
+
+##### Change root
+
+Once we change root we will be inside our system.  
+From this moment, We no longer refer to the `/mnt` mount point .
+
+> arch-chroot /mnt
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Change_root
+</sup></sub>
+
+###### (Optional) (RAID) Activate RAID module
+
+As said before, we need to enable `mdadm` uppon boot in order to assemble the RAID arrays.
+
+> nano /etc/mkinitcpio.conf  
+HOOKS="... block **mdadm_udev** filesystems ..."
+
+###### (Optional) Create initial ramdisk
+
+This was already created when the base system was intalled.  
+This is only needed if we add any modules, like the above step.
+
+> mkinitcpio -p linux
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/mkinitcpio
+</sup></sub>
+
+##### Configure GRUB2
+
+> grub-mkconfig -o /boot/grub/grub.cfg
+
+##### Install GRUB2 to the MBR
+
+This will install the bootloader to the first sector of the disk.  
+It is possible to install to a partition, but is not recommended.
+
+`--target=i386-pc` instructs grub-install to install for BIOS systems only.  
+It is recommended to always use this option to remove ambiguity in grub-install. 
+
+Desktop:  
+> grub-install -target=i386-pc --recheck /dev/**sda**
+
+Notebook:  
+> grub-install --target=i386-pc --recheck /dev/**md125**
 
 <sub><sup>
 References:  
