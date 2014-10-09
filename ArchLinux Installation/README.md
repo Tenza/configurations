@@ -341,6 +341,7 @@ Now we can reboot and remove the USB drive.
 
 > systemctl reboot
 
+
 <sub><sup>
 References:  
 [Video - System Installation](https://www.youtube.com/watch?v=kQFzVG4wZEg)  
