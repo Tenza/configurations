@@ -484,7 +484,7 @@ menuentry "System shutdown" {
 We can also change the text displayed on the bootloader if we manually edit the file.
 Keep in mind that these changes will be lost when we rebuild the file. Do this with extreme caution.
 If we delete something needed, the machine might not boot (but we  can always fix it with a live cd :P).
-Also, I like to use skins, see bellow.
+Also, to use skins, see the next part.
 
 > nano /boot/grub/grub.cfg
 
