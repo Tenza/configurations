@@ -434,8 +434,7 @@ https://wiki.archlinux.org/index.php/GRUB#Dual-booting
 
 > grub-mkconfig -o /boot/grub/grub.cfg
 
-The os-prober will be automatically called by `grub-mkconfig` and will add an entry to Windows.
-This has worked for me even on a dualboot with a RAID array.
+The os-prober will be automatically called by `grub-mkconfig` and will add an entry to Windows. This has worked for me even on a dualboot with a RAID array.
 
 But if for some reason it faild we can try and add a costum entry:
 
@@ -451,15 +450,17 @@ menuentry{
 }
 ```
 
-Use `blkid` to get the uuid of the disk and replace the 'XXX'.
+Use `blkid` to get the uuid of the disk and replace the 'XXX'. And re-run the command:
+
+> grub-mkconfig -o /boot/grub/grub.cfg
 
 ##### Arch already instaled:
 
 If we are installing Windows and Arch is already on the machine, we have to reinstall the bootloader because Windows automatically overwrites the MBR. To do so, we have to start Arch Live and do: 
 
-> mount /mnt
-arch-chroom /mnt
-grub-mkconfig -o /boot/grub/grub.cfg
+> mount /mnt  
+arch-chroom /mnt  
+grub-mkconfig -o /boot/grub/grub.cfg  
 grub-install /dev/**sda**
 
 ##### Custom Entries
