@@ -1,10 +1,10 @@
-# ArchLinux Instalation notes.
+# ArchLinux Instalation Notes
 
 These notes were created for my desktop and notebook installations.  
 The desktop uses a single SSD and the notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration.  
 Both have dualboot with Windows 7, and since both use SSD drives we will make some recommend optimizations.
 
-### Create Bootable USB
+### Create bootable USB
 
 ##### Windows:
 
@@ -341,6 +341,155 @@ Now we can reboot and remove the USB drive.
 
 > systemctl reboot
 
+### Configure the system
+
+##### Configure persistent keymap
+
+> nano /etc/vconsole.conf  
+KEYMAP=pt-latin9
+
+##### Configure hostname
+
+This is the name that will showup in the console, por example:
+filipe@filipe-desktop
+
+> hostnamectl set-hostname filipe-desktop
+
+##### Configure timezone 
+
+Get time zone info:  
+> ls /usr/share/zoneinfo
+
+In my case is Portugal, so:
+> timedatectl set-timezone Portugal
+
+##### Configure locale
+
+> nano /etc/locale.gen
+
+Remove the comment from the lines with the country code. pt_PT are 3.
+
+> locale-gen  
+localectl set-locale LANG="pt_PT-UTF-8"
+
+##### Network card
+
+There are multiple possible configurations. The following is the best for me.
+https://wiki.archlinux.org/index.php/Beginners%27_guide#Configure_the_network
+
+##### Configure DHCP, wired connection
+
+Get interface name:
+> ip link
+
+In my case is enp2s0, so: 
+> systemctl enable dhcpcd@enp2s0.service  
+systemctl start dhcpcd@enp2s0.service
+
+##### Configure Wifi, wireless connection
+
+If the required packages were installed before, this should work:
+> wifi-menu
+
+Get your interface name with:
+> ip link
+
+In my case is wlp5s2, and I will use `netctl-auto` to handle connectivity:
+> systemctl enable netctl-auto@wlp5s2.service
+
+##### (1) Configure hardware clock for UTC
+
+By default linux uses UTC, so we should instal NTP to sync the time online.
+
+> pacman -S ntp  
+systemctl enable ndpd.service
+
+###### (2) Configure hardware clock for Localtime
+
+The only reason to ever do this, is if we are in a dualboot configuration and there is already an OS managing time and DST switching while storing the RTC time in localtime, such as Windows. But even so, it would be preferable to force Windows to use UTC, rather than forcing Linux to localtime.
+
+With this said, keep in mind that we still have to logon in Windows at least two times a year (in Spring and Autumn) when DST kicks i.n
+
+> timedatectl set-local-rtc true
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Time  
+http://www.satsignal.eu/ntp/setup.html  
+http://www.meinbergglobal.com/english/sw/ntp.htm
+</sup></sub>
+
+##### Dualboot
+
+First we install the package responsible for detecting other OS instalations:
+
+> pacman -S os-prober
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/GRUB#Dual-booting
+</sup></sub>
+
+##### Windows already instaled:
+
+> grub-mkconfig -o /boot/grub/grub.cfg
+
+The os-prober will be automatically called by `grub-mkconfig` and will add an entry to Windows.
+This has worked for me even on a dualboot with a RAID array.
+
+But if for some reason it faild we can try and add a costum entry:
+
+> nano /etc/grub.d/40_custom
+
+```
+menuentry{
+	echo “Loading Windows 7”
+	insmod part_msdos
+	insmod ntfs
+	search --fs-uuid --no-floppy –set=root XXXXXXXXXXXXXX
+	chainloader +1
+}
+```
+
+Use `blkid` to get the uuid of the disk and replace the 'XXX'.
+
+##### Arch already instaled:
+
+If we are installing Windows and Arch is already on the machine, we have to reinstall the bootloader because Windows automatically overwrites the MBR. To do so, we have to start Arch Live and do: 
+
+> mount /mnt
+arch-chroom /mnt
+grub-mkconfig -o /boot/grub/grub.cfg
+grub-install /dev/**sda**
+
+##### Custom Entries
+
+> nano /etc/grub.d/40_custom
+
+```
+menuentry "System restart" {
+	echo "System rebooting..."
+	reboot
+}
+
+menuentry "System shutdown" {
+	echo "System shutting down..."
+	halt
+}
+```
+
+> grub-mkconfig -o /boot/grub/grub.cfg
+
+We can also change the text displayed on the bootloader if we manually edit the file.
+Keep in mind that these changes will be lost when we rebuild the file. Do this with extreme caution.
+If we delete something needed, the machine might not boot (but we  can always fix it with a live cd :P).
+Also, I like to use skins, see bellow.
+
+> nano /boot/grub/grub.cfg
+
+##### Reboot
+
+> systemctl reboot
 
 <sub><sup>
 References:  
