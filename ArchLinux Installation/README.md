@@ -4,6 +4,14 @@ These notes were created for my desktop and notebook installations.
 The desktop uses a single SSD and the notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration.  
 Both have dualboot with Windows 7, and since both use SSD drives we will make some recommend optimizations.
 
+<sub><sup>
+References:  
+[Video - System Installation](https://www.youtube.com/watch?v=kQFzVG4wZEg)  
+[Video - From Post-Install to Xorg](https://www.youtube.com/watch?v=DAmXKDJ3D7M)  
+[Video - Using AUI](https://www.youtube.com/watch?v=TLh44czUea0) 
+[Install script AUI](https://github.com/helmuthdu/aui)
+</sup></sub>
+
 ### Create bootable USB
 
 ##### Windows:
@@ -374,7 +382,7 @@ localectl set-locale LANG="pt_PT-UTF-8"
 
 ##### Network card
 
-There are multiple possible configurations. The following is the best for me.
+There are multiple possible configurations. The following is the best for me.  
 https://wiki.archlinux.org/index.php/Beginners%27_guide#Configure_the_network
 
 ##### Configure DHCP, wired connection
@@ -492,10 +500,52 @@ Also, to use skins, see the next part.
 
 > systemctl reboot
 
+# Post-Install to XOrg
+
+##### Add new user
+
+It is good practice to use a normal user and elevate to root only when necessary.
+
+> useradd -m -G wheel -s /bin/bash filipe  
+chfn filipe  
+passwd filipe
+
+##### Give sudo permissons to new user
+
+Trick visudo to open with nano:
+> EDITOR=nano visudo
+
+Add user to the section “User privilegie specification”:
+> Filipe ALL=(ALL) ALL
+
+Logout from root and enter your account:
+> logout
+
+##### Activate multilib repo
+
+Remove comments from [multilib]:
+> nano /etc/pacman.conf  
+pacman -Syy
+
+##### Install Packer
+
+> sudo pacman -S wget git jshon expac  
+wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz  
+tar zxvf packer.tar.gz  
+cd packer && makepkg  
+sudo pacman –U packer (press tab)
+
 <sub><sup>
-References:  
-[Video - System Installation](https://www.youtube.com/watch?v=kQFzVG4wZEg)  
-[Video - From Post-Install to Xorg](https://www.youtube.com/watch?v=DAmXKDJ3D7M)  
-[Video - Using AUI](https://www.youtube.com/watch?v=TLh44czUea0) 
-[Install script AUI](https://github.com/helmuthdu/aui)
+References:
+http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
 </sup></sub>
+
+##### Sound drivers
+
+ALSA is already apart of the Kernel, but the channels are muted by default.
+
+> pacman –S alsa-utils  
+run `alsamixer`  
+Press H to unmute. Press F1 for help.  
+run `speaker-test`
+
