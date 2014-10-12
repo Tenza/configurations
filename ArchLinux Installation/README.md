@@ -518,14 +518,14 @@ Trick visudo to open with nano:
 Add user to the section “User privilegie specification”:
 > Filipe ALL=(ALL) ALL
 
-Logout from root and enter your account:
+Logout from root and enter the new account:
 > logout
 
 ##### Activate multilib repo
 
 Remove comments from [multilib]:
-> nano /etc/pacman.conf  
-pacman -Syy
+> sudo nano /etc/pacman.conf  
+sudo pacman -Syy
 
 ##### Install Packer
 
@@ -534,6 +534,11 @@ wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz
 tar zxvf packer.tar.gz  
 cd packer && makepkg  
 sudo pacman –U packer (press tab)
+
+Once installed, cleanup:
+
+> rm -R packer  
+rm packer.tar.gz
 
 <sub><sup>
 References:
@@ -544,8 +549,106 @@ http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
 
 ALSA is already apart of the Kernel, but the channels are muted by default.
 
-> pacman –S alsa-utils  
+> sudo pacman –S alsa-utils  
 run `alsamixer`  
 Press H to unmute. Press F1 for help.  
 run `speaker-test`
 
+Install the plugins for high quality resampling:
+> sudo pacman –S alsa-plugins
+
+Now lets install the pulseaudio server:
+> sudo pacman –S pulseaudio pulseaudio-alsa 
+
+If we are in a x86_64 system we need to have sound for 32-bit multilib programs like Wine, Skype and Steam: 
+> sudo pacman –S lib32-libpulse lib32-alsa-plugins
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#High_quality_resampling  
+https://wiki.archlinux.org/index.php/PulseAudio#Back-end_configuration
+</sup></sub>
+
+##### XOrg
+
+> sudo pacman –S xorg-server xorg-server-utils xorg-xinit mesa
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/xorg#Installation
+</sup></sub>
+
+##### Graphic drivers
+
+Get graphics card:
+> lspci | grep VGA
+
+Desktop:
+
+The graphics card is too old, and there is no support for it, so I use the open-source drivers.
+
+Find open-source driver:
+> sudo pacman -Ss xf86-video | less
+
+Install:
+> sudo pacman –S mesa-dri xf86-video-vesa xf86-video-ati
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/ATI#Installation
+https://wiki.archlinux.org/index.php/Xorg#Driver_installation
+</sup></sub>
+
+Notebook:
+
+This notebook has two graphics cards, intel and nvidia.
+In order to manage them we use `bumblebee` that is Optimus for GNU/Linux.
+
+> sudo pacman –S mesa-dri xf86-video-intel nvidia bumblebee 
+
+Configure bumblebee:
+
+> sudo gpasswd -a filipe bumblebee  
+sudo systemctl enable bumblebeed.service 
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Bumblebee#Installing_Bumblebee_with_Intel.2FNVIDIA  
+https://wiki.archlinux.org/index.php/Bumblebee#Start_Bumblebee
+https://wiki.archlinux.org/index.php/Hybrid_graphics#ATI_Dynamic_Switchable_Graphics
+</sup></sub>
+
+##### Input drivers
+
+Desktop and Notebook:
+> sudo pacman –S xf86-input-mouse xf86-input-keyboard
+
+Notebook:
+> sudo pacman –S xf86-input-synaptics 
+
+##### Test default enviroment
+
+Make sure XOrg is working before we install a desktop enviroment.
+
+> sudo pacman –S xorg-twm xorg-xclock xterm  
+startx
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Xorg#Manually
+</sup></sub>
+
+##### Install KDE
+
+> sudo pacman –S kdebase kde-l10n-pt  
+sudo systemctl enable kdm.service  
+sudo systemctl reboot
+
+For the photon backend, use VLC because it has the best upstream support.  
+For the Kactivities, use the new `kactivities-frameworks`instead of `kactivities4`  
+For the fonts, use ttf-oxygen because it is KDE.
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/KDE
+</sup></sub>
