@@ -652,3 +652,46 @@ For the fonts, use ttf-oxygen because it is KDE.
 References:
 https://wiki.archlinux.org/index.php/KDE
 </sup></sub>
+
+##### Fonts
+
+For fonts I like to use the infinality bundle, they improve text rendering and have a package of hand picked fonts.  
+First, we need to add their repository and key.
+Also, if the terminal within KDE is messed up, press `Ctrl+Alt+F1` to `F6` to change to a virtual console provided by getty. In order to get back to the X session, press `Ctrl+Alt+F7`.
+
+> nano /etc/pacman.conf  
+
+> [infinality-bundle]  
+Server = http://bohoomil.com/repo/$arch  
+[infinality-bundle-multilib]  
+Server = http://bohoomil.com/repo/multilib/$arch  
+[infinality-bundle-fonts]  
+Server = http://bohoomil.com/repo/fonts
+
+Then we add the key and install everything:
+
+> pacman-key -r 962DDE58  
+pacman-key --lsign-key 962DDE58  
+pacman –Syyu  
+pacman -S infinality-bundle infinality-bundle-multilib ibfonts-meta-base
+
+<sub><sup>
+References:  
+http://bohoomil.com/  
+https://wiki.archlinux.org/index.php/Infinality-bundle%2Bfonts#Installation  
+https://wiki.archlinux.org/index.php/Unofficial_user_repositories#infinality-bundle  
+https://wiki.archlinux.org/index.php/Unofficial_user_repositories#infinality-bundle-multilib  
+https://wiki.archlinux.org/index.php/Unofficial_user_repositories#infinality-bundle-fonts  
+https://bbs.archlinux.org/viewtopic.php?id=162098
+</sup></sub>
+
+##### MS Fonts
+
+To install Microsoft fonts we will use the Legacy packages, because the new packages require us to have a mounted Windows partition or access to a setup or installation media, and I dont really want to waste time with this BS.
+
+> sudo packer -S ttf-ms-fonts ttf-vista-fonts
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/MS_fonts
+</sup></sub>
