@@ -353,8 +353,13 @@ Now we can reboot and remove the USB drive.
 
 ##### Configure persistent keymap
 
-> nano /etc/vconsole.conf  
-KEYMAP=pt-latin9
+> localectl set-keymap pt-latin9  
+localectl set-x11-keymap pt  
+
+> [filipe@filipe-desktop ~]$ localectl status  
+System Locale: LANG=pt_PT.UTF-8  
+VC Keymap: pt-latin9  
+X11 Layout: pt
 
 ##### Configure hostname
 
