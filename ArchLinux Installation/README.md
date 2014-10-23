@@ -337,6 +337,7 @@ Notebook:
 
 ###### (Optional) Install necessary wireless drivers
 
+You will not be able to access `wifi-menu`, without there packages once we reboot.
 > pacman -S iw wpa_supplicant dialog wpa_actiond
 
 ##### Exit change-root
@@ -385,30 +386,32 @@ Remove the comment from the lines with the country code. pt_PT are 3.
 > locale-gen  
 localectl set-locale LANG="pt_PT-UTF-8"
 
-##### Network card
+##### Configure network cards
 
 There are multiple possible configurations. The following is the best for me.  
 https://wiki.archlinux.org/index.php/Beginners%27_guide#Configure_the_network
 
-##### Configure DHCP, wired connection
-
-Get interface name:
+Get interfaces name:
 > ip link
 
-In my case is enp2s0, so: 
-> systemctl enable dhcpcd@enp2s0.service  
-systemctl start dhcpcd@enp2s0.service
+In my case the interfaces needed are:  
+Wired: enp2s0  
+Wireless: wlp3s0
 
-##### Configure Wifi, wireless connection
+##### Configure wired connection with DHCP
 
-If the required packages were installed before, this should work:
+> systemctl start dhcpcd@enp2s0.service
+
+##### Configure wireless connection with wifi-menu
+
 > wifi-menu
 
-Get your interface name with:
-> ip link
+###### (Optional) Load on boot
 
-In my case is wlp5s2, and I will use `netctl-auto` to handle connectivity:
-> systemctl enable netctl-auto@wlp5s2.service
+This will activate the connections on boot, but keep in mind, that these will have to be stopped and disabled when we install the `networkmanager` package once we have a graphical enviroment.
+
+> systemctl enable dhcpcd@enp2s0.service  
+systemctl enable netctl-auto@wlp3s0.service
 
 ##### (1) Configure hardware clock for UTC
 
@@ -419,7 +422,7 @@ systemctl enable ndpd.service
 
 ###### (2) Configure hardware clock for Localtime
 
-The only reason to ever do this, is if we are in a dualboot configuration and there is already an OS managing time and DST switching while storing the RTC time in localtime, such as Windows. But even so, it would be preferable to force Windows to use UTC, rather than forcing Linux to localtime.
+The only reason to ever do this, is if we are in a dualboot configuration and there is already an OS managing time and DST switching while storing the RTC time in localtime, such as Windows. But even so, it would be preferable to force Windows to use UTC, rather than forcing Linux to localtime. To do this, just install the Meinberg NTP Software.
 
 With this said, keep in mind that we still have to logon in Windows at least two times a year (in Spring and Autumn) when DST kicks i.n
 
@@ -505,7 +508,7 @@ Also, to use skins, see the next part.
 
 > systemctl reboot
 
-# Post-Install to XOrg
+### Post-Install to XOrg
 
 ##### Add new user
 
@@ -658,6 +661,8 @@ References:
 https://wiki.archlinux.org/index.php/KDE
 </sup></sub>
 
+### Configure X11 system
+
 ##### Fonts
 
 For fonts I like to use the infinality bundle, they improve text rendering and have a package of hand picked fonts.  
@@ -700,3 +705,95 @@ To install Microsoft fonts we will use the Legacy packages, because the new pack
 References:
 https://wiki.archlinux.org/index.php/MS_fonts
 </sup></sub>
+
+##### KDE volume control
+
+To have access to the tray applet:
+
+> sudo pacman -S kdemultimedia-kmix
+
+##### KDE network manager
+
+This will install the network tray applet, as well as its dependencies, that include the main package `networkmanager`.
+
+> sudo pacman -S kdeplasma-applets-plasma-nm
+
+If you enabled DHCP or netctl-auto on boot stop, disable them and start the new service:
+
+> sudo systemctl -t service  
+sudo systemctl stop dhcpcd@enp2s0.service   
+sudo systemctl stop netctl-auto@wlp3s0.service  
+sudo systemctl disable dhcpcd@enp2s0.service  
+sudo systemctl disable netctl-auto@wlp3s0.service  
+sudo systemctl enable NetworkManager.service  
+reboot
+
+Once we reboot and we use the networkmanager for a wireless connection, it will open KWallet in order to save the password. More below.
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/NetworkManager#KDE
+</sup></sub>
+
+##### KDE KWallet
+
+If the KWallet is already open, simply use the default configuration, and create the default `kdewallet` wallet.  
+If not, install the following package and open in `System Configurations > Account Details > Wallet` or `ALT+F2` and type `kwalletmanager`. 
+
+> sudo pacman -S kdeutils-kwalletmanager  
+
+Now, if Kwallet is prompting you at each startup for the password, probably due to the saved wireless password, you can simply change its password to blank.
+
+<sub><sup>
+References:
+http://mschlander.wordpress.com/2012/08/01/kwallet-is-annoying/  http://unix.stackexchange.com/questions/34186/automatically-opening-kwallet-while-logging-in-to-kde
+</sup></sub>
+
+##### Bluetooth
+
+This will install the bluetooth tray applet, as well as its dependencies, that include the main package `bluez`.
+
+> sudo pacman -S bluedevil
+
+Activate the bluetooth card, but be aware that some Bluetooth adapters are bundled with a Wi-Fi card (e.g. Intel Centrino). These require that the Wi-Fi card is first enabled (typically a keyboard shortcut on a laptop) in order to make the Bluetooth adapter visible to the kernel.
+
+> systemctl start bluetooth  
+systemctl enable bluetooth
+
+There are some known problems when the bluetooth deamon starts, but fortunatly bluetooth still works.  
+To see the errors do:
+
+> systemctl status bluetooth
+
+> Sap driver initialization failed.  
+sap-server: Operation not permitted (1)  
+hci0 Load Connection Parameters failed: Unknown Command (0x01)
+
+https://bugs.archlinux.org/task/41247
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Bluetooth#BlueDevil
+https://wiki.archlinux.org/index.php/Bluetooth#Installation
+</sup></sub>
+
+### Look & feel
+
+Some of my personal settings:  
+
+Configurate taskbar > No groups, manually ordered  
+Configurate system configurations > Classic tree, expand first level  
+Configurate desktop > Disposition: Folder  
+Add account image.
+
+### Random problems
+
+##### Miss behaved packages
+
+> nano /etc/pacman.conf  
+IgnorePkg = xyz
+
+##### Not-found services
+
+> sudo systemctl -t services -a  
+Not really a problem: https://ask.fedoraproject.org/en/question/49946/how-to-delete-a-systemd-service/
