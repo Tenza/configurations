@@ -276,12 +276,6 @@ https://wiki.archlinux.org/index.php/Solid_State_Drives#noatime_Mount_Flag
 https://wiki.archlinux.org/index.php/Solid_State_Drives#Enable_TRIM_by_Mount_Flags
 </sup></sub>
 
-###### (Optional) Change permissions of storage drives
-
-
-TODO
-
-
 ##### Enter change-root
 
 Once we change root we will be inside our system.  
@@ -777,14 +771,48 @@ https://wiki.archlinux.org/index.php/Bluetooth#BlueDevil
 https://wiki.archlinux.org/index.php/Bluetooth#Installation
 </sup></sub>
 
+##### Mount on boot
+
+> sudo nano /etc/fstab
+
+Desktop:
+
+Besides mounting on boot, we will set access permissions to only the created user.  
+I do this because I have some untrusted programs running on locked accounts, i.e Skype.
+
+> /dev/sdb1               /media/Dados1   ntfs            defaults,user,uid=1000,umask=0077        0 0  
+/dev/sdc1               /media/Dados2   ntfs            defaults,user,uid=1000,umask=0077        0 0  
+/dev/sdd                /media/Dados3   ntfs            defaults,user,uid=1000,umask=0077        0 0  
+
+```
+Permissions for ntfs and vfat file systems must be set with the dmask, fmask and umask options. dmask controls permissions for directories, fmask controls permissions for files, and umask controls both. Since these options set masks, they should be the compliment of the permissions you want. i.e, they are switched. For example, rwx for the owner and rw for others is 0022 rather than 0755. So, the first character represents that its an octal permissions, the second is for the owner, the third is the group and the last is for others.
+
+To set the owner, use the uid and gid options for user and group, respectively. You can find your UID with the command echo $UID. To find your GID, use cat /etc/group. These values are both usually 1000.
+
+A common set of mount options for ntfs is uid=1000,gid=1000,dmask=027,fmask=137. This sets you as the owner of the drive, and sets the permissions to drwxr-x---
+```
+
+<sub><sup>
+References:  
+http://en.wikipedia.org/wiki/Fmask#Example  
+http://www.omaroid.com/fstab-permission-masks-explained/  
+http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab
+</sup></sub>
+
 ### Look & feel
 
 Some of my personal settings:  
 
-Configurate taskbar > No groups, manually ordered  
-Configurate system configurations > Classic tree, expand first level  
-Configurate desktop > Disposition: Folder  
-Add account image.
+Move "Tool Box" on the desktop to the right top corner.  
+Configurate tray > Always show > All except the two notification icons.  
+Configurate taskbar > No groups, manually ordered.  
+Configurate system configurations > Classic tree, remove detailed tips, expand first level.  
+Configurate desktop > Disposition: Folder.  
+Configurate system configurations > Add account image.  
+Dolphin > Adjust window properties:  Show in details, order by name, show folders first, show preview, show hidden files. Additional Information: Name, Size, Date, Type, Location, permissions, owner. Apply to all folders, use by default.  
+Dolphin > Configure Dolphin: Change default start up, show location bar, show filter, doble-click to open, delete files from garbage after 7 days show space available information.   
+Dolphin > Right click on a drive > Icon size > Large.  
+Dolphin > Right click on top menu > Icon size > Large.  
 
 ### Random problems
 
