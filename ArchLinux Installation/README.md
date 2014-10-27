@@ -773,31 +773,36 @@ https://wiki.archlinux.org/index.php/Bluetooth#Installation
 
 ##### Mount on boot
 
-> sudo nano /etc/fstab
+> sudo pacman -S ntfs-3g  
+sudo nano /etc/fstab
 
 Desktop:
 
 Besides mounting on boot, we will set access permissions to only the created user.  
 I do this because I have some untrusted programs running on locked accounts, i.e Skype.
 
-> /dev/sdb1               /media/Dados1   ntfs            defaults,user,uid=1000,umask=0077        0 0  
-/dev/sdc1               /media/Dados2   ntfs            defaults,user,uid=1000,umask=0077        0 0  
-/dev/sdd                /media/Dados3   ntfs            defaults,user,uid=1000,umask=0077        0 0  
+> /dev/sdb1               /media/Dados1   ntfs            defaults,uid=1000,dmask=027,fmask=137        0 0  
+/dev/sdc1               /media/Dados2   ntfs            defaults,uid=1000,dmask=027,fmask=137        0 0  
+/dev/sdd                /media/Dados3   ntfs            defaults,uid=1000,dmask=027,fmask=137        0 0  
 
-```
-Permissions for ntfs and vfat file systems must be set with the dmask, fmask and umask options. dmask controls permissions for directories, fmask controls permissions for files, and umask controls both. Since these options set masks, they should be the compliment of the permissions you want. i.e, they are switched. For example, rwx for the owner and rw for others is 0022 rather than 0755. So, the first character represents that its an octal permissions, the second is for the owner, the third is the group and the last is for others.
+Notebook:
 
-To set the owner, use the uid and gid options for user and group, respectively. You can find your UID with the command echo $UID. To find your GID, use cat /etc/group. These values are both usually 1000.
-
-A common set of mount options for ntfs is uid=1000,gid=1000,dmask=027,fmask=137. This sets you as the owner of the drive, and sets the permissions to drwxr-x---
-```
+> /dev/mp125p3               /media/Dados   ntfs            defaults,uid=1000,dmask=027,fmask=137        0 0
 
 <sub><sup>
 References:  
 http://en.wikipedia.org/wiki/Fmask#Example  
+https://wiki.archlinux.org/index.php/NTFS-3G  
 http://www.omaroid.com/fstab-permission-masks-explained/  
+http://askubuntu.com/questions/429848/dmask-and-fmask-mount-options
 http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab
 </sup></sub>
+
+##### Installs
+
+Firefox and H.264 codec support:
+> sudo pacman -S firefox firefox-i18n-pt-pt gstreamer gst-plugins-good gst-libav  
+Test support: http://www.quirksmode.org/html5/tests/video.html
 
 ### Look & feel
 
@@ -813,6 +818,7 @@ Dolphin > Adjust window properties:  Show in details, order by name, show folder
 Dolphin > Configure Dolphin: Change default start up, show location bar, show filter, doble-click to open, delete files from garbage after 7 days show space available information.   
 Dolphin > Right click on a drive > Icon size > Large.  
 Dolphin > Right click on top menu > Icon size > Large.  
+Dolphin > Icon size 32px (drag lower bar)
 
 ### Random problems
 
@@ -825,3 +831,11 @@ IgnorePkg = xyz
 
 > sudo systemctl -t services -a  
 Not really a problem: https://ask.fedoraproject.org/en/question/49946/how-to-delete-a-systemd-service/
+
+##### Black Screen
+
+KDM might have crashed, due to some recent changes, check why in `/var/log`
+
+> CRTL+ALT+F1  
+sudo systemctl stop kdm.service  
+sudo systemctl start kdm.service
