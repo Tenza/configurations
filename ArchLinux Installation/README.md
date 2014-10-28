@@ -798,13 +798,38 @@ http://askubuntu.com/questions/429848/dmask-and-fmask-mount-options
 http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab
 </sup></sub>
 
+##### Uniform Look
+
+To make GTK based applications look like Qt based, I prefer `oxygen-gtk` instead of `qtcurve`.
+
+> sudo pacman -S oxygen-gtk2 oxygen-gtk3 kde-gtk-config
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Uniform_Look_for_Qt_and_GTK_Applications  
+http://askubuntu.com/questions/50928/qtcurve-vs-oxygen-gtk-theme
+</sup></sub>
+
 ##### Installs
 
 Firefox and H.264 codec support:
 > sudo pacman -S firefox firefox-i18n-pt-pt gstreamer gst-plugins-good gst-libav  
 Test support: http://www.quirksmode.org/html5/tests/video.html
 
-### Look & feel
+Firewall:
+> sudo pacman -S ufw  
+sudo packer -S kcm-ufw  
+sudo ufw enable  
+sudo systemctl enable ufw.service  
+sudo systemctl start ufw.service
+
+Antivirus:
+> sudo pacman -S clamav  
+sudo freshclam  
+sudo systemctl enable clamd.service  
+sudo systemctl start clamd.service-
+
+### KDE Look & feel
 
 Some of my personal settings:  
 
@@ -813,16 +838,19 @@ Configurate tray > Always show > All except the two notification icons.
 Configurate taskbar > No groups, manually ordered.  
 Configurate system configurations > Classic tree, remove detailed tips, expand first level.  
 Configurate desktop > Disposition: Folder.  
-Configurate system configurations > Add account image.  
 Dolphin > Adjust window properties:  Show in details, order by name, show folders first, show preview, show hidden files. Additional Information: Name, Size, Date, Type, Location, permissions, owner. Apply to all folders, use by default.  
 Dolphin > Configure Dolphin: Change default start up, show location bar, show filter, doble-click to open, delete files from garbage after 7 days show space available information.   
 Dolphin > Right click on a drive > Icon size > Large.  
 Dolphin > Right click on top menu > Icon size > Large.  
-Dolphin > Icon size 32px (drag lower bar)
+Dolphin > Icon size 32px (drag lower bar)  
+System configurations > Add account image.  
+System configurations > Screen borders > Lower right, Show Screen  
+System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+L  
+System configurations > Display and Screen > Protector > 5 min to init, 300 sec to ask pass, select screensaver  
 
 ### Random problems
 
-##### Miss behaved packages
+##### Misbehaved packages
 
 > nano /etc/pacman.conf  
 IgnorePkg = xyz
