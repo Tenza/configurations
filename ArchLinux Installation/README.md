@@ -825,9 +825,32 @@ sudo systemctl start ufw.service
 
 Antivirus:
 > sudo pacman -S clamav  
+sudo packer -S clamtk  
 sudo freshclam  
 sudo systemctl enable clamd.service  
-sudo systemctl start clamd.service-
+sudo systemctl start clamd.service  
+
+XScreensaver:
+> sudo pacman -S kdeartwork-kscreensaver xscreensaver  
+
+KDE tools:
+> sudo pacman -S kdesdk-kate kdegraphics-okular kdeutils-kcalc  kdeadmin-ksystemlog  
+
+Libreoffice:
+
+I prefer `Libreoffice` over `calligra` due to compatiblity and similarity to MS office.
+
+> sudo pacman -S libreoffice-fresh libreoffice-fresh-pt  
+sudo packer -S hunspell-pt_pt  
+
+7Zip:
+> sudo pacman -S p7zip zip unzip unrar kdeutils-ark
+
+Imageviewer:
+
+I prefer `photoqt` over `gwenview` due to its simplicity.
+
+> sudo packer -S photoqt
 
 ### KDE Look & feel
 
@@ -847,6 +870,8 @@ System configurations > Add account image.
 System configurations > Screen borders > Lower right, Show Screen  
 System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+L  
 System configurations > Display and Screen > Protector > 5 min to init, 300 sec to ask pass, select screensaver  
+Kate > Configurations > Activate console plugin.   
+Kate > Configurations > Appearence > Borders > Activate all  
 
 ### Random problems
 
@@ -867,3 +892,10 @@ KDM might have crashed, due to some recent changes, check why in `/var/log`
 > CRTL+ALT+F1  
 sudo systemctl stop kdm.service  
 sudo systemctl start kdm.service
+
+##### Duplicated Open-with
+
+Remove duplicated items on the open-with context menu: 
+
+> cd ~/.local/share/applications  
+rm ...
