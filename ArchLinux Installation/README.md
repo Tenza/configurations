@@ -810,57 +810,75 @@ https://wiki.archlinux.org/index.php/Uniform_Look_for_Qt_and_GTK_Applications
 http://askubuntu.com/questions/50928/qtcurve-vs-oxygen-gtk-theme
 </sup></sub>
 
-##### Installs
+### Installs
 
-Firefox and H.264 codec support:
+##### Firefox and H.264 codec support:
 > sudo pacman -S firefox firefox-i18n-pt-pt gstreamer gst-plugins-good gst-libav  
 Test support: http://www.quirksmode.org/html5/tests/video.html
 
-Firewall:
+##### Firewall:
 > sudo pacman -S ufw  
 sudo packer -S kcm-ufw  
 sudo ufw enable  
 sudo systemctl enable ufw.service  
 sudo systemctl start ufw.service
 
-Antivirus:
+##### Antivirus:
 > sudo pacman -S clamav  
 sudo packer -S clamtk  
 sudo freshclam  
 sudo systemctl enable clamd.service  
 sudo systemctl start clamd.service  
 
-XScreensaver:
+##### XScreensaver:
 > sudo pacman -S kdeartwork-kscreensaver xscreensaver  
 
-KDE tools:
-> sudo pacman -S kdesdk-kate kdegraphics-okular kdeutils-kcalc  kdeadmin-ksystemlog  
+##### KDE tools:
+> sudo pacman -S kdesdk-kate kdegraphics-okular kdeutils-kcalc
 
-Libreoffice:
+Kate > Configurations > Activate console plugin.   
+Kate > Configurations > Appearence > Borders > Activate all 
+
+##### Libreoffice:
 
 I prefer `Libreoffice` over `calligra` due to compatiblity and similarity to MS office.
 
 > sudo pacman -S libreoffice-fresh libreoffice-fresh-pt  
 sudo packer -S hunspell-pt_pt  
 
-7Zip:
+##### 7Zip:
 > sudo pacman -S p7zip zip unzip unrar kdeutils-ark
 
-Imageviewer:
+##### Imageviewer:
 
 I prefer `photoqt` over `gwenview` due to its simplicity.
 
 > sudo packer -S photoqt
 
-### KDE Look & feel
+##### QtCreator
 
-Some of my personal settings:  
+> sudo pacman -S gdb valgrind qt5-doc qtcreator
+
+##### Brackets
+
+I prefer `brackets` over `sublimetext` because it is open source.  
+`brackets` also has emmet support, an essencial plugin.  
+Other alternative would be to use `vim` or `emacs`, but I like GUI.
+
+> sudo packer -S brackets-bin
+
+##### Others
+
+> sudo packer -S qbittorrent partitionmanager-git
+
+### KDE Look & feel
 
 Move "Tool Box" on the desktop to the right top corner.  
 Configurate tray > Always show > All except the two notification icons.  
 Configurate taskbar > No groups, manually ordered.  
 Configurate system configurations > Classic tree, remove detailed tips, expand first level.  
 Configurate desktop > Disposition: Folder.  
+Configurate startmenu > change the icon to [one of these](http://gabriela2400.deviantart.com/art/Arch-Linux-Start-Icons-175557586)  
 Dolphin > Adjust window properties:  Show in details, order by name, show folders first, show preview, show hidden files. Additional Information: Name, Size, Date, Type, Location, permissions, owner. Apply to all folders, use by default.  
 Dolphin > Configure Dolphin: Change default start up, show location bar, show filter, doble-click to open, delete files from garbage after 7 days show space available information.   
 Dolphin > Right click on a drive > Icon size > Large.  
@@ -870,8 +888,6 @@ System configurations > Add account image.
 System configurations > Screen borders > Lower right, Show Screen  
 System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+L  
 System configurations > Display and Screen > Protector > 5 min to init, 300 sec to ask pass, select screensaver  
-Kate > Configurations > Activate console plugin.   
-Kate > Configurations > Appearence > Borders > Activate all  
 
 ### Random problems
 
