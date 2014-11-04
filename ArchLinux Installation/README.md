@@ -455,7 +455,7 @@ menuentry{
 	echo “Loading Windows 7”
 	insmod part_msdos
 	insmod ntfs
-	search --fs-uuid --no-floppy –set=root XXXXXXXXXXXXXX
+	search --fs-uuid --no-floppy -set=root XXXXXXXXXXXXXX
 	chainloader +1
 }
 ```
@@ -535,7 +535,7 @@ sudo pacman -Syy
 wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz  
 tar zxvf packer.tar.gz  
 cd packer && makepkg  
-sudo pacman –U packer (press tab)
+sudo pacman -U packer (press tab)
 
 Once installed, cleanup:
 
@@ -551,19 +551,19 @@ http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
 
 ALSA is already apart of the Kernel, but the channels are muted by default.
 
-> sudo pacman –S alsa-utils  
+> sudo pacman -S alsa-utils  
 run `alsamixer`  
 Press H to unmute. Press F1 for help.  
 run `speaker-test`
 
 Install the plugins for high quality resampling:
-> sudo pacman –S alsa-plugins
+> sudo pacman -S alsa-plugins
 
 Now lets install the pulseaudio server:
-> sudo pacman –S pulseaudio pulseaudio-alsa 
+> sudo pacman -S pulseaudio pulseaudio-alsa 
 
 If we are in a x86_64 system we need to have sound for 32-bit multilib programs like Wine, Skype and Steam: 
-> sudo pacman –S lib32-libpulse lib32-alsa-plugins
+> sudo pacman -S lib32-libpulse lib32-alsa-plugins
 
 <sub><sup>
 References:  
@@ -573,7 +573,7 @@ https://wiki.archlinux.org/index.php/PulseAudio#Back-end_configuration
 
 ##### XOrg
 
-> sudo pacman –S xorg-server xorg-server-utils xorg-xinit mesa
+> sudo pacman -S xorg-server xorg-server-utils xorg-xinit mesa
 
 <sub><sup>
 References:
@@ -593,7 +593,7 @@ Find open-source driver:
 > sudo pacman -Ss xf86-video | less
 
 Install:
-> sudo pacman –S mesa-dri xf86-video-vesa xf86-video-ati
+> sudo pacman -S mesa-dri xf86-video-vesa xf86-video-ati
 
 <sub><sup>
 References: 
@@ -606,7 +606,7 @@ Notebook:
 This notebook has two graphics cards, intel and nvidia.
 In order to manage them we use `bumblebee` that is Optimus for GNU/Linux.
 
-> sudo pacman –S mesa-dri xf86-video-intel nvidia bumblebee 
+> sudo pacman -S mesa-dri xf86-video-intel nvidia bumblebee 
 
 Configure bumblebee:
 
@@ -623,16 +623,16 @@ https://wiki.archlinux.org/index.php/Hybrid_graphics#ATI_Dynamic_Switchable_Grap
 ##### Input drivers
 
 Desktop and Notebook:
-> sudo pacman –S xf86-input-mouse xf86-input-keyboard
+> sudo pacman -S xf86-input-mouse xf86-input-keyboard
 
 Notebook:
-> sudo pacman –S xf86-input-synaptics 
+> sudo pacman -S xf86-input-synaptics 
 
 ##### Test default enviroment
 
 Make sure XOrg is working before we install a desktop enviroment.
 
-> sudo pacman –S xorg-twm xorg-xclock xterm  
+> sudo pacman -S xorg-twm xorg-xclock xterm  
 startx
 
 <sub><sup>
@@ -642,7 +642,7 @@ https://wiki.archlinux.org/index.php/Xorg#Manually
 
 ##### Install KDE
 
-> sudo pacman –S kdebase kde-l10n-pt  
+> sudo pacman -S kdebase kde-l10n-pt  
 sudo systemctl enable kdm.service  
 sudo systemctl reboot
 
@@ -676,7 +676,7 @@ Then we add the key and install everything:
 
 > pacman-key -r 962DDE58  
 pacman-key --lsign-key 962DDE58  
-pacman –Syyu  
+pacman -Syyu  
 pacman -S infinality-bundle infinality-bundle-multilib ibfonts-meta-base
 
 <sub><sup>
@@ -866,6 +866,42 @@ I prefer `brackets` over `sublimetext` because it is open source.
 Other alternative would be to use `vim` or `emacs`, but I like GUI.
 
 > sudo packer -S brackets-bin
+
+##### Dropbox
+
+> sudo packer -S dropbox
+
+On a multiboot configuration it would be best to choose a partition that is common to all installed OS.
+
+##### Truecrypt
+
+> sudo pacman -S truecrypt
+
+Mount the truecrypt container on boot:  
+> System configurations > Start and stop > Add program > System menu and select TrueCrypt.  
+mkdir /media/Trabalho  
+nano /home/filipe/.config/autostart/truecrypt.desktop  
+```
+Exec=truecrypt -t /PATH-TO-VOLUME /media/Trabalho -p 'PASSWORD' -k '' --protect-hidden=no --mount-options=readonly --fs-options=iocharset=utf8  
+Terminal=true
+```
+
+##### XMPP
+
+> sudo pacman -S pidgin pidgin-otr
+
+##### Skype
+
+> sudo pacman -S skype  
+sudo packer -S skype-secure
+
+Test skype access:
+
+> activate user in /etc/passwd  
+su _skype  
+set password  
+ls /main_user_folder  
+ls /internal_discs (deny access already set on the mount masks in fstab)  
 
 ##### Others
 
