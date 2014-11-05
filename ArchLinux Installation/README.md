@@ -739,8 +739,8 @@ If not, install the following package and open in `System Configurations > Accou
 Now, if Kwallet is prompting you at each startup for the password, probably due to the saved wireless password, you can simply change its password to blank.
 
 <sub><sup>
-References:
-http://mschlander.wordpress.com/2012/08/01/kwallet-is-annoying/  http://unix.stackexchange.com/questions/34186/automatically-opening-kwallet-while-logging-in-to-kde
+References:  
+http://mschlander.wordpress.com/2012/08/01/kwallet-is-annoying/   http://unix.stackexchange.com/questions/34186/automatically-opening-kwallet-while-logging-in-to-kde  
 </sup></sub>
 
 ##### Bluetooth
@@ -766,9 +766,9 @@ hci0 Load Connection Parameters failed: Unknown Command (0x01)
 https://bugs.archlinux.org/task/41247
 
 <sub><sup>
-References:
-https://wiki.archlinux.org/index.php/Bluetooth#BlueDevil
-https://wiki.archlinux.org/index.php/Bluetooth#Installation
+References:  
+https://wiki.archlinux.org/index.php/Bluetooth#BlueDevil  
+https://wiki.archlinux.org/index.php/Bluetooth#Installation  
 </sup></sub>
 
 ##### Mount on boot
@@ -836,7 +836,8 @@ sudo systemctl start clamd.service
 ##### KDE tools:
 > sudo pacman -S kdesdk-kate kdegraphics-okular kdeutils-kcalc
 
-Kate > Configurations > Activate console plugin.   
+Configurations:
+> Kate > Configurations > Activate console plugin.   
 Kate > Configurations > Appearence > Borders > Activate all 
 
 ##### Libreoffice:
@@ -873,6 +874,10 @@ Other alternative would be to use `vim` or `emacs`, but I like GUI.
 
 On a multiboot configuration it would be best to choose a partition that is common to all installed OS.
 
+Specific folders on different disks with symlink:  
+> sudo ln -s /media/Dados1/Músicas/ /home/filipe/Dropbox/Privado/Músicas  
+Warning: the forlder “Musicas” on the destination (dropbox) should NOT be already created.  
+
 ##### Truecrypt
 
 > sudo pacman -S truecrypt
@@ -886,22 +891,68 @@ Exec=truecrypt -t /PATH-TO-VOLUME /media/Trabalho -p 'PASSWORD' -k '' --protect-
 Terminal=true
 ```
 
+Avoid entering the root password at boot:
+> EDITOR=nano visudo  
+Add at the end:  
+filipe ALL=NOPASSWD: /usr/bin/truecrypt  
+
+<sub><sup>
+References:  
+http://andryou.com/truecrypt/docs/command-line-usage.php  
+http://ubuntuforums.org/showthread.php?t=1646881  
+http://medienvilla.com/index.php?id=236#linux_script  
+http://ubuntuforums.org/showthread.php?t=1924213  
+http://askubuntu.com/questions/68327/why-does-truecrypt-ask-for-administrator-password  
+http://askubuntu.com/questions/88523/creating-a-mount-point-if-it-does-not-exist  
+</sup></sub>
+
 ##### XMPP
 
 > sudo pacman -S pidgin pidgin-otr
+
+Configurations:  
+> Activate the following plugins:  
+Voice and video configuration  
+Offline messages emulation  
+History  
+Off the record messaging  
 
 ##### Skype
 
 > sudo pacman -S skype  
 sudo packer -S skype-secure
 
-Test skype access:
+If the sound is not working try:
+> As the main user, copy /etc/pulse/default.pa to ~/.pulse/default.pa and add:  
+load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1  
+As the skype user, create ~/.pulse/client.conf and add:  
+default-server = 127.0.0.1   
+reboot  
 
-> activate user in /etc/passwd  
+Distorted sound:
+> If you get distorted sound in skype, try adding PULSE_LATENCY_MSEC=60 to your env before starting skype.    
+Something like 'export PULSE_LATENCY_MSEC=60' in .bashrc, for example.  
+
+Test skype access:
+> su -  
+nano /etc/passwd  
+replace /sbin/nologin with /bin/bash  
+passwd _skype  
 su _skype  
-set password  
+Do whatever access tests needed, for example:  
 ls /main_user_folder  
 ls /internal_discs (deny access already set on the mount masks in fstab)  
+Lock the _skype account again:  
+su -  
+passwd -d _skype  
+nano /etc/passwd  
+replace /bin/bash with /sbin/nologin  
+Check groups with: groups _skype (should be video, audio, _skype)  
+
+Configurations:  
+> Options > General > Start at boot  
+Options > General > Style GTK+  
+Options > Message > Animated Icons  
 
 ##### Others
 
@@ -951,3 +1002,21 @@ Remove duplicated items on the open-with context menu:
 
 > cd ~/.local/share/applications  
 rm ...
+
+##### Install gstreamer0.10-good-plugins
+
+```
+(gconftool-2:2335): GConf-WARNING **: Client failed to connect to the D-BUS daemon:
+/usr/bin/dbus-launch terminated abnormally with the following error: No protocol specified
+Autolaunch error: X11 initialization failed.
+```
+https://bbs.archlinux.org/viewtopic.php?pid=1188169#p1188169
+
+##### Dolphin console
+
+Keep it hidden, otherwise it will litter the console history with `cd` commands.
+
+##### Watchdog
+
+At shutdown the system prints: kernel: watchdog watchdog0: watchdog did not stop!  
+This is normal: https://bbs.archlinux.org/viewtopic.php?pid=1195597#p1195597
