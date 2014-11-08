@@ -810,6 +810,18 @@ https://wiki.archlinux.org/index.php/Uniform_Look_for_Qt_and_GTK_Applications
 http://askubuntu.com/questions/50928/qtcurve-vs-oxygen-gtk-theme
 </sup></sub>
 
+##### Laptop tools
+
+> sudo pacman -S acpid wireless_tools ethtool bluez-utils  
+sudo packer -S laptop-mode-tools  
+sudo systemctl enable laptop-mode  
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Laptop_Mode_Tools  
+https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
+</sup></sub>
+
 ### Installs
 
 ##### Firefox and H.264 codec support:
@@ -950,9 +962,15 @@ replace /bin/bash with /sbin/nologin
 Check groups with: groups _skype (should be video, audio, _skype)  
 
 Configurations:  
-> Options > General > Start at boot  
+> Add skype to startup in KDE  
+Options > General > Start minimized  
 Options > General > Style GTK+  
 Options > Message > Animated Icons  
+Options > Video > Disable webcam auto-brightness  
+
+##### Steam
+
+> sudo pacman -S steam
 
 ##### Others
 
