@@ -972,6 +972,32 @@ Options > Video > Disable webcam auto-brightness
 
 > sudo pacman -S steam
 
+Close to tray:
+> sudo nano /etc/environment
+Add:
+STEAM_RUNTIME=1
+STEAM_FRAME_FORCE_CLOSE=1
+Alternatively, start steam with:
+STEAM_FRAME_FORCE_CLOSE=1 steam
+
+The first line tells steam to use its libraries instead of the system. They might be more outdated, but we guarantee that there will be no problems. The second line enables close to tray.
+
+Start silently:
+> Enable the startup at boot on the steam client and then add the `-silent` to entry using KDE.
+
+OpenGL problem:
+> rm /home/filipe/.local/share/Steam/ubuntu12_32/steam-runtime/i386/lib/i386-linux-gnu/libgcc_s.so.1
+rm /home/filipe/.local/share/Steam/ubuntu12_32/steam-runtime/i386/usr/lib/i386-linux-gnu/libstdc++.so.6
+Alternatively, start steam with:
+DRI_PRIME=1 LD_PRELOAD="/usr/lib/libstdc++.so.6 /usr/lib32/libstdc++.so.6 /usr/lib/libgcc_s.so.1 /usr/lib32/libgcc_s.so.1" ~/.local/share/Steam/ubuntu12_32/steam-runtime/run.sh steam
+
+##### Clementine
+
+> pacman –S clementine
+
+Configurations:
+
+
 ##### Others
 
 > sudo packer -S qbittorrent partitionmanager-git
