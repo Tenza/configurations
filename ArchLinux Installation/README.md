@@ -929,6 +929,11 @@ Offline messages emulation
 History  
 Off the record messaging  
 
+Tested:  
+> pidgin-extprefs - Useless  
+purple-plugin-pack - Useless  
+pidgin-encryption - OTR is better for IM  
+
 ##### Skype
 
 > sudo pacman -S skype  
@@ -944,6 +949,11 @@ reboot
 Distorted sound:
 > If you get distorted sound in skype, try adding PULSE_LATENCY_MSEC=60 to your env before starting skype.    
 Something like 'export PULSE_LATENCY_MSEC=60' in .bashrc, for example.  
+
+Skype stops video playback with notifications:  
+> nano /etc/pulse/default.pa  
+Comment the following line:  
+load-module module-cork-music-on-phone  
 
 Test skype access:
 > su -  
@@ -968,6 +978,16 @@ Options > General > Style GTK+
 Options > Message > Animated Icons  
 Options > Video > Disable webcam auto-brightness  
 
+Links and downloads:
+There are ways to make the links open on the same browser, but I will not enable this.  
+Same goes for the downloads, they will be transfered to the _skype account folder, I will move them manually.
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/skype#Use_Skype_with_special_user  
+http://lightrush.ndoytchev.com/random-1/debiansqueezefixespreventskypefrompausingaudiovideoplayback  
+https://forums.gentoo.org/viewtopic-t-997098.html?sid=531888f644a8f99aac8d4bc0260ddf83  
+</sup></sub>
 ##### Steam
 
 > sudo pacman -S steam
@@ -995,8 +1015,11 @@ DRI_PRIME=1 LD_PRELOAD="/usr/lib/libstdc++.so.6 /usr/lib32/libstdc++.so.6 /usr/l
 
 > pacman –S clementine
 
-Configurations:
-
+Configurations:  
+> Add library.  
+Make the image on the left bigger. (Start a music and right-click)  
+Preferences > Reproduction > Disable animations, Fade-in, Fade-out  
+Preferences > Notifications > Personalized, 3 seconds, bottom right corner.   
 
 ##### Others
 
@@ -1019,6 +1042,8 @@ System configurations > Add account image.
 System configurations > Screen borders > Lower right, Show Screen  
 System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+L  
 System configurations > Display and Screen > Protector > 5 min to init, 300 sec to ask pass, select screensaver  
+VLC > Enable multiple instances
+VLC > Make the player bar full with on full-screen
 
 ### Random problems
 
@@ -1064,3 +1089,29 @@ Keep it hidden, otherwise it will litter the console history with `cd` commands.
 
 At shutdown the system prints: kernel: watchdog watchdog0: watchdog did not stop!  
 This is normal: https://bbs.archlinux.org/viewtopic.php?pid=1195597#p1195597
+
+##### Microphone Playback
+
+> alsamixer  
+Select sound card with F6  
+Select reproduction devices, if not already  
+Make the value of Mic 0  
+
+##### Microphone Echo
+
+This is diferent from the above problem, this happens when we receive audio, or we speak. It repeats alot of times.
+
+> alsamixer  
+Select sound card with F6  
+Select record devices  
+Make the value of PCM 0  
+
+##### Diagrams
+
+There are programs like DIA or Violet for UML diagrams.  
+But I prefer to use the https://www.draw.io/ website.  
+To me, has better usability, there is no need for account and supports offline mode.
+
+##### Clementine does not close
+
+https://github.com/clementine-player/Clementine/issues/1728
