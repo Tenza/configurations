@@ -266,9 +266,13 @@ http://unix.stackexchange.com/questions/124733/what-does-genfstabs-p-option-do
 ###### (Optional) Change filesystem table flags for SSD optimization.
 
 > nano /mnt/etc/fstab  
-Add to the SSD disk parameters: `discard`  
-Update the SSD disk parameters: `realatime` for `noatime`  
-Make sure the SWAP is not on `/mnt` and rather on `/`
+Add to the SSD disk parameters: `discard` to activate TRIM, if you are sure that the SSD has support.  
+Update the SSD disk parameters: `realatime` for `noatime` it eliminates the need by the system to make writes to the file system for files which are simply being read.  
+Make sure the SWAP is not on `/mnt` and rather on `/`  
+
+Checks:
+> If the kernel knows about SSDs: /sys/block/sd?/queue/rotational  
+Check for TRIM support: hdparm -I /dev/sd? | grep TRIM  
 
 <sub><sup>
 References:  
@@ -310,6 +314,8 @@ https://wiki.archlinux.org/index.php/mkinitcpio
 ##### Configure GRUB2
 
 > grub-mkconfig -o /boot/grub/grub.cfg
+
+The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a wrapper.
 
 ##### Install GRUB2 to the MBR
 
@@ -771,33 +777,6 @@ https://wiki.archlinux.org/index.php/Bluetooth#BlueDevil
 https://wiki.archlinux.org/index.php/Bluetooth#Installation  
 </sup></sub>
 
-##### Mount on boot
-
-> sudo pacman -S ntfs-3g  
-sudo nano /etc/fstab
-
-Desktop:
-
-Besides mounting on boot, we will set access permissions to only the created user.  
-I do this because I have some untrusted programs running on locked accounts, i.e Skype.
-
-> /dev/sdb1               /media/Dados1   ntfs            defaults,uid=1000,dmask=027,fmask=137        0 0  
-/dev/sdc1               /media/Dados2   ntfs            defaults,uid=1000,dmask=027,fmask=137        0 0  
-/dev/sdd                /media/Dados3   ntfs            defaults,uid=1000,dmask=027,fmask=137        0 0  
-
-Notebook:
-
-> /dev/mp125p3               /media/Dados   ntfs            defaults,uid=1000,dmask=027,fmask=137        0 0
-
-<sub><sup>
-References:  
-http://en.wikipedia.org/wiki/Fmask#Example  
-https://wiki.archlinux.org/index.php/NTFS-3G  
-http://www.omaroid.com/fstab-permission-masks-explained/  
-http://askubuntu.com/questions/429848/dmask-and-fmask-mount-options
-http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab
-</sup></sub>
-
 ##### Uniform Look
 
 To make GTK based applications look like Qt based, I prefer `oxygen-gtk` instead of `qtcurve`.
@@ -820,6 +799,53 @@ sudo systemctl enable laptop-mode
 References:  
 https://wiki.archlinux.org/index.php/Laptop_Mode_Tools  
 https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
+</sup></sub>
+
+##### Mount on boot
+
+> sudo pacman -S ntfs-3g  
+sudo nano /etc/fstab
+
+Desktop:
+
+Besides mounting on boot, we will set access permissions to only the created user.  
+I do this because I have some untrusted programs running on locked accounts, i.e Skype.
+
+> /dev/sdb1 /media/Dados1 ntfs defaults,uid=1000,dmask=027,fmask=137 0 0  
+/dev/sdc1 /media/Dados2 ntfs defaults,uid=1000,dmask=027,fmask=137 0 0  
+/dev/sdd /media/Dados3 ntfs defaults,uid=1000,dmask=027,fmask=137 0 0  
+
+Notebook:
+
+> /dev/mp125p3 /media/Dados ntfs defaults,noatime,discard,uid=1000,dmask=027,fmask=137 0 0
+
+<sub><sup>
+References:  
+http://en.wikipedia.org/wiki/Fmask#Example  
+https://wiki.archlinux.org/index.php/NTFS-3G  
+http://www.omaroid.com/fstab-permission-masks-explained/  
+http://askubuntu.com/questions/429848/dmask-and-fmask-mount-options
+http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab
+</sup></sub>
+
+##### Change Kernel I/O scheduler
+
+When using only SSD's for the OS, one setting that can boost your storage performance dramatically is changing the I/O scheduler.
+
+> sudo nano /etc/default/grub  
+Change the line:  
+GRUB_CMDLINE_LINUX_DEFAULT="quiet"  
+To:  
+GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash elevator=noop"  
+grub-mkconfig -o /boot/grub/grub.cfg  
+
+The quiet and splash parameters is just to show the systemd startup and shutdown code. The elevator is the kernel paremeter that changes the I/O scheduler.
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Solid_State_Drives#I.2FO_Scheduler  
+http://blog.nashcom.de/nashcomblog.nsf/dx/linux-io-performance-tweek.htm?opendocument&comments  
+https://wiki.archlinux.org/index.php/Solid_State_Drives#Kernel_parameter_.28for_a_single_device.29  
 </sup></sub>
 
 ### Installs
