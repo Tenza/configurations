@@ -848,6 +848,25 @@ http://blog.nashcom.de/nashcomblog.nsf/dx/linux-io-performance-tweek.htm?opendoc
 https://wiki.archlinux.org/index.php/Solid_State_Drives#Kernel_parameter_.28for_a_single_device.29  
 </sup></sub>
 
+##### Bootloader theme
+
+I use the following bootloader theme:
+https://github.com/Generator/Grub2-themes
+
+Check the page before following these instructions:
+> git clone git://github.com/Generator/Grub2-themes.git # cp -r Grub2-themes/{Archlinux,Archxion} /boot/grub/themes/  
+> nano /etc/default/grub  
+Change: #GRUB_THEME="/path/to/gfxtheme"   
+To: GRUB_THEME="/boot/grub/themes/Archxion/theme.txt"   
+Or: GRUB_THEME="/boot/grub/themes/Archlinux/theme.txt"  
+
+> To center the theme, change:  
+Change: GRUB_GFXMODE=auto  
+To: GRUB_GFXMODE=1024x768  
+
+> Apply changes:  
+grub-mkconfig -o /boot/grub/grub.cfg  
+
 ### Installs
 
 ##### Firefox and H.264 codec support:
