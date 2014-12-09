@@ -789,9 +789,11 @@ https://wiki.archlinux.org/index.php/Uniform_Look_for_Qt_and_GTK_Applications
 http://askubuntu.com/questions/50928/qtcurve-vs-oxygen-gtk-theme
 </sup></sub>
 
-##### Improve battery life
+###### Improve battery life
 
-###### Laptop tools:
+To improve overall battery life of my notebook I use the package laptop-mode-tools and activate multiple kernel modules, check the references for the description of each activated module.
+
+Laptop tools:
 > sudo pacman -S acpid wireless_tools ethtool bluez-utils  
 sudo packer -S laptop-mode-tools  
 sudo systemctl enable laptop-mode  
@@ -802,8 +804,7 @@ https://wiki.archlinux.org/index.php/Laptop_Mode_Tools
 https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
 </sup></sub>
 
-###### Kernel Modules
-
+Kernel Modules:
 > sudo nano /etc/default/grub  
 GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash elevator=noop i915.i915_enable_rc6=1 i915.i915_enable_fbc=1 i915.lvds_downclock=1 pcie_aspm=force drm.vblankoffdelay=1 i915.semaphores=1"
 
@@ -815,7 +816,6 @@ https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management
 https://wiki.archlinux.org/index.php/ASUS_Zenbook_Prime_UX31A#Kernel_Parameters  
 https://01.org/linuxgraphics/downloads/2012/intel-2011q4-graphics-stack-release  
 </sup></sub>
-
 
 ##### Mount on boot
 
