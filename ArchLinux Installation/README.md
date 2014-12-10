@@ -789,7 +789,7 @@ https://wiki.archlinux.org/index.php/Uniform_Look_for_Qt_and_GTK_Applications
 http://askubuntu.com/questions/50928/qtcurve-vs-oxygen-gtk-theme
 </sup></sub>
 
-###### Improve battery life
+##### Improve battery life
 
 To improve overall battery life of my notebook I use the package laptop-mode-tools and activate multiple kernel modules, check the references for the description of each activated module.
 
@@ -882,6 +882,41 @@ To: GRUB_GFXMODE=1024x768
 
 > Apply changes:  
 grub-mkconfig -o /boot/grub/grub.cfg  
+
+##### Activate stand-by mode on HDDs
+
+Normaly we would use the `hdparm` tool, but this tool does not seem to work well with my Westrem Digital hard drives. It is possible to activate standby on demand with the command:
+
+> sudo hdparm -y /dev/sdc  
+
+and it is also possible to check the disk state:
+
+> sudo hdparm -C /dev/sdc  
+
+But, it does not work well when we try to activate with X time of inactivity, for example:
+
+> sudo hdparm –S 5 /dev/sdc  
+
+For me the solution lies on using the tool `hd-idle` instead:
+
+> packer –S hd-idle  
+systemctl enable hd-idle  
+systemctl start hd-idle  
+systemctl status hd-idle  
+hd-idle -i 0 -a sdb -i 600 -a sdc -i 600 –a sdd –I 1200  
+
+```
+Example:
+hd-idle -i 0 -a sda -i 300 -a sdb -i 1200
+
+This example sets the default idle time to 0 (meaning hd-idle will never try to spin down a disk), then sets explicit idle times for disks which have the string "sda" or "sdb" in their device name. 
+```
+<sub><sup>
+References:  
+http://hd-idle.sourceforge.net/  
+http://askubuntu.com/questions/196473/setting-sata-hdd-spindown-time  
+http://www.spencerstirling.com/computergeek/powersaving.html#harddrive  
+</sup></sub>
 
 ### Installs
 
@@ -995,6 +1030,9 @@ Tested:
 purple-plugin-pack - Useless  
 pidgin-encryption - OTR is better for IM  
 
+Note:  
+KDE will restore pidgin state on boot.
+
 ##### Skype
 
 > sudo pacman -S skype  
@@ -1039,9 +1077,13 @@ Options > General > Style GTK+
 Options > Message > Animated Icons  
 Options > Video > Disable webcam auto-brightness  
 
-Links and downloads:
+Links and downloads:  
 There are ways to make the links open on the same browser, but I will not enable this.  
 Same goes for the downloads, they will be transfered to the _skype account folder, I will move them manually.
+
+Other types of protection:  
+Using `apparmor` and `tomoyo` requires kernel recompilation.  
+Using `docker` and `sandfox` seem outdated or lack instructions.  
 
 <sub><sup>
 References:  
@@ -1049,6 +1091,7 @@ https://wiki.archlinux.org/index.php/skype#Use_Skype_with_special_user
 http://lightrush.ndoytchev.com/random-1/debiansqueezefixespreventskypefrompausingaudiovideoplayback  
 https://forums.gentoo.org/viewtopic-t-997098.html?sid=531888f644a8f99aac8d4bc0260ddf83  
 </sup></sub>
+
 ##### Steam
 
 > sudo pacman -S steam
@@ -1072,6 +1115,17 @@ rm /home/filipe/.local/share/Steam/ubuntu12_32/steam-runtime/i386/usr/lib/i386-l
 Alternatively, start steam with:
 DRI_PRIME=1 LD_PRELOAD="/usr/lib/libstdc++.so.6 /usr/lib32/libstdc++.so.6 /usr/lib/libgcc_s.so.1 /usr/lib32/libgcc_s.so.1" ~/.local/share/Steam/ubuntu12_32/steam-runtime/run.sh steam
 
+Instalation notes:  
+When installing steam will give the following advices:
+
+If you are having problems with the steam license, remove .steam and .local/share/Steam  
+If you are running x86_64, you need the lib32 opt depends for your driver.  
+
+> lib32-mesa-dri: for open source driver users  
+lib32-catalyst-utils: for AMD Catalyst users  
+lib32-nvidia-utils: for NVIDIA proprietary blob users  
+lib32-alsa-plugins: for pulseaudio on some games  
+
 ##### Clementine
 
 > pacman –S clementine
@@ -1082,9 +1136,30 @@ Make the image on the left bigger. (Start a music and right-click)
 Preferences > Reproduction > Disable animations, Fade-in, Fade-out  
 Preferences > Notifications > Personalized, 3 seconds, bottom right corner.   
 
+##### Lancelot
+
+> sudo pacman -S kdeplasma-addons-applets-lancelot  
+Activate by adding the new icon from the elements.  
+
+<sub><sup>
+References:  
+http://www.archlinuxuser.com/2014/04/change-default-kde-start-menu-with.html  
+https://www.kubuntuforums.net/showthread.php?59851-KDE-Application-Launchers  
+</sup></sub>
+
+##### Themes
+
+Caledonia: https://aur.archlinux.org/packages/caledonia-bundle/  
+Logon: http://kde-look.org/content/show.php/ArchPrecise-KDM-Theme?content=161886  
+Splash: http://kde-look.org/content/show.php/modern+Arch+Linux?content=164279  
+
 ##### Others
 
-> sudo packer -S qbittorrent partitionmanager-git
+> sudo packer -S qbittorrent partitionmanager-git gimp
+
+Notes:  
+KDE will restore qtorrent state on boot.  
+Activate single window mode on gimp.
 
 ### KDE Look & feel
 
@@ -1132,6 +1207,11 @@ Remove duplicated items on the open-with context menu:
 
 > cd ~/.local/share/applications  
 rm ...
+
+##### Modify shortcuts
+
+> Either search for .desktop files or go to `/user/share...`  
+Edit the `Exec:` line.
 
 ##### Install gstreamer0.10-good-plugins
 
