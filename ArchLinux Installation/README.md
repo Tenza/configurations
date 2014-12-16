@@ -777,6 +777,40 @@ https://wiki.archlinux.org/index.php/Bluetooth#BlueDevil
 https://wiki.archlinux.org/index.php/Bluetooth#Installation  
 </sup></sub>
 
+##### Samba
+
+Install the Samba and the KDE samba utility:
+> sudo pacman -S samba kdenetwork-filesharing   
+sudo systemctl enable smbd.socket  
+sudo systemctl start smbd.socket  
+
+Apply the default settings:
+> sudo cp /etc/samba/smb.conf.default /etc/samba/smb.conf
+
+Create a public folder (there are alot of examples on the configuration file):
+>  [Transfer]  
+   comment = Network Transfer  
+   path = /media/Dados/Transferências Rede/  
+   valid users = filipe  
+   public = no  
+   writable = yes  
+   printable = no  
+  
+Check if there are no configuration errors:
+> testparm
+
+Create a new samba user (this will also create the users file):
+> sudo smbpasswd -a filipe
+
+At this point we can test on the localhost with `\\hostname`, to enable network usage, we have to open the following port on the firewall:
+> TCP/445
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/samba  
+https://wiki.archlinux.org/index.php/Samba/Tips_and_tricks
+</sup></sub> 
+
 ##### Uniform Look
 
 To make GTK based applications look like Qt based, I prefer `oxygen-gtk` instead of `qtcurve`.
