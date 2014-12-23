@@ -811,6 +811,23 @@ https://wiki.archlinux.org/index.php/samba
 https://wiki.archlinux.org/index.php/Samba/Tips_and_tricks
 </sup></sub> 
 
+##### CUPS
+
+Install the CUPS (deamon) and the KDE CUPS utility:
+> sudo pacman -S cups kdeutils-print-manager  
+sudo systemctl enable org.cups.cupsd.service  
+sudo systemctl start org.cups.cupsd.service  
+
+Install EPSON printer drivers:
+> sudo packer -S epson-inkjet-printer-escpr
+
+Configuration:
+> System Settings > Printers > Add printer  
+The settings applied for the discovered Printers on the network did NOT work for me.  
+Instead, I configured manually using AppSocket/HP JetDirect, with the printer static local IP (192.168.1.98:9100).   
+After this, if the EPSON drivers were installed, simply select the printer model (Epson Stylus SX430).  
+Print test page to verify.  
+
 ##### Uniform Look
 
 To make GTK based applications look like Qt based, I prefer `oxygen-gtk` instead of `qtcurve`.
