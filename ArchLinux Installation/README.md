@@ -821,12 +821,36 @@ sudo systemctl start org.cups.cupsd.service
 Install EPSON printer drivers:
 > sudo packer -S epson-inkjet-printer-escpr
 
-Configuration:
+Interfaces:
+> Printers can be managed using the CUPS web-interface on http://localhost:631/ or using the KDE interface, I will use the KDE interface for the configurations.
+
+Configurations:
 > System Settings > Printers > Add printer  
 The settings applied for the discovered Printers on the network did NOT work for me.  
 Instead, I configured manually using AppSocket/HP JetDirect, with the printer static local IP (192.168.1.98:9100).   
 After this, if the EPSON drivers were installed, simply select the printer model (Epson Stylus SX430).  
-Print test page to verify.  
+Disable sharing, enable default printer and print test page to verify.  
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/CUPS  
+https://wiki.archlinux.org/index.php/CUPS#KDE  
+https://wiki.archlinux.org/index.php/CUPS_printer_sharing  
+</sup></sub> 
+
+##### SANE
+
+To use SANE with an EPSON printer I'm going to use "Image Scan! for Linux".
+> sudo packer -S iscan iscan-plugin-network
+
+Next just add the printer IP to the config file:
+> sudo nano /etc/sane.d/epkowa.conf  
+net 192.168.1.98
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/sane#For_Epson_hardware
+</sup></sub> 
 
 ##### Uniform Look
 
