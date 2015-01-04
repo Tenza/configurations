@@ -864,34 +864,6 @@ https://wiki.archlinux.org/index.php/Uniform_Look_for_Qt_and_GTK_Applications
 http://askubuntu.com/questions/50928/qtcurve-vs-oxygen-gtk-theme
 </sup></sub>
 
-##### Improve battery life
-
-To improve overall battery life of my notebook I use the package laptop-mode-tools and activate multiple kernel modules, check the references for the description of each activated module.
-
-Laptop tools:
-> sudo pacman -S acpid wireless_tools ethtool bluez-utils  
-sudo packer -S laptop-mode-tools  
-sudo systemctl enable laptop-mode  
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Laptop_Mode_Tools  
-https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
-</sup></sub>
-
-Kernel Modules:
-> sudo nano /etc/default/grub  
-GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash elevator=noop i915.i915_enable_rc6=1 i915.i915_enable_fbc=1 i915.lvds_downclock=1 pcie_aspm=force drm.vblankoffdelay=1 i915.semaphores=1"
-
-<sub><sup>
-References:  
-https://wiki.ubuntu.com/Kernel/PowerManagement/PowerSavingTweaks  
-https://wiki.debian.org/InstallingDebianOn/Asus/UX31a  
-https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
-https://wiki.archlinux.org/index.php/ASUS_Zenbook_Prime_UX31A#Kernel_Parameters  
-https://01.org/linuxgraphics/downloads/2012/intel-2011q4-graphics-stack-release  
-</sup></sub>
-
 ##### Mount on boot
 
 > sudo pacman -S ntfs-3g  
@@ -918,45 +890,6 @@ http://www.omaroid.com/fstab-permission-masks-explained/
 http://askubuntu.com/questions/429848/dmask-and-fmask-mount-options
 http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab
 </sup></sub>
-
-##### Change Kernel I/O scheduler
-
-When using only SSD's for the OS, one setting that can boost your storage performance dramatically is changing the I/O scheduler.
-
-> sudo nano /etc/default/grub  
-Change the line:  
-GRUB_CMDLINE_LINUX_DEFAULT="quiet"  
-To:  
-GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash elevator=noop"  
-grub-mkconfig -o /boot/grub/grub.cfg  
-
-The quiet and splash parameters is just to show the systemd startup and shutdown code. The elevator is the kernel paremeter that changes the I/O scheduler.
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Solid_State_Drives#I.2FO_Scheduler  
-http://blog.nashcom.de/nashcomblog.nsf/dx/linux-io-performance-tweek.htm?opendocument&comments  
-https://wiki.archlinux.org/index.php/Solid_State_Drives#Kernel_parameter_.28for_a_single_device.29  
-</sup></sub>
-
-##### Bootloader theme
-
-I use the following bootloader theme:
-https://github.com/Generator/Grub2-themes
-
-Check the page before following these instructions:
-> git clone git://github.com/Generator/Grub2-themes.git # cp -r Grub2-themes/{Archlinux,Archxion} /boot/grub/themes/  
-> nano /etc/default/grub  
-Change: #GRUB_THEME="/path/to/gfxtheme"   
-To: GRUB_THEME="/boot/grub/themes/Archxion/theme.txt"   
-Or: GRUB_THEME="/boot/grub/themes/Archlinux/theme.txt"  
-
-> To center the theme, change:  
-Change: GRUB_GFXMODE=auto  
-To: GRUB_GFXMODE=1024x768  
-
-> Apply changes:  
-grub-mkconfig -o /boot/grub/grub.cfg  
 
 ##### Activate stand-by mode on HDDs
 
@@ -992,6 +925,86 @@ http://hd-idle.sourceforge.net/
 http://askubuntu.com/questions/196473/setting-sata-hdd-spindown-time  
 http://www.spencerstirling.com/computergeek/powersaving.html#harddrive  
 </sup></sub>
+
+##### Change Kernel I/O scheduler
+
+When using only SSD's for the OS, one setting that can boost your storage performance dramatically is changing the I/O scheduler.
+
+> sudo nano /etc/default/grub  
+Change the line:  
+GRUB_CMDLINE_LINUX_DEFAULT="quiet"  
+To:  
+GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash elevator=noop"  
+sudo grub-mkconfig -o /boot/grub/grub.cfg  
+
+The quiet and splash parameters is just to show the systemd startup and shutdown code. The elevator is the kernel paremeter that changes the I/O scheduler.
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Solid_State_Drives#I.2FO_Scheduler  
+http://blog.nashcom.de/nashcomblog.nsf/dx/linux-io-performance-tweek.htm?opendocument&comments  
+https://wiki.archlinux.org/index.php/Solid_State_Drives#Kernel_parameter_.28for_a_single_device.29  
+</sup></sub>
+
+##### Improve battery life
+
+To improve overall battery life of my notebook I use the package laptop-mode-tools and activate multiple kernel modules, check the references for the description of each activated module.
+
+Laptop tools:
+> sudo pacman -S acpid wireless_tools ethtool bluez-utils  
+sudo packer -S laptop-mode-tools  
+sudo systemctl enable laptop-mode  
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Laptop_Mode_Tools  
+https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
+</sup></sub>
+
+Kernel Modules:
+> sudo nano /etc/default/grub  
+GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash elevator=noop i915.i915_enable_rc6=1 i915.i915_enable_fbc=1 i915.lvds_downclock=1 pcie_aspm=force drm.vblankoffdelay=1 i915.semaphores=1"  
+sudo grub-mkconfig -o /boot/grub/grub.cfg  
+
+<sub><sup>
+References:  
+https://wiki.ubuntu.com/Kernel/PowerManagement/PowerSavingTweaks  
+https://wiki.debian.org/InstallingDebianOn/Asus/UX31a  
+https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
+https://wiki.archlinux.org/index.php/ASUS_Zenbook_Prime_UX31A#Kernel_Parameters  
+https://01.org/linuxgraphics/downloads/2012/intel-2011q4-graphics-stack-release  
+</sup></sub>
+
+##### UVC Webcams
+
+To enable external webcam support, activate the following kernel module:
+> sudo nano /etc/default/grub  
+GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash elevator=noop i915.i915_enable_rc6=1 i915.i915_enable_fbc=1 i915.lvds_downclock=1 pcie_aspm=force drm.vblankoffdelay=1 i915.semaphores=1 uvcvideo"  
+sudo grub-mkconfig -o /boot/grub/grub.cfg  
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/webcam_setup#linux-uvc
+</sup></sub>
+
+##### Bootloader theme
+
+I use the following bootloader theme:
+https://github.com/Generator/Grub2-themes
+
+Check the page before following these instructions:
+> git clone git://github.com/Generator/Grub2-themes.git # cp -r Grub2-themes/{Archlinux,Archxion} /boot/grub/themes/  
+> sudo nano /etc/default/grub  
+Change: #GRUB_THEME="/path/to/gfxtheme"   
+To: GRUB_THEME="/boot/grub/themes/Archxion/theme.txt"   
+Or: GRUB_THEME="/boot/grub/themes/Archlinux/theme.txt"  
+
+> To center the theme, change:  
+Change: GRUB_GFXMODE=auto  
+To: GRUB_GFXMODE=1024x768  
+
+> Apply changes:  
+sudo grub-mkconfig -o /boot/grub/grub.cfg  
 
 ### Installs
 
