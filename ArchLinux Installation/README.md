@@ -781,13 +781,14 @@ https://wiki.archlinux.org/index.php/Bluetooth#Installation
 
 Install the Samba and the KDE samba utility:
 > sudo pacman -S samba kdenetwork-filesharing   
-sudo systemctl enable smbd.socket  
-sudo systemctl start smbd.socket  
+sudo systemctl enable smbd.socket nmbd  
+sudo systemctl start smbd.socket nmbd   
 
 Apply the default settings:
 > sudo cp /etc/samba/smb.conf.default /etc/samba/smb.conf
 
-Create a public folder (there are alot of examples on the configuration file):
+Create a public folder (there are alot of examples on the configuration file):  
+And comment out the [homes] and [printers] default shares.
 >  [Transfer]  
    comment = Network Transfer  
    path = /media/Dados/Transferências Rede/  
@@ -803,12 +804,27 @@ Create a new samba user (this will also create the users file):
 > sudo smbpasswd -a filipe
 
 At this point we can test on the localhost with `\\hostname`, to enable network usage, we have to open the following port on the firewall:
-> TCP/445
+> TCP/445 - Samba over TCP  
+> UDP/137 - NetBIOS Name Service 
 
 <sub><sup>
 References:  
 https://wiki.archlinux.org/index.php/samba  
 https://wiki.archlinux.org/index.php/Samba/Tips_and_tricks
+</sup></sub> 
+
+##### VLC with samba
+
+> Open VLC  
+Go to Tools > Preferences  
+Under the header Show Settings (bottom left), select the All button  
+Select Input / Codecs > Access Modules > SMB on the left  
+Input the samba user and password, defined above and leave the Domain empty  
+To view log errors, just open "vlc" with the console.
+
+<sub><sup>
+References: 
+http://jorisvandijk.com/2013/12/24/vlc-wont-play-smb-shares/
 </sup></sub> 
 
 ##### CUPS
