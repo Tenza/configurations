@@ -612,7 +612,7 @@ Notebook:
 This notebook has two graphics cards, intel and nvidia.
 In order to manage them we use `bumblebee` that is Optimus for GNU/Linux.
 
-> sudo pacman -S mesa-dri xf86-video-intel nvidia bumblebee 
+> sudo pacman -S mesa-dri xf86-video-intel nvidia bumblebee bbswitch
 
 Configure bumblebee:
 
@@ -971,10 +971,19 @@ Laptop tools:
 sudo packer -S laptop-mode-tools  
 sudo systemctl enable laptop-mode  
 
+For more optimizations install the `powertop` tool by intel.
+> sudo pacman -S powertop  
+sudo powertop --html=powerreport.html
+
+Now check your $home for the `powerreport.html` file, open it and review the `Tuning` tab.  
+It includes the commands necessary for more battery optimizations.
+
 <sub><sup>
 References:  
 https://wiki.archlinux.org/index.php/Laptop_Mode_Tools  
 https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
+https://wiki.archlinux.org/index.php/powertop  
+http://lumbercoder.com/2014/03/02/improve-battery-life-arch-linux.html
 </sup></sub>
 
 Kernel Modules:
@@ -1240,6 +1249,12 @@ Make the image on the left bigger. (Start a music and right-click)
 Preferences > Reproduction > Disable animations, Fade-in, Fade-out  
 Preferences > Notifications > Personalized, 3 seconds, bottom right corner.   
 
+##### Diagrams
+
+There are programs like DIA or Violet for UML diagrams.  
+But I prefer to use the https://www.draw.io/ website.  
+To me, has better usability, there is no need for account and supports offline mode.
+
 ##### Lancelot
 
 > sudo pacman -S kdeplasma-addons-applets-lancelot  
@@ -1259,7 +1274,8 @@ Splash: http://kde-look.org/content/show.php/modern+Arch+Linux?content=164279
 
 ##### Others
 
-> sudo packer -S qbittorrent partitionmanager-git gimp
+> sudo packer -S qbittorrent partitionmanager-git gimp  
+sudo pacman -S meld
 
 Notes:  
 KDE will restore qtorrent state on boot.  
@@ -1350,12 +1366,6 @@ This is diferent from the above problem, this happens when we receive audio, or 
 Select sound card with F6  
 Select record devices  
 Make the value of PCM 0  
-
-##### Diagrams
-
-There are programs like DIA or Violet for UML diagrams.  
-But I prefer to use the https://www.draw.io/ website.  
-To me, has better usability, there is no need for account and supports offline mode.
 
 ##### Clementine does not close
 
