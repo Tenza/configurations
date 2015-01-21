@@ -1263,6 +1263,8 @@ At every kernel update we will have to reload the modules manually by doing:
 
 > modprobe vboxdrv
 
+Alternatively, install DKMS along with the DKMS version of virtualbox.
+
 ##### Lancelot
 
 > sudo pacman -S kdeplasma-addons-applets-lancelot  
