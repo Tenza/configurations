@@ -1255,6 +1255,14 @@ There are programs like DIA or Violet for UML diagrams.
 But I prefer to use the https://www.draw.io/ website.  
 To me, has better usability, there is no need for account and supports offline mode.
 
+##### VirtualBox
+
+> sudo pacman -S virtualbox virtualbox-host-modules virtualbox-guest-iso
+
+At every kernel update we will have to reload the modules manually by doing:
+
+> modprobe vboxdrv
+
 ##### Lancelot
 
 > sudo pacman -S kdeplasma-addons-applets-lancelot  
@@ -1274,8 +1282,8 @@ Splash: http://kde-look.org/content/show.php/modern+Arch+Linux?content=164279
 
 ##### Others
 
-> sudo packer -S qbittorrent partitionmanager-git gimp  
-sudo pacman -S meld
+> sudo pacman -S meld gaupol  
+sudo packer -S qbittorrent partitionmanager-git gimp popcorntime-bin caffeine-ng
 
 Notes:  
 KDE will restore qtorrent state on boot.  
