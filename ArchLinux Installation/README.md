@@ -1037,6 +1037,18 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 > sudo pacman -S firefox firefox-i18n-pt-pt gstreamer gst-plugins-good gst-libav  
 Test support: http://www.quirksmode.org/html5/tests/video.html
 
+Remove some of the password manager functionality:
+
+> Go to `/home/filipe/.mozilla/firefox/XXXXXXXX.default/`  
+Create the folder `chrome`  
+Create the file `userChrome.css` inside the `chrome` folder.  
+Edit the file with the following options:  
+```
+#removeAllSignons {display: none;}   
+#removeSignon {display: none;}   
+#togglePasswords {display: none;}   
+```
+
 ##### Firewall:
 > sudo pacman -S ufw  
 sudo packer -S kcm-ufw  
