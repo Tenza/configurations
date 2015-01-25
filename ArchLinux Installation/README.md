@@ -106,6 +106,8 @@ http://dottheslash.wordpress.com/2011/11/29/deleting-all-partitions-on-a-usb-dri
 > Get mirrors: https://www.archlinux.org/mirrorlist/  
 nano /etc/pacman.d/mirrorlist
 
+See how to optimize bellow.
+
 ###### (Optional) (RAID) Create file to assembly RAID arrays:
 
 This is required, for the RAID 0 configuration.  
@@ -704,6 +706,22 @@ To install Microsoft fonts we will use the Legacy packages, because the new pack
 <sub><sup>
 References:
 https://wiki.archlinux.org/index.php/MS_fonts
+</sup></sub>
+
+##### Optimize Mirrorlist
+
+> Get all up-to-date mirrors here: https://www.archlinux.org/mirrorlist/all/  
+Goto: `cd /etc/pacman.d`  
+Backup: `sudo mv mirrorlist mirrorlist.bak`  
+Create new mirror list and paste the mirrors from the link: `sudo nano mirrorlist.new`  
+Remove commented lines with: `sudo sed -i "s/#Server/Server/g" mirrorlist.new`  
+Rank all the mirrors: `sudo rankmirrors -v -n 0 mirrorlist.new`  
+Finnaly create and paste the result on the mirrorslist file and delete mirrorlist.new  
+
+<sub><sup>
+References:  
+http://www.garron.me/en/go2linux/how-to-find-the-fastest-archlinux-mirrors.html  
+http://bbs.archbang.org/viewtopic.php?id=3007
 </sup></sub>
 
 ##### KDE volume control
