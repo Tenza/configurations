@@ -1314,7 +1314,7 @@ Splash: http://kde-look.org/content/show.php/modern+Arch+Linux?content=164279
 
 ##### Others
 
-> sudo pacman -S meld gaupol  
+> sudo pacman -S meld gaupol remmina libvncserver traceroute  
 sudo packer -S qbittorrent partitionmanager-git gimp popcorntime-bin caffeine-ng
 
 Notes:  
@@ -1410,3 +1410,8 @@ Make the value of PCM 0
 ##### Clementine does not close
 
 https://github.com/clementine-player/Clementine/issues/1728
+
+##### Remmina closes VNC connection without notice
+
+This might be because the color preferences are not the same on the server and on the client.  
+Try changing the color preferences of the VNC connection, to match the VNC server.
