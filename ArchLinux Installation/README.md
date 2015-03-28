@@ -1119,6 +1119,33 @@ Other alternative would be to use `vim` or `emacs`, but I like GUI.
 
 > sudo packer -S brackets-bin
 
+##### LAMP
+
+After the instalation, just run:
+> sudo systemctl start httpd mysqld
+
+###### Apache
+
+> sudo pacman -S apache  
+
+By default, it will serve the directory `/srv/http`
+
+###### PHP
+
+> sudo pacman -S php php-apache
+
+Follow these instructions to enable the needed modules:  
+https://wiki.archlinux.org/index.php/Apache_HTTP_Server#PHP
+
+###### Mysql
+
+> sudo pacman -S mariadb phpmyadmin php-mcrypt mysql-workbench gnome-keyring   
+> mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql  
+> sudo mysql_secure_installation  
+
+Follow these instructions to enable the needed modules on phpmyadmin:  
+https://wiki.archlinux.org/index.php/PhpMyAdmin#Configuration
+
 ##### Dropbox
 
 > sudo packer -S dropbox
