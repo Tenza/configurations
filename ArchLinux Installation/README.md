@@ -1085,7 +1085,8 @@ sudo systemctl start clamd.service
 > sudo pacman -S kdeartwork-kscreensaver xscreensaver  
 
 ##### KDE tools:
-> sudo pacman -S kdesdk-kate kdegraphics-okular kdeutils-kcalc
+> sudo pacman -S kdesdk-kate kdegraphics-okular kdeutils-kcalc   
+> packer -S kdesudo
 
 Configurations:
 > Kate > Configurations > Activate console plugin.   
@@ -1121,7 +1122,7 @@ Other alternative would be to use `vim` or `emacs`, but I like GUI.
 
 ##### LAMP
 
-After the instalation, just run:
+After the instalation, just run, there is no need to enable this at boot:
 > sudo systemctl start httpd mysqld
 
 ###### Apache
@@ -1134,17 +1135,88 @@ By default, it will serve the directory `/srv/http`
 
 > sudo pacman -S php php-apache
 
-Follow these instructions to enable the needed modules:  
+Configure PHP:
+
+> sudo nano /etc/httpd/conf/httpd.conf  
+> Comment this line: LoadModule mpm_event_module modules/mod_mpm_event.so  
+> Add this line: LoadModule mpm_prefork_module modules/mod_mpm_prefork.so  
+> Add this line: LoadModule php5_module modules/libphp5.so  
+> Add this line: Include conf/extra/php5_module.conf  
+
+<sub><sup>
+References: 
 https://wiki.archlinux.org/index.php/Apache_HTTP_Server#PHP
+</sup></sub>
 
 ###### Mysql
 
-> sudo pacman -S mariadb phpmyadmin php-mcrypt mysql-workbench gnome-keyring   
-> mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql  
+> sudo pacman -S mariadb 
+
+After the instalation, initialize MySQL data directory and creates the system tables:
+
+> sudo mysql_install_db --user=mysql --basedir=/usr --datadir=/var/lib/mysql  
+
+Start MySQL:
+
+> sudo systemctl start mysqld
+
+Secure instalation:
+
 > sudo mysql_secure_installation  
 
-Follow these instructions to enable the needed modules on phpmyadmin:  
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/MySQL#Installation
+</sup></sub>
+
+##### phpmyadmin
+
+> sudo pacman -S phpmyadmin php-mcrypt
+
+Configure phpmyadmin:
+
+> sudo nano /etc/php/php.ini  
+> Uncomment:  
+extension=mysqli.so  
+extension=mcrypt.so  
+extension=zip.so  
+> Add `/etc/webapps` to `open_basedir`  
+> Result: open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/:/etc/webapps/
+
+Create the following config file:
+
+> sudo nano /etc/httpd/conf/extra/phpmyadmin.conf
+
+```
+Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"  
+<Directory "/usr/share/webapps/phpMyAdmin">  
+    DirectoryIndex index.php  
+    AllowOverride All  
+    Options FollowSymlinks  
+    Require local  
+</Directory>  
+```
+
+And finnaly include it:
+
+> sudo nano /etc/httpd/conf/httpd.conf
+
+> \#phpMyAdmin configuration  
+Include conf/extra/phpmyadmin.conf
+
+<sub><sup>
+References: 
 https://wiki.archlinux.org/index.php/PhpMyAdmin#Configuration
+</sup></sub>
+
+Install mysql-workbench:
+
+> sudo pacman -S mysql-workbench gnome-keyring
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/PhpMyAdmin#Configuration
+</sup></sub>
 
 ##### Dropbox
 
