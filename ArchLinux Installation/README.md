@@ -437,7 +437,7 @@ http://www.satsignal.eu/ntp/setup.html
 http://www.meinbergglobal.com/english/sw/ntp.htm
 </sup></sub>
 
-##### Dualboot
+#### Dualboot
 
 First we install the package responsible for detecting other OS instalations:
 
@@ -648,7 +648,7 @@ References:
 https://wiki.archlinux.org/index.php/Xorg#Manually
 </sup></sub>
 
-##### Install KDE
+###### (1) Install KDE 4
 
 > sudo pacman -S kdebase kde-l10n-pt  
 sudo systemctl enable kdm.service  
@@ -661,6 +661,58 @@ For the fonts, use ttf-oxygen because it is KDE.
 <sub><sup>
 References:
 https://wiki.archlinux.org/index.php/KDE
+</sup></sub>
+
+###### (2) Install KDE 5
+
+At the moment this is just experimental. There are still some problems regarding the tray area being changed, as well as the look on some Qt4 applications. Even though there is a themes for them.
+
+If KDE4 is installed, and since KDE4 and KDE5 cannot run together we need to remove it first:
+
+> sudo pacman -Rnc kdebase-workspace 
+
+Install KDE 5:
+
+> sudo pacman -S plasma kde-l10n-pt
+
+Instead of KDM it is recommended to use the newer SDDM display manager
+
+> sudo pacman -S sddm
+
+Activate SDDM and create the config file
+
+> systemctl disable kdm && systemctl enable sddm  
+> sddm --example-config > /etc/sddm.conf
+
+Finally, apply the newer `breeze` theme to the display manager, because the default one is just ugly
+
+> sudo nano /etc/sddm.conf
+
+And change the theme section according to this:
+```
+[Theme]
+Current=breeze
+CursorTheme=breeze_cursors
+FacesDir=/usr/share/sddm/faces
+ThemeDir=/usr/share/sddm/themes
+```
+
+OR you can do it with GUI, just install:
+
+> sudo pacman -S sddm-kcm
+
+Reboot and go to `Setting > Startup and Shutdown > Login Screen. (2nd tab)` and choose the `Breeze` theme.
+
+To make things look better and more uniform install and select the following themes.
+Before instalation tt is better to look on the wiki, because at the moment there are no breeze-based themes for GTK, and this might be totally diferent. 
+
+> sudo pacman -S breeze-kde4 qtconfig-qt4 
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Plasma  
+https://wiki.archlinux.org/index.php/SDDM  
+http://www.linuxveda.com/2015/02/27/how-to-install-kdes-plasma-5-on-arch-linux/
 </sup></sub>
 
 ### Configure X11 system
@@ -795,97 +847,6 @@ https://wiki.archlinux.org/index.php/Bluetooth#BlueDevil
 https://wiki.archlinux.org/index.php/Bluetooth#Installation  
 </sup></sub>
 
-##### Samba
-
-Install the Samba and the KDE samba utility:
-> sudo pacman -S samba kdenetwork-filesharing   
-sudo systemctl enable smbd.socket nmbd  
-sudo systemctl start smbd.socket nmbd   
-
-Apply the default settings:
-> sudo cp /etc/samba/smb.conf.default /etc/samba/smb.conf
-
-Create a public folder (there are alot of examples on the configuration file):  
-And comment out the [homes] and [printers] default shares.
->  [Transfer]  
-   comment = Network Transfer  
-   path = /media/Dados/Transferências Rede/  
-   valid users = filipe  
-   public = no  
-   writable = yes  
-   printable = no  
-  
-Check if there are no configuration errors:
-> testparm
-
-Create a new samba user (this will also create the users file):
-> sudo smbpasswd -a filipe
-
-At this point we can test on the localhost with `\\hostname`, to enable network usage, we have to open the following port on the firewall:
-> TCP/445 - Samba over TCP  
-> UDP/137 - NetBIOS Name Service 
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/samba  
-https://wiki.archlinux.org/index.php/Samba/Tips_and_tricks
-</sup></sub> 
-
-##### VLC with samba
-
-> Open VLC  
-Go to Tools > Preferences  
-Under the header Show Settings (bottom left), select the All button  
-Select Input / Codecs > Access Modules > SMB on the left  
-Input the samba user and password, defined above and leave the Domain empty  
-To view log errors, just open "vlc" with the console.
-
-<sub><sup>
-References: 
-http://jorisvandijk.com/2013/12/24/vlc-wont-play-smb-shares/
-</sup></sub> 
-
-##### CUPS
-
-Install the CUPS (deamon) and the KDE CUPS utility:
-> sudo pacman -S cups kdeutils-print-manager  
-sudo systemctl enable org.cups.cupsd.service  
-sudo systemctl start org.cups.cupsd.service  
-
-Install EPSON printer drivers:
-> sudo packer -S epson-inkjet-printer-escpr
-
-Interfaces:
-> Printers can be managed using the CUPS web-interface on http://localhost:631/ or using the KDE interface, I will use the KDE interface for the configurations.
-
-Configurations:
-> System Settings > Printers > Add printer  
-The settings applied for the discovered Printers on the network did NOT work for me.  
-Instead, I configured manually using AppSocket/HP JetDirect, with the printer static local IP (192.168.1.98:9100).   
-After this, if the EPSON drivers were installed, simply select the printer model (Epson Stylus SX430).  
-Disable sharing, enable default printer and print test page to verify.  
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/CUPS  
-https://wiki.archlinux.org/index.php/CUPS#KDE  
-https://wiki.archlinux.org/index.php/CUPS_printer_sharing  
-</sup></sub> 
-
-##### SANE
-
-To use SANE with an EPSON printer I'm going to use "Image Scan! for Linux".
-> sudo packer -S iscan iscan-plugin-network
-
-Next just add the printer IP to the config file:
-> sudo nano /etc/sane.d/epkowa.conf  
-net 192.168.1.98
-
-<sub><sup>
-References:
-https://wiki.archlinux.org/index.php/sane#For_Epson_hardware
-</sup></sub> 
-
 ##### Uniform Look
 
 To make GTK based applications look like Qt based, I prefer `oxygen-gtk` instead of `qtcurve`.
@@ -923,41 +884,6 @@ https://wiki.archlinux.org/index.php/NTFS-3G
 http://www.omaroid.com/fstab-permission-masks-explained/  
 http://askubuntu.com/questions/429848/dmask-and-fmask-mount-options
 http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab
-</sup></sub>
-
-##### Activate stand-by mode on HDDs
-
-Normaly we would use the `hdparm` tool, but this tool does not seem to work well with my Westrem Digital hard drives. It is possible to activate standby on demand with the command:
-
-> sudo hdparm -y /dev/sdc  
-
-and it is also possible to check the disk state:
-
-> sudo hdparm -C /dev/sdc  
-
-But, it does not work well when we try to activate with X time of inactivity, for example:
-
-> sudo hdparm –S 5 /dev/sdc  
-
-For me the solution lies on using the tool `hd-idle` instead:
-
-> packer –S hd-idle  
-systemctl enable hd-idle  
-systemctl start hd-idle  
-systemctl status hd-idle  
-hd-idle -i 0 -a sdb -i 600 -a sdc -i 600 –a sdd –I 1200  
-
-```
-Example:
-hd-idle -i 0 -a sda -i 300 -a sdb -i 1200
-
-This example sets the default idle time to 0 (meaning hd-idle will never try to spin down a disk), then sets explicit idle times for disks which have the string "sda" or "sdb" in their device name. 
-```
-<sub><sup>
-References:  
-http://hd-idle.sourceforge.net/  
-http://askubuntu.com/questions/196473/setting-sata-hdd-spindown-time  
-http://www.spencerstirling.com/computergeek/powersaving.html#harddrive  
 </sup></sub>
 
 ##### Change Kernel I/O scheduler
@@ -1049,6 +975,132 @@ To: GRUB_GFXMODE=1024x768
 > Apply changes:  
 sudo grub-mkconfig -o /boot/grub/grub.cfg  
 
+##### Samba
+
+Install the Samba and the KDE samba utility:
+> sudo pacman -S samba kdenetwork-filesharing   
+sudo systemctl enable smbd.socket nmbd  
+sudo systemctl start smbd.socket nmbd   
+
+Apply the default settings:
+> sudo cp /etc/samba/smb.conf.default /etc/samba/smb.conf
+
+Create a public folder (there are alot of examples on the configuration file):  
+And comment out the [homes] and [printers] default shares.
+>  [Transfer]  
+   comment = Network Transfer  
+   path = /media/Dados/Transferências Rede/  
+   valid users = filipe  
+   public = no  
+   writable = yes  
+   printable = no  
+  
+Check if there are no configuration errors:
+> testparm
+
+Create a new samba user (this will also create the users file):
+> sudo smbpasswd -a filipe
+
+At this point we can test on the localhost with `\\hostname`, to enable network usage, we have to open the following port on the firewall:
+> TCP/445 - Samba over TCP  
+> UDP/137 - NetBIOS Name Service 
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/samba  
+https://wiki.archlinux.org/index.php/Samba/Tips_and_tricks
+</sup></sub> 
+
+##### VLC with samba
+
+> Open VLC  
+Go to Tools > Preferences  
+Under the header Show Settings (bottom left), select the All button  
+Select Input / Codecs > Access Modules > SMB on the left  
+Input the samba user and password, defined above and leave the Domain empty  
+To view log errors, just open "vlc" with the console.
+
+<sub><sup>
+References: 
+http://jorisvandijk.com/2013/12/24/vlc-wont-play-smb-shares/
+</sup></sub> 
+
+##### CUPS
+
+Install the CUPS (deamon) and the KDE CUPS utility:
+> sudo pacman -S cups kdeutils-print-manager  
+sudo systemctl enable org.cups.cupsd.service  
+sudo systemctl start org.cups.cupsd.service  
+
+Install EPSON printer drivers:
+> sudo packer -S epson-inkjet-printer-escpr
+
+Interfaces:
+> Printers can be managed using the CUPS web-interface on http://localhost:631/ or using the KDE interface, I will use the KDE interface for the configurations.
+
+Configurations:
+> System Settings > Printers > Add printer  
+The settings applied for the discovered Printers on the network did NOT work for me.  
+Instead, I configured manually using AppSocket/HP JetDirect, with the printer static local IP (192.168.1.98:9100).   
+After this, if the EPSON drivers were installed, simply select the printer model (Epson Stylus SX430).  
+Disable sharing, enable default printer and print test page to verify.  
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/CUPS  
+https://wiki.archlinux.org/index.php/CUPS#KDE  
+https://wiki.archlinux.org/index.php/CUPS_printer_sharing  
+</sup></sub> 
+
+##### SANE
+
+To use SANE with an EPSON printer I'm going to use "Image Scan! for Linux".
+> sudo packer -S iscan iscan-plugin-network
+
+Next just add the printer IP to the config file:
+> sudo nano /etc/sane.d/epkowa.conf  
+net 192.168.1.98
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/sane#For_Epson_hardware
+</sup></sub> 
+
+##### Activate stand-by mode on HDDs
+
+Normaly we would use the `hdparm` tool, but this tool does not seem to work well with my Westrem Digital hard drives. It is possible to activate standby on demand with the command:
+
+> sudo hdparm -y /dev/sdc  
+
+and it is also possible to check the disk state:
+
+> sudo hdparm -C /dev/sdc  
+
+But, it does not work well when we try to activate with X time of inactivity, for example:
+
+> sudo hdparm –S 5 /dev/sdc  
+
+For me the solution lies on using the tool `hd-idle` instead:
+
+> packer –S hd-idle  
+systemctl enable hd-idle  
+systemctl start hd-idle  
+systemctl status hd-idle  
+hd-idle -i 0 -a sdb -i 600 -a sdc -i 600 –a sdd –I 1200  
+
+```
+Example:
+hd-idle -i 0 -a sda -i 300 -a sdb -i 1200
+
+This example sets the default idle time to 0 (meaning hd-idle will never try to spin down a disk), then sets explicit idle times for disks which have the string "sda" or "sdb" in their device name. 
+```
+<sub><sup>
+References:  
+http://hd-idle.sourceforge.net/  
+http://askubuntu.com/questions/196473/setting-sata-hdd-spindown-time  
+http://www.spencerstirling.com/computergeek/powersaving.html#harddrive  
+</sup></sub>
+
 ### Installs
 
 ##### Firefox and H.264 codec support:
@@ -1125,13 +1177,13 @@ Other alternative would be to use `vim` or `emacs`, but I like GUI.
 After the instalation, just run, there is no need to enable this at boot:
 > sudo systemctl start httpd mysqld
 
-###### Apache
+##### Apache
 
 > sudo pacman -S apache  
 
 By default, it will serve the directory `/srv/http`
 
-###### PHP
+##### PHP
 
 > sudo pacman -S php php-apache
 
@@ -1148,7 +1200,7 @@ References:
 https://wiki.archlinux.org/index.php/Apache_HTTP_Server#PHP
 </sup></sub>
 
-###### Mysql
+##### Mysql
 
 > sudo pacman -S mariadb 
 
@@ -1370,13 +1422,24 @@ lib32-alsa-plugins: for pulseaudio on some games
 
 ##### Clementine
 
-> pacman –S clementine
+> sudo pacman –S clementine
 
 Configurations:  
 > Add library.  
 Make the image on the left bigger. (Start a music and right-click)  
 Preferences > Reproduction > Disable animations, Fade-in, Fade-out  
 Preferences > Notifications > Personalized, 3 seconds, bottom right corner.   
+
+##### Video Editor
+
+> sudo pacman –S kdenlive
+
+I've tested `Avidemux`, `Cinelerra` and `Open Shot` but I prefer `kdenlive`.
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/List_of_applications/Multimedia#Graphical_3
+</sup></sub>
 
 ##### Diagrams
 
@@ -1390,7 +1453,7 @@ To me, has better usability, there is no need for account and supports offline m
 
 At every kernel update we will have to reload the modules manually by doing:
 
-> modprobe vboxdrv
+> sudo modprobe vboxdrv
 
 Alternatively, install DKMS along with the DKMS version of virtualbox.
 
@@ -1411,14 +1474,42 @@ Caledonia: https://aur.archlinux.org/packages/caledonia-bundle/
 Logon: http://kde-look.org/content/show.php/ArchPrecise-KDM-Theme?content=161886  
 Splash: http://kde-look.org/content/show.php/modern+Arch+Linux?content=164279  
 
-##### Others
+##### File Compare
 
-> sudo pacman -S meld gaupol remmina libvncserver traceroute  
-sudo packer -S qbittorrent partitionmanager-git gimp popcorntime-bin caffeine-ng
+> sudo pacman -S meld
 
-Notes:  
+I tested `Kompare` but it does not work as well.
+
+##### Subtitle Editor
+
+> sudo pacman -S gaupol
+
+##### SSH/FTP/VNC/NX Client
+
+> sudo pacman -S remmina libvncserver
+
+##### Torrent Client
+
+> sudo packer -S qbittorrent popcorntime-bin
+
 KDE will restore qtorrent state on boot.  
+
+##### Caffeine 
+
+> sudo packer -S caffeine-ng
+
+Used to prevent the screensaver to kickin due to inactivity, like watching an online video.
+
+##### Image Editor 
+
+> sudo packer -S gimp
+
 Activate single window mode on gimp.
+
+##### Other Tools
+
+> sudo pacman -S traceroute  
+sudo packer -S partitionmanager-git   
 
 ### KDE Look & feel
 
@@ -1514,3 +1605,70 @@ https://github.com/clementine-player/Clementine/issues/1728
 
 This might be because the color preferences are not the same on the server and on the client.  
 Try changing the color preferences of the VNC connection, to match the VNC server.
+
+### System cleanup
+
+##### Check logs
+
+> systemctl --failed  
+> nano /var/log/pacman.log  
+> journalctl -p 0..3 -xn  
+
+##### Find and remove orphan packages
+
+> sudo pacman -Rns $(pacman -Qtdq)
+
+If there is a packages that should not be in here, it is probably because it was installed as a depenency when it should have been instaled explicitly.
+
+Check if that is the case with:
+
+> pacman -Qi \<pkg>
+
+And mark it as explict with:
+
+> pacman -D --asexplicit \<pkg>
+
+##### Improving database access speeds
+
+> pacman-optimize
+
+##### Clean the package cache (/var/cache/)
+
+Pacman stores its downloaded packages in `/var/cache/pacman/pkg/` and does not remove the old or uninstalled versions automatically, therefore it is necessary to deliberately clean up that folder periodically to prevent such folder to grow indefinitely in size. 
+
+> paccache -ruk0
+
+##### Clean systemd journal (/var/log/)
+
+> sudo journalctl --vacuum-time=10d 
+
+Cleans everything except ne previous 10 days.
+
+##### Manually clean the home directory
+
+In the $HOME folder there are files created by many different programs, and as such there is no easy way to manage them all. The best way is to search manually and double check the name of folders and files with packages name with `pacman -Qs <pkg>`
+
+~/ - Probably some useless empty folders  
+~/.config/ - Where apps stores their configuration  
+~/.cache/ - Cache of some programs may grow in size  
+~/.local/share/ - Old files may be lying there  
+
+Also, there is an application that tries to acomplish this, called mundus, but it did not run on my machine.
+
+##### Find lost files
+
+A simple bash script that shows users "lost" files on their Arch Linux systems. "Lost" in this context means those files that are not owned by an installed Arch Linux package.
+
+> sudo packer -S lostfiles
+> sudo lostfiles
+
+Inspect and manually delete the files.
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/System_maintenance  
+https://wiki.archlinux.org/index.php/Pacman_tips#Removing_orphaned_packages  
+https://wiki.archlinux.org/index.php/Pacman#Cleaning_the_package_cache  
+https://wiki.archlinux.org/index.php/Improve_pacman_performance#Improving_database_access_speeds  
+https://aur.archlinux.org/packages/lostfiles/  
+</sup></sub>
