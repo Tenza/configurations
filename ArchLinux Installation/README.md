@@ -847,6 +847,15 @@ https://wiki.archlinux.org/index.php/Bluetooth#BlueDevil
 https://wiki.archlinux.org/index.php/Bluetooth#Installation  
 </sup></sub>
 
+##### CD/DVD/Bluray Drive
+
+Arch doesn't mount the drive unless its necessary (i.e. a DVD or CD is loaded into the drive).  
+The mount command will only work if the drive is already mounted, but it will probably not be needed because it should be auto-mounted once the media is loaded.
+
+To burn and rip CD's and DVD's I like the K3b that is part of the KDE suite.
+
+> sudo pacman -S k3b
+
 ##### Uniform Look
 
 To make GTK based applications look like Qt based, I prefer `oxygen-gtk` instead of `qtcurve`.
@@ -1430,17 +1439,6 @@ Make the image on the left bigger. (Start a music and right-click)
 Preferences > Reproduction > Disable animations, Fade-in, Fade-out  
 Preferences > Notifications > Personalized, 3 seconds, bottom right corner.   
 
-##### Video Editor
-
-> sudo pacman –S kdenlive
-
-I've tested `Avidemux`, `Cinelerra` and `Open Shot` but I prefer `kdenlive`.
-
-<sub><sup>
-References: 
-https://wiki.archlinux.org/index.php/List_of_applications/Multimedia#Graphical_3
-</sup></sub>
-
 ##### Diagrams
 
 There are programs like DIA or Violet for UML diagrams.  
@@ -1474,6 +1472,17 @@ Caledonia: https://aur.archlinux.org/packages/caledonia-bundle/
 Logon: http://kde-look.org/content/show.php/ArchPrecise-KDM-Theme?content=161886  
 Splash: http://kde-look.org/content/show.php/modern+Arch+Linux?content=164279  
 
+##### Video Editor
+
+> sudo pacman –S kdenlive
+
+I've tested `Avidemux`, `Cinelerra` and `Open Shot` but I prefer `kdenlive`.
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/List_of_applications/Multimedia#Graphical_3
+</sup></sub>
+
 ##### File Compare
 
 > sudo pacman -S meld
@@ -1506,10 +1515,13 @@ Used to prevent the screensaver to kickin due to inactivity, like watching an on
 
 Activate single window mode on gimp.
 
-##### Other Tools
+##### Partition manager
 
-> sudo pacman -S traceroute  
-sudo packer -S partitionmanager-git   
+> sudo pacman -S partitionmanager  
+
+##### Equivalent of `tracert` in Windows, `traceroute`
+
+> sudo pacman -S traceroute
 
 ### KDE Look & feel
 
