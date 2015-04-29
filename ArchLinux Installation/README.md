@@ -1606,6 +1606,16 @@ https://github.com/clementine-player/Clementine/issues/1728
 This might be because the color preferences are not the same on the server and on the client.  
 Try changing the color preferences of the VNC connection, to match the VNC server.
 
+##### 0B Removable Media in device notifier
+
+Normally this is a floppy drive, you can confirm with the presence or absence of `/dev/fd0`
+
+But, if I dont have a floppy drive, why is this here? Simple, the floopy drive hardware is not actually capable of being auto detected; so, this is something that has to be configured in the system BIOS. You have to manually tell the BIOS what type of floppy you have, and it in turn tells the OS.
+
+So you need to go into your BIOS and tell it that you have no floppy.
+
+UNTESTED: Another way around this is to blacklist the floppy drive in the kernel modules.
+
 ### System cleanup
 
 ##### Check logs
@@ -1659,7 +1669,7 @@ Also, there is an application that tries to acomplish this, called mundus, but i
 
 A simple bash script that shows users "lost" files on their Arch Linux systems. "Lost" in this context means those files that are not owned by an installed Arch Linux package.
 
-> sudo packer -S lostfiles
+> sudo packer -S lostfiles  
 > sudo lostfiles
 
 Inspect and manually delete the files.
