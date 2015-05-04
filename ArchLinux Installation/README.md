@@ -1258,6 +1258,21 @@ Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"
 </Directory>  
 ```
 
+Also, if you wish to restrict phpmyadmin to local access you can use the following config. But remember, if you want to be really safe, I would advise to remove it completely. Also, with this config, you will only be able to access by typing  `127.0.0.1` not `localhost`.
+
+```
+Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"
+<Directory "/usr/share/webapps/phpMyAdmin">
+    DirectoryIndex index.php
+    AllowOverride All
+    Options FollowSymlinks
+    Require all granted
+    Order Deny,Allow
+    Deny from all
+    Allow from 127.0.0.1
+</Directory> 
+```
+
 And finnaly include it:
 
 > sudo nano /etc/httpd/conf/httpd.conf
