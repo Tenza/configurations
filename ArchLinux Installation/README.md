@@ -1296,9 +1296,11 @@ https://wiki.archlinux.org/index.php/PhpMyAdmin#Configuration
 
 ##### Owncloud
 
-With LAMP already working:
+With the above instalation of LAMP already working:
 
 > sudo pacman -S owncloud php-intl php-mcrypt php-xcache exiv2 
+
+Owncloud configuration:
 
 In `/etc/php/php.ini` enable:
 ```
@@ -1320,6 +1322,92 @@ Copy the Apache configuration file to its configuration directory:
 
 > cp /etc/webapps/owncloud/apache.example.conf /etc/httpd/conf/extra/owncloud.conf
 
+And include it at the bottom of `/etc/httpd/conf/httpd.conf`:
+
+> Include conf/extra/owncloud.conf
+
+Now the easy way to set the correct permissions is to copy and run this script. Replace the `ocpath` variable with the path to your ownCloud directory, and replace the `htuser` variable with your own HTTP user. If the `data` directory does not yet exist, please create it first.
+
+```
+#!/bin/bash
+ocpath='/usr/share/webapps/owncloud'
+htuser='http'
+
+find ${ocpath}/ -type f -print0 | xargs -0 chmod 0640
+find ${ocpath}/ -type d -print0 | xargs -0 chmod 0750
+
+chown -R root:${htuser} ${ocpath}/
+chown -R ${htuser}:${htuser} ${ocpath}/apps/
+chown -R ${htuser}:${htuser} ${ocpath}/config/
+chown -R ${htuser}:${htuser} ${ocpath}/data/
+
+chown root:${htuser} ${ocpath}/.htaccess
+chown root:${htuser} ${ocpath}/data/.htaccess
+
+chmod 0644 ${ocpath}/.htaccess
+chmod 0644 ${ocpath}/data/.htaccess
+```
+
+Everything should be working but I would advise to setup HTTPS access:
+
+> sudo pacman -S openssl
+
+Generate server key and certificate:
+
+> cd /etc/httpd/conf  
+openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out server.key  
+chmod 600 server.key  
+openssl req -new -sha256 -key server.key -out server.csr  
+openssl x509 -req -days 365 -in server.csr -signkey server.key -out server.crt  
+
+Then, in `/etc/httpd/conf/httpd.conf`, uncomment the following three lines:
+
+> LoadModule ssl_module modules/mod_ssl.so  
+LoadModule socache_shmcb_module modules/mod_socache_shmcb.so  
+Include conf/extra/httpd-ssl.conf  
+Include conf/extra/httpd-vhosts.conf
+
+Now lets setup a virtualhost, but first we need to comment the existing one in:
+
+> sudo nano /etc/httpd/conf/extra/owncloud.conf
+
+```
+#<VirtualHost *:80>
+#    ...
+#</VirtualHost>
+```
+
+Now we add a new virtualhost that uses HTTPS:
+
+> sudo nano /etc/httpd/conf/extra/httpd-vhosts.conf
+
+```
+<VirtualHost *:443>
+    ServerName OwnCloud
+    DocumentRoot /usr/share/webapps/owncloud
+
+    SSLEngine On
+    SSLCertificateFile /etc/httpd/conf/server.crt
+    SSLCertificateKeyFile /etc/httpd/conf/server.key
+
+    ErrorLog /var/log/httpd/owncloud.info-error_log
+    CustomLog /var/log/httpd/owncloud.info-access_log common
+</VirtualHost>
+```
+
+If you want to map to another port, for example 1337, just change the above virtualHost port and `nano /etc/httpd/conf/httpd.conf` and add `Listen 1337`.
+
+Now, this should be working for HTTPS only, for an easier access, we can redirect the port 80 to the port 443 with the following host in `/etc/httpd/conf/extra/httpd-vhosts.conf`:
+
+```
+<VirtualHost *:80>
+   ServerName OwnCloud
+   Redirect permanent / https://LOCAL.OR.PUBLIC.IP:80/
+</VirtualHost>
+```
+
+Also, dont forget to forward these TCP ports on your router and local firewall.
+
 ...
 
 XCache Warning:
@@ -1333,7 +1421,8 @@ Clear Log:
 <sub><sup>
 References: 
 https://wiki.archlinux.org/index.php/OwnCloud  
-https://wiki.archlinux.org/index.php/Apache_HTTP_Server#TLS.2FSSL
+https://wiki.archlinux.org/index.php/Apache_HTTP_Server#TLS.2FSSL  
+https://doc.owncloud.org/server/8.0/admin_manual/installation/installation_wizard.html#setting-strong-directory-permissions  
 </sup></sub>
 
 ##### Dropbox
