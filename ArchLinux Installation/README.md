@@ -1294,6 +1294,48 @@ References:
 https://wiki.archlinux.org/index.php/PhpMyAdmin#Configuration
 </sup></sub>
 
+##### Owncloud
+
+With LAMP already working:
+
+> sudo pacman -S owncloud php-intl php-mcrypt php-xcache exiv2 
+
+In `/etc/php/php.ini` enable:
+```
+gd.so
+iconv.so
+xmlrpc.so
+zip.so
+bz2.so
+curl.so
+intl.so
+mcrypt.so
+openssl.so
+pdo_mysql.so
+mysql.so
+exif.so
+```
+
+Copy the Apache configuration file to its configuration directory:
+
+> cp /etc/webapps/owncloud/apache.example.conf /etc/httpd/conf/extra/owncloud.conf
+
+...
+
+XCache Warning:
+
+"XCache opcode cache will not be cleared because "xcache.admin.enable_auth" is enabled."
+
+Clear Log:
+
+/usr/share/webapps/owncloud/data/owncloud.log
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/OwnCloud  
+https://wiki.archlinux.org/index.php/Apache_HTTP_Server#TLS.2FSSL
+</sup></sub>
+
 ##### Dropbox
 
 > sudo packer -S dropbox
