@@ -1348,7 +1348,11 @@ chmod 0644 ${ocpath}/.htaccess
 chmod 0644 ${ocpath}/data/.htaccess
 ```
 
-Everything should be working but I would advise to setup HTTPS access:
+Now we just need to activate xcache, for that remove the comment on:
+
+> sudo nano /etc/php/conf.d/xcache.ini
+
+Everything should be working. Now we are going to setup HTTPS access:
 
 > sudo pacman -S openssl
 
@@ -1367,7 +1371,7 @@ LoadModule socache_shmcb_module modules/mod_socache_shmcb.so
 Include conf/extra/httpd-ssl.conf  
 Include conf/extra/httpd-vhosts.conf
 
-Now lets setup a virtualhost, but first we need to comment the existing one in:
+Now lets setup a virtualhost, but first, we need to comment the existing one in (this can also be done with the purpose of stopping owncloud from taking control of the port 80):
 
 > sudo nano /etc/httpd/conf/extra/owncloud.conf
 
@@ -1406,22 +1410,22 @@ Now, this should be working for HTTPS only, for an easier access, we can redirec
 </VirtualHost>
 ```
 
-Also, dont forget to forward these TCP ports on your router and local firewall.
+Finnaly, dont forget to forward these TCP ports on your router and local firewall to enable public access.
 
-...
-
-XCache Warning:
-
+XCache Warning:  
 "XCache opcode cache will not be cleared because "xcache.admin.enable_auth" is enabled."
 
-Clear Log:
+To solve this just go to `/etc/php/conf.d/xcache.ini` and add the line:  
+> xcache.admin.enable_auth=off
 
+The log is located in:  
 /usr/share/webapps/owncloud/data/owncloud.log
 
 <sub><sup>
 References: 
 https://wiki.archlinux.org/index.php/OwnCloud  
 https://wiki.archlinux.org/index.php/Apache_HTTP_Server#TLS.2FSSL  
+http://serverfault.com/questions/528210/bind-apache-ssl-port-with-different-port-with-same-openssl-port-443  
 https://doc.owncloud.org/server/8.0/admin_manual/installation/installation_wizard.html#setting-strong-directory-permissions  
 </sup></sub>
 
