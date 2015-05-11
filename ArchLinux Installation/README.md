@@ -476,10 +476,17 @@ Use `blkid` to get the uuid of the disk and replace the 'XXX'. And re-run the co
 
 If we are installing Windows and Arch is already on the machine, we have to reinstall the bootloader because Windows automatically overwrites the MBR. To do so, we have to start Arch Live and do: 
 
-> mount /mnt  
-arch-chroom /mnt  
+> loadkeys pt-latin9  
+mount /dev/**sda** /mnt  
+arch-chroot /mnt  
+cfdisk /dev/sdX  (if you need to set the bootflag)  
 grub-mkconfig -o /boot/grub/grub.cfg  
 grub-install /dev/**sda**
+
+If you need any extra package aditionaly use:
+> wifi-menu  
+pacman -Syy  
+pacman -S os-prober  
 
 ##### Custom Entries
 
@@ -914,6 +921,48 @@ https://wiki.archlinux.org/index.php/Solid_State_Drives#I.2FO_Scheduler
 http://blog.nashcom.de/nashcomblog.nsf/dx/linux-io-performance-tweek.htm?opendocument&comments  
 https://wiki.archlinux.org/index.php/Solid_State_Drives#Kernel_parameter_.28for_a_single_device.29  
 </sup></sub>
+
+##### SSD Alignment
+
+What happend:  
+I had to format my Windows instalation and I decided to arrange and resize all the partitions.  
+Previously I had:  
+Windows 230GB, Data 180GB, Linux 50GB  
+But I wanted:  
+Windows 130GB, Linux 130GB, Data 200GB  
+
+First I backed up my Linux installation to an external storage using EaseUS Partition Master. Then I resized the partitions, and reinstaled windows. Finnaly I put my Linux instalation in place and manually fixed the bootloader with ArchLive. Everything is fine until I ran:
+
+```
+$ sudo fdisk -l
+...
+Partition 3 does not start on physical sector boundary.
+Partition 4 does not start on physical sector boundary.
+...
+```
+
+Then I realized it was an alignment problem, and checked it with:
+
+```
+$ sudo parted /dev/md125
+GNU Parted 3.2
+Using /dev/md125
+Welcome to GNU Parted! Type 'help' to view a list of commands.
+(parted) align-check opt 1                                                
+1 aligned
+(parted) align-check opt 2
+2 aligned
+(parted) align-check opt 3
+3 not aligned
+(parted) align-check opt 4
+4 not aligned
+```
+
+I tried to fix the problem using the following softwares: Paragon-Aligment, AOMEI Partition Assistant and MiniTool, unfortunatly all these software are able to do is align NTFS partitions, and so they only were able to align my Partition 4.
+
+To align an Ext partitions, I did it manually with the help of GParted LiveCD following a procedure recommended by Intel on the following PDF: http://www.intel.com/content/dam/www/public/us/en/documents/technology-briefs/ssd-partition-alignment-tech-brief.pdf
+
+...
 
 ##### Improve battery life
 
