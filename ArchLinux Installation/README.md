@@ -1648,11 +1648,38 @@ To me, has better usability, there is no need for account and supports offline m
 
 > sudo pacman -S virtualbox virtualbox-host-modules virtualbox-guest-iso
 
+To enable the necessary kernel modules at boot we need to create a static config file under `/etc/modules-load.d/`, these files will be automatically loaded by [udev](https://wiki.archlinux.org/index.php/Udev)
+
+> sudo nano /etc/modules-load.d/virtualbox.conf  
+vboxdrv  
+vboxnetadp  
+vboxnetflt  
+vboxpci  
+
+The only obrigatory module is `vboxdrv` but we need the other modules to use aditional functionalities like bridged networking and PCI passthrough.
+
 At every kernel update we will have to reload the modules manually by doing:
 
 > sudo modprobe vboxdrv
 
 Alternatively, install DKMS along with the DKMS version of virtualbox.
+
+To use shared folders, first, we create a folder on the host OS and select the folder on the VM settings.
+Once we start our Linux VM we need to mount the folder. To do so, we can use the following command:
+
+> sudo mount -t vboxsf -o rw,uid=1000,gid=1000 share ~/host
+
+To enable at boot, simply copy the above command to the file `/etc/rc.local`. Remember to change the uid and gid if needed, this is to give your user permission to read and write on this folder.
+
+Finally, if you use the aforementioned "Host-only" or "bridge networking" feature, make sure net-tools is installed. VirtualBox actually uses `ifconfig` and `route `to assign the IP and route to the host interface configured with VBoxManage hostonlyif or via the GUI in Settings > Network > Host-only Networks > Edit host-only network (space) > Adapter. 
+
+> sudo pacman -S net-tools
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/VirtualBox  
+https://forums.virtualbox.org/viewtopic.php?t=15868
+</sup></sub>
 
 ##### Lancelot
 
