@@ -962,7 +962,31 @@ I tried to fix the problem using the following softwares: Paragon-Aligment, AOME
 
 To align an Ext partitions, I did it manually with the help of GParted LiveCD following a procedure recommended by Intel on the following PDF: http://www.intel.com/content/dam/www/public/us/en/documents/technology-briefs/ssd-partition-alignment-tech-brief.pdf
 
-...
+```
+Re-align Partitions Without Losing Data
+
+If a partition is misaligned and has data that needs to be preserved, using the open source tool GPARTED is recommended. 
+GPARTED can be downloaded from gparted.org. The live image is the best to use for this purpose. 
+Procedure for GPARTED:
+
+• Before proceeding – BACK UP THE ENTIRE DRIVE – all partitions should be backed up or cloned for DR purposes
+• Boot from the GPARTED Live CD or USB stick
+• In the gparted GUI, select your SSD in the upper right drop-down menu
+• Click on the first partition
+• Click on Resize/Move
+• Change Free Space Proceeding to 2MB
+• Uncheck Round to Cylinders, or select Align to: MiB
+• Click on Resize/Move
+• Click OK on the warning page
+• Click Apply
+• Click Apply in the warning window
+• This process can take a great deal of time, depending on the amount of data
+• When the move is complete, close out of GPARTED and reboot the system
+```
+
+To boot with GParted Live the easiest way is to use `tuxboot`, this tool also recommended by GParted, it downloads and burns GParted live on a USB drive.
+
+> sudo packer -S tuxboot
 
 ##### Improve battery life
 
@@ -1194,13 +1218,24 @@ sudo systemctl start clamd.service
 ##### XScreensaver:
 > sudo pacman -S kdeartwork-kscreensaver xscreensaver  
 
-##### KDE tools:
-> sudo pacman -S kdesdk-kate kdegraphics-okular kdeutils-kcalc   
-> packer -S kdesudo
+##### Screenshots
+> sudo pacman -S kdegraphics-ksnapshot 
+
+##### PDF Reader
+> sudo pacman -S kdegraphics-okular 
+
+##### Notepad
+> sudo pacman -S kdesdk-kate 
 
 Configurations:
 > Kate > Configurations > Activate console plugin.   
 Kate > Configurations > Appearence > Borders > Activate all 
+
+##### KDE Sudo:
+> packer -S kdesudo
+
+##### Calculator
+> packer -S extcalc
 
 ##### Libreoffice:
 
