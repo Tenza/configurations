@@ -1702,7 +1702,9 @@ Alternatively, install DKMS along with the DKMS version of virtualbox.
 To use shared folders, first, we create a folder on the host OS and select the folder on the VM settings.
 Once we start our Linux VM we need to mount the folder. To do so, we can use the following command:
 
-> sudo mount -t vboxsf -o rw,uid=1000,gid=1000 share ~/host
+> sudo mount -t vboxsf -o rw,uid=1000,gid=1000 share '/home/filipe/Shared'
+
+Find the user uid with `cat /etc/passwd` and the gui with `cat /etc/groups` or `group username`  
 
 To enable at boot, simply copy the above command to the file `/etc/rc.local`. Remember to change the uid and gid if needed, this is to give your user permission to read and write on this folder.
 
@@ -1779,6 +1781,15 @@ Activate single window mode on gimp.
 ##### Partition manager
 
 > sudo pacman -S partitionmanager  
+
+##### Surveillance
+
+I was not able to find any decent surveillance software. I tested:  
+Zoneminder - It is just too massive for a single camera and forces the use of apache.  
+Xeoma - I was not able to run this.  
+To test: gSpy, bluecherrydvr, Ubiquity's Unifi Video
+
+In Windows I used `iSpy` and it does a very good job.  
 
 ##### Equivalent of `tracert` in Windows, `traceroute`
 
