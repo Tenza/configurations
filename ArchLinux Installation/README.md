@@ -450,6 +450,8 @@ https://wiki.archlinux.org/index.php/GRUB#Dual-booting
 
 ##### Windows already instaled:
 
+If we are installing Arch and Windows is already on the machine, assuming the bootloader was already installed to the MBR, we simply need to refresh the config file.
+
 > grub-mkconfig -o /boot/grub/grub.cfg
 
 The os-prober will be automatically called by `grub-mkconfig` and will add an entry to Windows. This has worked for me even on a dualboot with a RAID array.
@@ -481,7 +483,7 @@ mount /dev/**sda** /mnt
 arch-chroot /mnt  
 cfdisk /dev/sdX  (if you need to set the bootflag)  
 grub-mkconfig -o /boot/grub/grub.cfg  
-grub-install /dev/**sda**
+grub-install -target=i386-pc --recheck /dev/**sda**
 
 If you need any extra package aditionaly use:
 > wifi-menu  
@@ -1183,6 +1185,17 @@ http://askubuntu.com/questions/196473/setting-sata-hdd-spindown-time
 http://www.spencerstirling.com/computergeek/powersaving.html#harddrive  
 </sup></sub>
 
+##### Android MTP protocol
+
+To use the Media Transfer Protocol which is used by many mobile phones and media players we need to give dolphin this ability. To do so, we simply have to install the following package:
+
+> sudo pacman -S kio-mtp
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/MTP 
+</sup></sub>
+
 ### Installs
 
 ##### Firefox and H.264 codec support:
@@ -1629,6 +1642,18 @@ http://lightrush.ndoytchev.com/random-1/debiansqueezefixespreventskypefrompausin
 https://forums.gentoo.org/viewtopic-t-997098.html?sid=531888f644a8f99aac8d4bc0260ddf83  
 </sup></sub>
 
+##### TOR
+
+We can use TOR with an existing browser (not recommended) simply by installing and running:
+
+> sudo pacman -S tor  
+tor
+
+Then we open the browser and set the SOCKS proxy to `localhost` with port `9050`  
+For ease we can install a plugin to toggle proxys.
+
+A better alternative is to use to TOR Browser. I did not have any luck in installing `tor-browser-en`, it keept falling on verifying the keys even after I added them to the keyring (other users complain of the same problem on the AUR). An alternative to this, is to simply download the bundle directly from https://www.torproject.org/download/ extract and double click the provided shortcut on the folder to run the browser.
+
 ##### Steam
 
 > sudo pacman -S steam
@@ -1794,6 +1819,12 @@ In Windows I used `iSpy` and it does a very good job.
 ##### Equivalent of `tracert` in Windows, `traceroute`
 
 > sudo pacman -S traceroute
+
+##### Multiboot USB
+
+This is for Linux distros only, for Windows use YUMI on Windows.
+
+> packer -S multibootusb
 
 ### KDE Look & feel
 
@@ -1966,3 +1997,23 @@ https://wiki.archlinux.org/index.php/Pacman#Cleaning_the_package_cache
 https://wiki.archlinux.org/index.php/Improve_pacman_performance#Improving_database_access_speeds  
 https://aur.archlinux.org/packages/lostfiles/  
 </sup></sub>
+
+##### KDE restores volume to 100%
+
+> https://bugs.kde.org/show_bug.cgi?id=324975
+
+##### GRUB Message
+
+If GRUB flashes a message for a split second at boot, it is possible that the message is like the following:  
+> Welcome to Grub!  
+error: file '/boot/grub/locale/pt.mo' not found
+
+To fix this we simply need to copy one of the existing configs to the missing one:  
+
+> sudo cp /boot/grub/locale/pt_BR.mo /boot/grub/locale/pt.mo
+
+##### Kernel Missing firmwares:
+
+Search for it and simply install:
+
+> packer -S aic94xx-firmware wd719x-firmware
