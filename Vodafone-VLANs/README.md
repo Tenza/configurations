@@ -1,5 +1,40 @@
 # Vodafone VLans Configuration
 
+#### TL;DR  
+1. Flash Merlin on the router.
+2. Configurate:
+   * LAN → IPTV → Manual → Internet: VID 100 | PRIO 0 
+   * Administration → System → Enable JFFS custom scripts and configs: Yes 
+   * Administration → System → Enable SSH: Yes
+3. Reboot.
+4. SSH into the router:
+   * `vi /jffs/scripts/services-start`
+   * Type `i` to enter edit mode, then paste the code bellow with your SSH client paste shortcut.  
+Press `esc` to exit edit mode, type `:` to enter command mode, and type `wq` to save and exit.
+
+```bash
+#!/bin/sh
+logger "Starting configuration of VLans 100 (NET) 101 (VOIP) and 105 (IPTV)"
+
+logger "Creating VLans 101 and 105"
+vconfig add eth0 101
+vconfig add eth0 105
+
+logger "Enabling VLans 101 and 105"
+ifconfig vlan101 up
+ifconfig vlan105 up
+
+logger "Creating trunk port 4 for VLans 100, 101 and 105"
+robocfg vlan 1 ports "1 2 3 8t"
+robocfg vlan 100 ports "0t 4t 8t"
+robocfg vlan 101 ports "0t 4t 8t"
+robocfg vlan 105 ports "0t 4t 8t"
+
+logger "Done. Secondary router should be functional."
+```
+
+#### Long Version 
+
 I recently changed my ISP to Vodafone, replaced the coaxial wiring with fiber optic and during the installation 
 I explicitly asked them to **change the new Huawei HG8247H**, that is ONT+Router an on a single device, 
 for a separate ONT and Router because I wanted to have my **Asus RT-AC66U as the primary router**. 
@@ -64,11 +99,12 @@ rather than the default untagged network. This can be done in the web-interface:
 * Advanced Settings → LAN → IPTV 
 * Select ISP Profile: Manual 
 * Internet: VID 100 | PRIO 0
+
 You should now have internet access on your Asus. 
 
 We are going to need SSH access to the router, because the settings that we are about to apply cannot be done through 
 the web-interface, just like the original firmware so:
-* Advanced Settings → Administration →System 
+* Advanced Settings → Administration → System 
 * Enable JFFS custom scripts and configs: Yes
 * Enable SSH: Yes
 * Reboot the router
