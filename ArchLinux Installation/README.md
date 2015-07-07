@@ -1214,6 +1214,13 @@ Edit the file with the following options:
 #togglePasswords {display: none;}   
 ```
 
+Set as default browser on xdg-open:
+
+> xdg-mime default firefox.desktop x-scheme-handler/http  
+xdg-mime default firefox.desktop x-scheme-handler/https  
+xdg-mime default firefox.desktop text/html  
+xdg-settings set default-web-browser firefox.desktop
+
 ##### Firewall:
 > sudo pacman -S ufw  
 sudo packer -S kcm-ufw  
@@ -1255,7 +1262,9 @@ Kate > Configurations > Appearence > Borders > Activate all
 I prefer `Libreoffice` over `calligra` due to compatiblity and similarity to MS office.
 
 > sudo pacman -S libreoffice-fresh libreoffice-fresh-pt  
+sudo pacman -S hunspell-en  
 sudo packer -S hunspell-pt_pt  
+sudo packer -S libreoffice-extension-languagetool  
 
 ##### 7Zip:
 > sudo pacman -S p7zip zip unzip unrar kdeutils-ark
@@ -1325,6 +1334,27 @@ Secure instalation:
 <sub><sup>
 References: 
 https://wiki.archlinux.org/index.php/MySQL#Installation
+</sup></sub>
+
+##### Postgre
+
+Install Postgre:
+
+> sudo pacman -S postgresql  
+
+Configurate the Postgres user:
+
+> passwd postgres  
+su - postgres -c "initdb --locale pt_PT.UTF-8 -D '/var/lib/postgres/data'"
+
+Now, either start using the postgres user, or create a new one:
+
+> createuser --interactive  
+createdb myDatabaseName -U username
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/PostgreSQL
 </sup></sub>
 
 ##### phpmyadmin
@@ -1758,7 +1788,11 @@ https://www.kubuntuforums.net/showthread.php?59851-KDE-Application-Launchers
 
 Caledonia: https://aur.archlinux.org/packages/caledonia-bundle/  
 Logon: http://kde-look.org/content/show.php/ArchPrecise-KDM-Theme?content=161886  
-Splash: http://kde-look.org/content/show.php/modern+Arch+Linux?content=164279  
+Splash: http://kde-look.org/content/show.php/modern+Arch+Linux?content=164279
+
+Other:  
+http://kde-look.org/content/show.php/Modern+KDM+Archlinux?content=163475  
+http://kde-look.org/content/show.php/Modern+KDE+4+Splash+Screen?content=163449
 
 ##### Video Editor
 
@@ -1826,6 +1860,23 @@ This is for Linux distros only, for Windows use YUMI on Windows.
 
 > packer -S multibootusb
 
+##### Wireshark
+
+> sudo pacman -S wireshark-qt
+
+Running Wireshark as root is insecure.
+
+`/usr/bin/dumpcap` is the only process that has privileges to capture packets.  
+`/usr/bin/dumpcap` can only be run by root and members of the `wireshark` group. 
+
+Add yourself to the `wireshark` group:
+
+> gpasswd -a filipe wireshark
+
+To make your session aware of this new group without having to log in:
+
+> newgrp wireshark && groups
+
 ### KDE Look & feel
 
 Move "Tool Box" on the desktop to the right top corner.  
@@ -1877,6 +1928,8 @@ rm ...
 
 > Either search for .desktop files or go to `/user/share...`  
 Edit the `Exec:` line.
+
+https://wiki.archlinux.org/index.php/Desktop_entries
 
 ##### Install gstreamer0.10-good-plugins
 
@@ -1930,6 +1983,41 @@ But, if I dont have a floppy drive, why is this here? Simple, the floopy drive h
 So you need to go into your BIOS and tell it that you have no floppy.
 
 UNTESTED: Another way around this is to blacklist the floppy drive in the kernel modules.
+
+##### KDE restores volume to 100%
+
+> https://bugs.kde.org/show_bug.cgi?id=324975
+
+##### GRUB Message
+
+If GRUB flashes a message for a split second at boot, it is possible that the message is like the following:  
+> Welcome to Grub!  
+error: file '/boot/grub/locale/pt.mo' not found
+
+To fix this we simply need to copy one of the existing configs to the missing one:  
+
+> sudo cp /boot/grub/locale/pt_BR.mo /boot/grub/locale/pt.mo
+
+##### Kernel Missing firmwares
+
+Search for it and simply install:
+
+> packer -S aic94xx-firmware wd719x-firmware
+
+##### MySQL Workbench Warning
+
+> MySQL WorkBench is an Oracle product, and will therefore warn about the version numbers used by MariaDB. The error message starts with a text similar to this: "Incompatible/nonstandard server version or connection protocol detected (10.0.13)" Select "Continue Anyway" to continue connecting.
+
+##### Libreoffice does not autocorrect
+
+Check if you have a blue tick on the combobox in:
+> Tools -> Options -> Language Settings -> Languages  
+
+http://askubuntu.com/questions/203727/libreoffice-spell-checker-doesnt-work
+
+##### Backlight
+
+Do NOT install the package `asus-kbd-backlight` because it is no longer required, current KDE desktop can control the keyboard brightness with the native facilities. 
 
 ### System cleanup
 
@@ -1998,22 +2086,7 @@ https://wiki.archlinux.org/index.php/Improve_pacman_performance#Improving_databa
 https://aur.archlinux.org/packages/lostfiles/  
 </sup></sub>
 
-##### KDE restores volume to 100%
+##### System Hierarchy
 
-> https://bugs.kde.org/show_bug.cgi?id=324975
-
-##### GRUB Message
-
-If GRUB flashes a message for a split second at boot, it is possible that the message is like the following:  
-> Welcome to Grub!  
-error: file '/boot/grub/locale/pt.mo' not found
-
-To fix this we simply need to copy one of the existing configs to the missing one:  
-
-> sudo cp /boot/grub/locale/pt_BR.mo /boot/grub/locale/pt.mo
-
-##### Kernel Missing firmwares:
-
-Search for it and simply install:
-
-> packer -S aic94xx-firmware wd719x-firmware
+https://wiki.archlinux.org/index.php/Arch_filesystem_hierarchy
+https://techbase.kde.org/KDE_System_Administration/KDE_Filesystem_Hierarchy
