@@ -4,6 +4,8 @@ These notes were created for my desktop and notebook installations.
 The desktop uses a single SSD and the notebook (Asus UX51VZ) uses two SSD's on a RAID 0 configuration.  
 Both have dualboot with Windows 7, and since both use SSD drives we will make some recommend optimizations.
 
+Some configurations in here might be outdated, always check the archwiki.
+
 <sub><sup>
 References:  
 [Video - System Installation](https://www.youtube.com/watch?v=kQFzVG4wZEg)  
@@ -882,10 +884,13 @@ http://askubuntu.com/questions/50928/qtcurve-vs-oxygen-gtk-theme
 > sudo pacman -S ntfs-3g  
 sudo nano /etc/fstab
 
+*With dmask and fmask flags.*
+
 Desktop:
 
 Besides mounting on boot, we will set access permissions to only the created user.  
-I do this because I have some untrusted programs running on locked accounts, i.e Skype.
+I do this because I have some untrusted programs running on locked accounts, i.e Skype.  
+But this apporach has a big downside, we will not be able to change permissions on the fly.
 
 > /dev/sdb1 /media/Dados1 ntfs defaults,uid=1000,dmask=027,fmask=137 0 0  
 /dev/sdc1 /media/Dados2 ntfs defaults,uid=1000,dmask=027,fmask=137 0 0  
@@ -895,13 +900,31 @@ Notebook:
 
 > /dev/mp125p3 /media/Dados ntfs defaults,noatime,discard,uid=1000,dmask=027,fmask=137 0 0
 
+*With permission flag.*
+
+To be able to change permissions, use the following flag.  
+ntfs and ntfs-3g are the same, check with: `ls /sbin/mount.ntfs* -l`
+
+> /dev/sdb1               /media/Dados1   ntfs-3g         defaults,permissions     0 0  
+/dev/sdc1               /media/Dados2   ntfs-3g         defaults,permissions     0 0  
+/dev/sdd                /media/Dados3   ntfs-3g         defaults,permissions     0 0  
+
+Then, set the files permissions and ownership with:
+
+> sudo chown -R filipe:users /media/Dados3/  
+find /media/Dados3/ -type d -exec chmod 750 {} \;  
+find /media/Dados3/ -type f -exec chmod 640 {} \;  
+Adjust commands to all other storage drives.  
+
 <sub><sup>
 References:  
 http://en.wikipedia.org/wiki/Fmask#Example  
 https://wiki.archlinux.org/index.php/NTFS-3G  
 http://www.omaroid.com/fstab-permission-masks-explained/  
-http://askubuntu.com/questions/429848/dmask-and-fmask-mount-options
-http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab
+http://askubuntu.com/questions/429848/dmask-and-fmask-mount-options  
+http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab  
+http://serverfault.com/questions/304354/fstab-filesystem-type-for-ntfs-ntfs-or-ntfs-3g  
+http://man7.org/linux/man-pages/man8/mount.8.html#FILESYSTEM-INDEPENDENT_MOUNT%20OPTIONS  
 </sup></sub>
 
 ##### Change Kernel I/O scheduler
