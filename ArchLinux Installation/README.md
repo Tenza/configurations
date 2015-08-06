@@ -1476,7 +1476,7 @@ And include it at the bottom of `/etc/httpd/conf/httpd.conf`:
 
 > Include conf/extra/owncloud.conf
 
-Now the easy way to set the correct permissions is to copy and run this script. Replace the `ocpath` variable with the path to your ownCloud directory, and replace the `htuser` variable with your own HTTP user. If the `data` directory does not yet exist, please create it first.
+Now the easy way to set the correct permissions is to copy and run this script. Replace the `ocpath` variable with the path to your ownCloud directory, and replace the `htuser` variable with your own HTTP user. If the `data` directory does not yet exist, please create it first. (Script extracted from owncloud wiki)
 
 ```
 #!/bin/bash
@@ -1498,9 +1498,20 @@ chmod 0644 ${ocpath}/.htaccess
 chmod 0644 ${ocpath}/data/.htaccess
 ```
 
-Now we just need to activate xcache, for that remove the comment on:
+Now we just need to activate xcache, for that remove the comment on xcache.ini
 
 > sudo nano /etc/php/conf.d/xcache.ini
+
+And add the entry on config.php:
+
+> sudo nano /etc/webapps/owncloud/config/config.php
+'memcache.local' => '\\OC\\Memcache\\XCache'
+
+Finnaly we have to give owncloud access to `/dev/urandom`.
+To do so, just attach :/dev/urandom (no slash at the end) to open_basedir in php.ini.
+For easy access just open the file on kate, and find the correct line.
+
+> kdesu kate /etc/php/php.ini
 
 Everything should be working. Now we are going to setup HTTPS access:
 
