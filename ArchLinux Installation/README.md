@@ -1888,7 +1888,11 @@ Used to prevent the screensaver to kickin due to inactivity, like watching an on
 
 ##### Image Editor 
 
-> sudo packer -S gimp
+> sudo packer -S gimp imagemagick
+
+Imagemagick is a command line tool, some examples here:  
+http://askubuntu.com/questions/246647/jpeg-files-to-pdf  
+http://forum.linuxcareer.com/threads/1644-Batch-image-resize-using-linux-command-line
 
 Activate single window mode on gimp.
 
@@ -1931,6 +1935,18 @@ Add yourself to the `wireshark` group:
 To make your session aware of this new group without having to log in:
 
 > newgrp wireshark && groups
+
+##### Crop PDFs
+
+> packer -S briss
+
+##### OCR Tool
+
+I've tested: gscan2pdf, gimagereader, ocropy...  
+I have to say that tesseract is an absolute shit.  
+
+Use instead:  
+> sudo pacman -S ocrfeeder cuneiform
 
 ### KDE Look & feel
 
