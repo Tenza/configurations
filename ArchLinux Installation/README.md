@@ -1604,7 +1604,7 @@ Warning: the forlder “Musicas” on the destination (dropbox) should NOT be al
 
 > sudo pacman -S truecrypt
 
-Mount the truecrypt container on boot:  
+Auto-Mount the truecrypt container on boot using KDE:  
 > System configurations > Start and stop > Add program > System menu and select TrueCrypt.  
 mkdir /media/Trabalho  
 nano /home/filipe/.config/autostart/truecrypt.desktop  
@@ -1618,8 +1618,25 @@ Avoid entering the root password at boot:
 Add at the end:  
 filipe ALL=NOPASSWD: /usr/bin/truecrypt  
 
+Auto-Unmount the truecrypt container using KDE:
+
+Create the following stript:
+> sudo nano ~/.kde4/shutdown/truecryptshutdown
+
+```
+#!/bin/bash
+/usr/bin/truecrypt -d
+```
+
+Make it executable:
+> sudo chmod 755 ~/.kde4/shutdown/truecryptshutdown
+
+Notice that the script was added in:
+> System configurations > Start and stop
+
 <sub><sup>
 References:  
+http://okomestudio.net/biboroku/?p=303  
 http://andryou.com/truecrypt/docs/command-line-usage.php  
 http://ubuntuforums.org/showthread.php?t=1646881  
 http://medienvilla.com/index.php?id=236#linux_script  
@@ -1931,7 +1948,74 @@ System configurations > Display and Screen > Protector > 5 min to init, 300 sec 
 VLC > Enable multiple instances
 VLC > Make the player bar full with on full-screen
 
-### Random problems
+### System cleanup
+
+##### Check logs
+
+> systemctl --failed  
+> nano /var/log/pacman.log  
+> journalctl -p 0..3 -xn  
+
+##### Find and remove orphan packages
+
+> sudo pacman -Rns $(pacman -Qtdq)
+
+If there is a packages that should not be in here, it is probably because it was installed as a depenency when it should have been instaled explicitly.
+
+Check if that is the case with:
+
+> pacman -Qi \<pkg>
+
+And mark it as explict with:
+
+> pacman -D --asexplicit \<pkg>
+
+##### Improving database access speeds
+
+> pacman-optimize
+
+##### Clean the package cache (/var/cache/)
+
+Pacman stores its downloaded packages in `/var/cache/pacman/pkg/` and does not remove the old or uninstalled versions automatically, therefore it is necessary to deliberately clean up that folder periodically to prevent such folder to grow indefinitely in size. 
+
+> paccache -ruk0
+
+##### Clean systemd journal (/var/log/)
+
+> sudo journalctl --vacuum-time=10d 
+
+Cleans everything except ne previous 10 days.
+
+##### Manually clean the home directory
+
+In the $HOME folder there are files created by many different programs, and as such there is no easy way to manage them all. The best way is to search manually and double check the name of folders and files with packages name with `pacman -Qs <pkg>`
+
+~/ - Probably some useless empty folders  
+~/.config/ - Where apps stores their configuration  
+~/.cache/ - Cache of some programs may grow in size  
+~/.local/share/ - Old files may be lying there  
+
+Also, there is an application that tries to acomplish this, called mundus, but it did not run on my machine.
+
+##### Find lost files
+
+A simple bash script that shows users "lost" files on their Arch Linux systems. "Lost" in this context means those files that are not owned by an installed Arch Linux package.
+
+> sudo packer -S lostfiles  
+> sudo lostfiles
+
+Inspect and manually delete the files.
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/System_maintenance  
+https://wiki.archlinux.org/index.php/Pacman_tips#Removing_orphaned_packages  
+https://wiki.archlinux.org/index.php/Pacman#Cleaning_the_package_cache  
+https://wiki.archlinux.org/index.php/Improve_pacman_performance#Improving_database_access_speeds  
+https://aur.archlinux.org/packages/lostfiles/  
+</sup></sub>
+
+### Random problems and notes
 
 ##### Misbehaved packages
 
@@ -2053,74 +2137,54 @@ http://askubuntu.com/questions/203727/libreoffice-spell-checker-doesnt-work
 
 Do NOT install the package `asus-kbd-backlight` because it is no longer required, current KDE desktop can control the keyboard brightness with the native facilities. 
 
-### System cleanup
-
-##### Check logs
-
-> systemctl --failed  
-> nano /var/log/pacman.log  
-> journalctl -p 0..3 -xn  
-
-##### Find and remove orphan packages
-
-> sudo pacman -Rns $(pacman -Qtdq)
-
-If there is a packages that should not be in here, it is probably because it was installed as a depenency when it should have been instaled explicitly.
-
-Check if that is the case with:
-
-> pacman -Qi \<pkg>
-
-And mark it as explict with:
-
-> pacman -D --asexplicit \<pkg>
-
-##### Improving database access speeds
-
-> pacman-optimize
-
-##### Clean the package cache (/var/cache/)
-
-Pacman stores its downloaded packages in `/var/cache/pacman/pkg/` and does not remove the old or uninstalled versions automatically, therefore it is necessary to deliberately clean up that folder periodically to prevent such folder to grow indefinitely in size. 
-
-> paccache -ruk0
-
-##### Clean systemd journal (/var/log/)
-
-> sudo journalctl --vacuum-time=10d 
-
-Cleans everything except ne previous 10 days.
-
-##### Manually clean the home directory
-
-In the $HOME folder there are files created by many different programs, and as such there is no easy way to manage them all. The best way is to search manually and double check the name of folders and files with packages name with `pacman -Qs <pkg>`
-
-~/ - Probably some useless empty folders  
-~/.config/ - Where apps stores their configuration  
-~/.cache/ - Cache of some programs may grow in size  
-~/.local/share/ - Old files may be lying there  
-
-Also, there is an application that tries to acomplish this, called mundus, but it did not run on my machine.
-
-##### Find lost files
-
-A simple bash script that shows users "lost" files on their Arch Linux systems. "Lost" in this context means those files that are not owned by an installed Arch Linux package.
-
-> sudo packer -S lostfiles  
-> sudo lostfiles
-
-Inspect and manually delete the files.
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/System_maintenance  
-https://wiki.archlinux.org/index.php/Pacman_tips#Removing_orphaned_packages  
-https://wiki.archlinux.org/index.php/Pacman#Cleaning_the_package_cache  
-https://wiki.archlinux.org/index.php/Improve_pacman_performance#Improving_database_access_speeds  
-https://aur.archlinux.org/packages/lostfiles/  
-</sup></sub>
-
 ##### System Hierarchy
 
 https://wiki.archlinux.org/index.php/Arch_filesystem_hierarchy
 https://techbase.kde.org/KDE_System_Administration/KDE_Filesystem_Hierarchy
+
+##### Create Systemd Service
+
+This script does NOT work with the above auto-mount using KDE.
+If you want to make this work, make sure you also mount with systemd.
+
+> sudo nano /usr/lib/systemd/system/truecryptshutdown.service
+
+```
+[Unit]
+Description=Truecrypt Unmount
+DefaultDependencies=no
+Before=shutdown.target reboot.target halt.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/true
+ExecStop=/usr/bin/truecryptshutdown
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Now create your script:
+
+> sudo nano /usr/bin/truecryptshutdown
+
+```
+#!/bin/bash
+/usr/bin/truecrypt -d
+```
+
+Change permissions:
+> sudo chmod 755 /usr/bin/truecryptshutdown
+
+To test the script:
+> sudo systemctl status truecryptshutdown
+sudo systemctl start truecryptshutdown
+
+Since this script is only aimed to work uppon exit, use restart to test:
+> sudo systemctl restart truecryptshutdown
+
+<sub><sup>
+References: 
+http://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-right-before-shutdown
+</sup></sub>
