@@ -871,7 +871,11 @@ To burn and rip CD's and DVD's I like the K3b that is part of the KDE suite.
 
 To make GTK based applications look like Qt based, I prefer `oxygen-gtk` instead of `qtcurve`.
 
-> sudo pacman -S oxygen-gtk2 oxygen-gtk3 kde-gtk-config
+> sudo pacman -S oxygen-gtk2 kde-gtk-config-kde4  
+> packer -S oxygen-gtk3-git
+
+Go to, and change to `oxygen-gtk`:  
+System Settings > Application Appearance > GTK
 
 <sub><sup>
 References:  
@@ -2188,3 +2192,7 @@ Since this script is only aimed to work uppon exit, use restart to test:
 References: 
 http://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-right-before-shutdown
 </sup></sub>
+
+##### Give pacman some color
+
+> Uncomment the "Color" line in /etc/pacman.conf
