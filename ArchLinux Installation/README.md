@@ -2308,3 +2308,13 @@ Mar 13 11:50:54 NetworkManager[1106]: <error> [1426243854.961697] [rdisc/nm-lndp
 You have to disable IPv6 on the connection.  
 To do so, go to:
 > NetworkManager Tray > Edit Connections > Wired > Network name > Edit > IPv6 Settings > Method > Ignore/Disabled
+
+##### Disable IPv6 on UFW
+
+If when you click `IPv6 Support` in `System Settings > Network and Conectivity > Firewall` check box, and it changes the firewall status, try the "Restore Defauls" button, an then reset:
+
+> Firewall Status - Yes  
+IPv6 Support - No  
+Outgoing Policy - Allow  
+Incoming Policy - Deny  
+Logging Level - Medium  
