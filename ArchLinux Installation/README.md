@@ -2288,3 +2288,23 @@ The read bit allows the affected user to list the files within the directory
 The execute bit allows the affected user to enter the directory, and access files and directories inside
 The sticky bit states that files and directories within that directory may only be deleted or renamed by their owner (or root)
 ```
+
+##### IPV6 router solicitation
+
+Check if the network manager is constantly making router solicitation.
+> journalctl -p 0..3 -xn
+
+Ther errors are like this:
+```
+Mar 13 11:50:42 NetworkManager[1106]: <error> [1426243842.961433] [rdisc/nm-lndp-rdisc.c:241] send_rs(): (eth0): cannot send router solicitation: -1.
+Mar 13 11:50:43 NetworkManager[1106]: <error> [1426243843.959533] [rdisc/nm-lndp-rdisc.c:241] send_rs(): (wlan0): cannot send router solicitation: -1.
+Mar 13 11:50:46 NetworkManager[1106]: <error> [1426243846.960535] [rdisc/nm-lndp-rdisc.c:241] send_rs(): (eth0): cannot send router solicitation: -1.
+Mar 13 11:50:47 NetworkManager[1106]: <error> [1426243847.959683] [rdisc/nm-lndp-rdisc.c:241] send_rs(): (wlan0): cannot send router solicitation: -1.
+Mar 13 11:50:50 NetworkManager[1106]: <error> [1426243850.962048] [rdisc/nm-lndp-rdisc.c:241] send_rs(): (eth0): cannot send router solicitation: -1.
+Mar 13 11:50:51 NetworkManager[1106]: <error> [1426243851.959510] [rdisc/nm-lndp-rdisc.c:241] send_rs(): (wlan0): cannot send router solicitation: -1.
+Mar 13 11:50:54 NetworkManager[1106]: <error> [1426243854.961697] [rdisc/nm-lndp-rdisc.c:241] send_rs(): (eth0): cannot send router solicitation: -1.
+```
+
+You have to disable IPv6 on the connection.  
+To do so, go to:
+> NetworkManager Tray > Edit Connections > Wired > Network name > Edit > IPv6 Settings > Method > Ignore/Disabled
