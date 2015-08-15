@@ -2212,3 +2212,79 @@ http://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-r
 ##### Give pacman some color
 
 > Uncomment the "Color" line in /etc/pacman.conf
+
+##### Owner, group, permissions summary
+
+###### Groups:
+
+Create group:
+> groupadd groupname
+
+Delete group:
+> groupdel groupname
+
+Change group GID:
+> groupmod -g NEW_GID groupname
+
+List primary and secondary groups from user:
+> id
+
+###### Users:
+
+Create User:
+> useradd username 
+
+Delete User:
+> userdel username
+
+Append existing user to group:
+> usermod -a -G username group
+
+Remove user from group:
+(The new group config will be assigned at the next login)
+> gpasswd -d user group
+
+Assign primary group to user:
+> usermod -g primarygroupname username
+
+Assign primary group to user:
+> usermod -G secondarygroupname username
+
+###### Permissions:
+
+Change set owner and group:
+> chown user:group [file/dir]
+
+`chown` does the same that `chgrp`: 
+http://unix.stackexchange.com/questions/164853/what-is-the-point-of-chgrp
+
+Each file and directory has three user based permission groups:
+ ```
+owner - The Owner permissions apply only the owner of the file or directory, they will not impact the actions of other users.
+group - The Group permissions apply only to the group that has been assigned to the file or directory, they will not effect the actions of other users.
+all users - The All Users permissions apply to all other users on the system, this is the permission group that you want to watch the most.
+ ```
+ 
+Each file or directory has three basic permission types:
+ ```
+read - The Read permission refers to a user's capability to read the contents of the file.
+write - The Write permissions refer to a user's capability to write or modify a file or directory.
+execute - The Execute permission affects a user's capability to execute a file or view the contents of a directory.
+ ```
+
+The special permissions flag can be marked with any of the following:
+```
+_ - no special permissions
+d - directory
+l - The file or directory is a symbolic link
+s - This indicated the setuid/setgid permissions. This is not set displayed in the special permission part of the permissions display, but is represented as a s in the read portion of the owner or group permissions.
+t - This indicates the sticky bit permissions. This is not set displayed in the special permission part of the permissions display, but is represented as a t in the executable portion of the all users permissions
+ ```
+
+When applying permissions to directories on Linux, the permission bits have different meanings than on regular files:
+ ```
+The write bit allows the affected user to create, rename, or delete files within the directory, and modify the directory's attributes
+The read bit allows the affected user to list the files within the directory
+The execute bit allows the affected user to enter the directory, and access files and directories inside
+The sticky bit states that files and directories within that directory may only be deleted or renamed by their owner (or root)
+```
