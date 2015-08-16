@@ -1639,19 +1639,48 @@ http://docs.syncthing.net/index.html
 
 > sudo pacman -S truecrypt
 
+Avoid entering the password:
+> EDITOR=nano visudo  
+Add at the end:  
+filipe ALL=NOPASSWD: /usr/bin/truecrypt  
+
+Create the mount point:
+> mkdir /media/Trabalho
+
+Auto-mount and dismount using systemd:
+
+> sudo nano /usr/lib/systemd/system/truecrypt.service
+
+```
+[Unit]
+Description=Truecrypt auto mount and dismount
+DefaultDependencies=no
+RequiresMountsFor=/media/Dados/
+Before=shutdown.target reboot.target halt.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/sudo -u filipe /usr/bin/truecrypt -t PATH-TO-VOLUME /media/Trabalho -p 'PASSWORD' -k '' --protect-hidden=no --fs-options=iocharset=utf8
+ExecStop=/usr/bin/sudo -u filipe /usr/bin/truecrypt -d
+
+[Install]
+WantedBy=multi-user.target
+```
+
+If you need, a bash script can be specified instead of the actual command. (See below how.)
+
+`Alternatively` you can use KDE, but it will not unmount properly, if you shutdown using the console.
+
 Auto-Mount the truecrypt container on boot using KDE:  
+
 > System configurations > Start and stop > Add program > System menu and select TrueCrypt.  
-mkdir /media/Trabalho  
 nano /home/filipe/.config/autostart/truecrypt.desktop  
+
 ```
 Exec=truecrypt -t /PATH-TO-VOLUME /media/Trabalho -p 'PASSWORD' -k '' --protect-hidden=no --mount-options=readonly --fs-options=iocharset=utf8  
 Terminal=true
 ```
-
-Avoid entering the root password at boot:
-> EDITOR=nano visudo  
-Add at the end:  
-filipe ALL=NOPASSWD: /usr/bin/truecrypt  
 
 Auto-Unmount the truecrypt container using KDE:
 
@@ -2211,14 +2240,11 @@ https://techbase.kde.org/KDE_System_Administration/KDE_Filesystem_Hierarchy
 
 ##### Create Systemd Service
 
-This script does NOT work with the above auto-mount using KDE.
-If you want to make this work, make sure you also mount with systemd.
-
-> sudo nano /usr/lib/systemd/system/truecryptshutdown.service
+> sudo nano /usr/lib/systemd/system/awesomescript.service
 
 ```
 [Unit]
-Description=Truecrypt Unmount
+Description=Execute awesomescript on shutdown
 DefaultDependencies=no
 Before=shutdown.target reboot.target halt.target
 
@@ -2226,7 +2252,7 @@ Before=shutdown.target reboot.target halt.target
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/bin/true
-ExecStop=/usr/bin/truecryptshutdown
+ExecStop=/usr/bin/awesomescript
 
 [Install]
 WantedBy=multi-user.target
@@ -2234,22 +2260,23 @@ WantedBy=multi-user.target
 
 Now create your script:
 
-> sudo nano /usr/bin/truecryptshutdown
+> sudo nano /usr/bin/awesomescript
 
 ```
 #!/bin/bash
-/usr/bin/truecrypt -d
+YOUR COMMANDS
+(If you only need to run one command, you can type it directly on the service, just remember to use absolute paths.)
 ```
 
 Change permissions:
-> sudo chmod 755 /usr/bin/truecryptshutdown
+> sudo chmod 755 /usr/bin/awesomescript
 
 To test the script:
-> sudo systemctl status truecryptshutdown
-sudo systemctl start truecryptshutdown
+> sudo systemctl status awesomescript
+sudo systemctl start awesomescript
 
 Since this script is only aimed to work uppon exit, use restart to test:
-> sudo systemctl restart truecryptshutdown
+> sudo systemctl restart awesomescript
 
 <sub><sup>
 References: 
