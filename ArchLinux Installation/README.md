@@ -1614,16 +1614,16 @@ Inotify (inode notify) is a Linux kernel subsystem that acts to extend filesyste
 > packer -S  syncthing-inotify
 
 The syncthing-inotify service requires syncthing so you don't have to start/enable syncthing seperately. 
-> systemctl --user enable syncthing-inotify.service
+> systemctl --user enable syncthing-inotify.service  
 systemctl --user start syncthing-inotify.service
 
 Open local ports on the firewall:
-> Port 22000/TCP - Sync Protocol Listen Address 
+> Port 22000/TCP - Sync Protocol Listen Address  
 Port 21025/UDP - Discovery broadcasts on IPv4
 
 Make sure your user has permissions to sync the selected folders.
 
-I also tried the package `syncthing-gtk`, but the tray function does NOT work properly.
+I also tried the package `syncthing-gtk`, but the tray function does NOT work properly.  
 There are some tray programs being built in Qt, check later:
 https://forum.syncthing.net/t/osx-syncthingtray-update-qt-based-traybar/5391
 
@@ -2255,7 +2255,7 @@ Change group GID:
 List primary and secondary groups from user:
 > id  
 groups  
-cat /etc/group | grep filipe
+cat /etc/group | grep filipe  
 getent group <groupname>
 
 ###### Users:
