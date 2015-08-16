@@ -526,8 +526,9 @@ Also, to use skins, see the next part.
 ##### Add new user
 
 It is good practice to use a normal user and elevate to root only when necessary.
+Also, decide if you want to create a new primary group or add to the existing `users` group
 
-> useradd -m -G wheel -s /bin/bash filipe  
+> useradd -m -G wheel -s /bin/bash filipe OR useradd -m -g users -G wheel -s /bin/bash filipe
 chfn filipe  
 passwd filipe
 
@@ -1604,6 +1605,31 @@ Specific folders on different disks with symlink:
 > sudo ln -s /media/Dados1/Músicas/ /home/filipe/Dropbox/Privado/Músicas  
 Warning: the forlder “Musicas” on the destination (dropbox) should NOT be already created.  
 
+##### Syncthing
+
+Syncthing replaces proprietary sync and cloud services with something open, trustworthy and decentralized.  
+> sudo pacman -S syncthing
+
+Inotify (inode notify) is a Linux kernel subsystem that acts to extend filesystems to notice changes to the filesystem, and report those changes to applications. 
+> packer -S  syncthing-inotify
+
+The syncthing-inotify service requires syncthing so you don't have to start/enable syncthing seperately. 
+> systemctl --user enable syncthing-inotify.service
+systemctl --user start syncthing-inotify.service
+
+Open local ports on the firewall:
+> Port 22000/TCP - Sync Protocol Listen Address 
+Port 21025/UDP - Discovery broadcasts on IPv4
+
+Make sure your user has permissions to sync the selected folders.
+
+I also tried the package `syncthing-gtk`, but the tray function does NOT work properly.
+There are some tray programs being built in Qt, check later:
+https://forum.syncthing.net/t/osx-syncthingtray-update-qt-based-traybar/5391
+
+They have a very good documentation:
+http://docs.syncthing.net/index.html
+
 ##### Truecrypt
 
 > sudo pacman -S truecrypt
@@ -2227,7 +2253,10 @@ Change group GID:
 > groupmod -g NEW_GID groupname
 
 List primary and secondary groups from user:
-> id
+> id  
+groups  
+cat /etc/group | grep filipe
+getent group <groupname>
 
 ###### Users:
 
@@ -2308,6 +2337,9 @@ Mar 13 11:50:54 NetworkManager[1106]: <error> [1426243854.961697] [rdisc/nm-lndp
 You have to disable IPv6 on the connection.  
 To do so, go to:
 > NetworkManager Tray > Edit Connections > Wired > Network name > Edit > IPv6 Settings > Method > Ignore/Disabled
+
+I also tried the following method, and DOES NOT WORK:
+http://askubuntu.com/questions/440649/how-to-disable-ipv6-in-ubuntu-14-04
 
 ##### Disable IPv6 on UFW
 
