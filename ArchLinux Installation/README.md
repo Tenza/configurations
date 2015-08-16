@@ -1139,8 +1139,9 @@ http://jorisvandijk.com/2013/12/24/vlc-wont-play-smb-shares/
 
 ##### CUPS
 
-Install the CUPS (deamon) and the KDE CUPS utility:
-> sudo pacman -S cups kdeutils-print-manager  
+Install the CUPS (deamon) and the KDE CUPS utility for KDE4:
+> pacman -S cups    
+packer -S print-manager-kde4  
 sudo systemctl enable org.cups.cupsd.service  
 sudo systemctl start org.cups.cupsd.service  
 
@@ -1148,7 +1149,7 @@ Install EPSON printer drivers:
 > sudo packer -S epson-inkjet-printer-escpr
 
 Interfaces:
-> Printers can be managed using the CUPS web-interface on http://localhost:631/ or using the KDE interface, I will use the KDE interface for the configurations.
+> Printers can be managed using the CUPS web-interface on `http://localhost:631/` or using the KDE interface, I will use the KDE interface for the configurations.
 
 Configurations:
 > System Settings > Printers > Add printer  
@@ -1306,6 +1307,10 @@ I prefer `photoqt` over `gwenview` due to its simplicity.
 ##### QtCreator
 
 > sudo pacman -S gdb valgrind qt5-doc qtcreator
+
+##### Visual Studio
+
+> packer -S visual-studio-code
 
 ##### Brackets
 
@@ -1799,6 +1804,12 @@ lib32-catalyst-utils: for AMD Catalyst users
 lib32-nvidia-utils: for NVIDIA proprietary blob users  
 lib32-alsa-plugins: for pulseaudio on some games  
 
+##### Lutris
+
+Nice game launcher/installer
+
+> packer -S lutris
+
 ##### Clementine
 
 > sudo pacman –S clementine
@@ -1973,6 +1984,16 @@ I have to say that tesseract is an absolute shit.
 
 Use instead:  
 > sudo pacman -S ocrfeeder cuneiform
+
+##### Network Statistics
+
+> sudo pacman -S vnstat
+
+Query the network traffic: 
+> vnstat -q
+
+Viewing live network traffic usage: 
+> vnstat -l
 
 ### KDE Look & feel
 
