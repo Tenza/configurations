@@ -1068,6 +1068,48 @@ References:
 https://wiki.archlinux.org/index.php/webcam_setup#linux-uvc
 </sup></sub>
 
+##### Hibernate
+
+To have the hibernate functionality we have to add some kernel parameters as well as some hooks to the initramfs.  
+But first, because I'm using a file swap intead of a partition, I have to find out where the file stars on disk.
+
+> sudo filefrag -v /swapfile
+
+```
+Filesystem type is: ef53
+File size of /swapfile is 6442450944 (1572864 blocks of 4096 bytes)
+ ext:     logical_offset:        physical_offset: length:   expected: flags:
+   0:        0..       0:      34816..     34816:      1:            
+   1:        1..   30719:      34817..     65535:  30719:             unwritten
+   2:    30720..   61439:      65536..     96255:  30720:             unwritten
+   3:    61440..   63487:      96256..     98303:   2048:             unwritten
+   ...
+```
+
+The value that i'm looking for is `34816` for the `resume_offset` parameter.  
+`resume` parameter is the partition where the swapfile is located, not the swapfile itself.
+
+Add the needed kernel parameters:
+> sudo nano /etc/default/grub  
+GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash uvcvideo `resume=/dev/md125p3 resume_offset=34816` elevator=noop ...
+
+Now to add the `resume` hook to the initramfs.
+>  sudo nano /etc/mkinitcpio.conf  
+HOOKS="base udev `resume` autodetect modconf block mdadm_udev filesystems keyboard fsck"
+
+The `resume` hook needs to be after `udev` because the swap partition is referred to with a udev device node.
+
+Finaly apply the changes by rebuilding the initramfs with the mkinitcpio script, as well as re-generate the grub.cfg file:
+> sudo mkinitcpio -p linux  
+sudo grub-mkconfig -o /boot/grub/grub.cfg
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/Power_management/Suspend_and_hibernate#Hibernation  
+https://wiki.archlinux.org/index.php/Mkinitcpio#Image_creation_and_activation  
+https://wiki.archlinux.org/index.php/Kernel_parameters#GRUB  
+</sup></sub>
+
 ##### Bootloader theme
 
 I use the following bootloader theme:
