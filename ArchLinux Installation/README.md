@@ -921,6 +921,9 @@ find /media/Dados3/ -type d -exec chmod 750 {} \;
 find /media/Dados3/ -type f -exec chmod 640 {} \;  
 Adjust commands to all other storage drives.  
 
+After we reset these permissions, we might have problems on the Windows side.  
+If we get "Access Denied" to the disk, just change the permissions of the "Everyone" user.
+
 <sub><sup>
 References:  
 http://en.wikipedia.org/wiki/Fmask#Example  
