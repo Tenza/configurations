@@ -1380,7 +1380,7 @@ By default, it will serve the directory `/srv/http`
 
 > sudo pacman -S php php-apache
 
-Configure PHP:
+Add PHP to the Apache configuration file:
 
 > sudo nano /etc/httpd/conf/httpd.conf  
 > Comment this line: LoadModule mpm_event_module modules/mod_mpm_event.so  
@@ -1439,7 +1439,7 @@ https://wiki.archlinux.org/index.php/PostgreSQL
 
 > sudo pacman -S phpmyadmin php-mcrypt
 
-Configure phpmyadmin:
+Add phpmyadmin to the PHP configuration file:
 
 > sudo nano /etc/php/php.ini  
 > Uncomment:  
@@ -1454,7 +1454,10 @@ Create the following config file:
 > sudo nano /etc/httpd/conf/extra/phpmyadmin.conf
 
 ```
-Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"  
+<IfModule mod_alias.c>
+   Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin" 
+</IfModule>
+
 <Directory "/usr/share/webapps/phpMyAdmin">  
     DirectoryIndex index.php  
     AllowOverride All  
@@ -1466,7 +1469,9 @@ Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"
 Also, if you wish to restrict phpmyadmin to local access you can use the following config. But remember, if you want to be really safe, I would advise to remove it completely. Also, with this config, you will only be able to access by typing  `127.0.0.1` not `localhost`.
 
 ```
-Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"
+<IfModule mod_alias.c>
+   Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"
+</IfModule>
 <Directory "/usr/share/webapps/phpMyAdmin">
     DirectoryIndex index.php
     AllowOverride All
@@ -1478,7 +1483,7 @@ Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"
 </Directory> 
 ```
 
-And finnaly include it:
+And finnaly include it in the Apache config file:
 
 > sudo nano /etc/httpd/conf/httpd.conf
 
@@ -1527,27 +1532,30 @@ Copy the Apache configuration file to its configuration directory:
 
 > cp /etc/webapps/owncloud/apache.example.conf /etc/httpd/conf/extra/owncloud.conf
 
+**Check if this configuration file is overriding open_basedir, with "php_admin_value open_basedir" if so, comment this line. I had problems with the inclusion of an external storage because I was giving permissions on the php.ini file (where this config should be) and because of this, it was not working.**
+
 And include it at the bottom of `/etc/httpd/conf/httpd.conf`:
 
 > Include conf/extra/owncloud.conf
 
-Now the easy way to set the correct permissions is to copy and run this script. Replace the `ocpath` variable with the path to your ownCloud directory, and replace the `htuser` variable with your own HTTP user. If the `data` directory does not yet exist, please create it first. (Script extracted from owncloud wiki)
+Now the easy way to set the correct permissions is to copy and run this script. Replace the `ocpath` variable with the path to your ownCloud directory, and replace the `htuser` variable with your own HTTP user. If the `data` directory does not yet exist, please create it first. (Script extracted from owncloud wiki, modified for Arch)
 
 ```
 #!/bin/bash
 ocpath='/usr/share/webapps/owncloud'
 htuser='http'
+htgroup='http'
 
 find ${ocpath}/ -type f -print0 | xargs -0 chmod 0640
 find ${ocpath}/ -type d -print0 | xargs -0 chmod 0750
 
-chown -R root:${htuser} ${ocpath}/
-chown -R ${htuser}:${htuser} ${ocpath}/apps/
-chown -R ${htuser}:${htuser} ${ocpath}/config/
-chown -R ${htuser}:${htuser} ${ocpath}/data/
-
-chown root:${htuser} ${ocpath}/.htaccess
-chown root:${htuser} ${ocpath}/data/.htaccess
+chown -R root:${htgroup} ${ocpath}/
+chown -R ${htuser}:${htgroup} ${ocpath}/apps/
+chown -R ${htuser}:${htgroup} ${ocpath}/config/
+chown -R ${htuser}:${htgroup} ${ocpath}/data/
+chown -R ${htuser}:${htgroup} ${ocpath}/themes/
+chown root:${htgroup} ${ocpath}/.htaccess
+chown root:${htgroup} ${ocpath}/data/.htaccess
 
 chmod 0644 ${ocpath}/.htaccess
 chmod 0644 ${ocpath}/data/.htaccess
@@ -1559,11 +1567,14 @@ Now we just need to activate xcache, for that remove the comment on xcache.ini
 
 And add the entry on config.php:
 
-> sudo nano /etc/webapps/owncloud/config/config.php
-'memcache.local' => '\\OC\\Memcache\\XCache'
+> sudo nano /etc/webapps/owncloud/config/config.php  
+Add the line: 'memcache.local' => '\\OC\\Memcache\\XCache'  
+Add the line: xcache.admin.enable_auth=off  
+
+The `xcache.admin.enable_auth=off` solves the `XCache opcode cache will not be cleared because xcache.admin.enable_auth is enabled.` warning.
 
 Finnaly we have to give owncloud access to `/dev/urandom`.
-To do so, just attach :/dev/urandom (no slash at the end) to open_basedir in php.ini.
+To do so, just attach `:/dev/urandom` (no slash at the end) to open_basedir in php.ini.
 For easy access just open the file on kate, and find the correct line.
 
 > kdesu kate /etc/php/php.ini
@@ -1584,8 +1595,7 @@ Then, in `/etc/httpd/conf/httpd.conf`, uncomment the following three lines:
 
 > LoadModule ssl_module modules/mod_ssl.so  
 LoadModule socache_shmcb_module modules/mod_socache_shmcb.so  
-Include conf/extra/httpd-ssl.conf  
-Include conf/extra/httpd-vhosts.conf
+Include conf/extra/httpd-vhosts.conf  
 
 Now lets setup a virtualhost, but first, we need to comment the existing one in (this can also be done with the purpose of stopping owncloud from taking control of the port 80):
 
@@ -1596,8 +1606,9 @@ Now lets setup a virtualhost, but first, we need to comment the existing one in 
 #    ...
 #</VirtualHost>
 ```
+The virtualhost for HTTPS could be re-defined in the `owncloud.conf` file, but I prefer to only have defined application specific configurations, like aliases, in these files. I prefer to have all virtualhosts defined in the file created for that purpose, the `httpd-vhosts.conf`. Also, we could use the `httpd-ssl.conf` because this is a HTTPS virtualhost, but this file has alot of comments that are good for guide lines, but it will create alot of entropy.
 
-Now we add a new virtualhost that uses HTTPS:
+Add a new virtualhost that uses HTTPS:
 
 > sudo nano /etc/httpd/conf/extra/httpd-vhosts.conf
 
@@ -1615,9 +1626,14 @@ Now we add a new virtualhost that uses HTTPS:
 </VirtualHost>
 ```
 
-If you want to map to another port, for example 1337, just change the above virtualHost port and `nano /etc/httpd/conf/httpd.conf` and add `Listen 1337`.
+Now make sure to listen to the 443 port.
+> sudo nano /etc/httpd/conf/httpd.conf  
+Add: Listen 443
 
-Now, this should be working for HTTPS only, for an easier access, we can redirect the port 80 to the port 443 with the following host in `/etc/httpd/conf/extra/httpd-vhosts.conf`:
+If you want to map to another port, just change the virtualHost port and the listen port.
+
+For an easier access, we can redirect the port 80 to the port 443 with the following host:
+> sudo nano /etc/httpd/conf/extra/httpd-vhosts.conf`:
 
 ```
 <VirtualHost *:80>
@@ -1626,19 +1642,14 @@ Now, this should be working for HTTPS only, for an easier access, we can redirec
 </VirtualHost>
 ```
 
-Finnaly, dont forget to forward these TCP ports on your router and local firewall to enable public access.
+Dont forget to forward these TCP ports on your router and local firewall to enable public access.  
 
-XCache Warning:  
-"XCache opcode cache will not be cleared because "xcache.admin.enable_auth" is enabled."
+If you need to access an external drive, make sure to add the folder to open_basedir and give write permissions to the 'http' user.  
 
-To solve this just go to `/etc/php/conf.d/xcache.ini` and add the line:  
-> xcache.admin.enable_auth=off
-
-The log is located in:  
-/usr/share/webapps/owncloud/data/owncloud.log
+The log is located in the GUI interface is locaded herein: `/usr/share/webapps/owncloud/data/owncloud.log`
 
 <sub><sup>
-References: 
+References:   
 https://wiki.archlinux.org/index.php/OwnCloud  
 https://wiki.archlinux.org/index.php/Apache_HTTP_Server#TLS.2FSSL  
 http://serverfault.com/questions/528210/bind-apache-ssl-port-with-different-port-with-same-openssl-port-443  
