@@ -1472,6 +1472,7 @@ Also, if you wish to restrict phpmyadmin to local access you can use the followi
 <IfModule mod_alias.c>
    Alias /phpmyadmin "/usr/share/webapps/phpMyAdmin"
 </IfModule>
+
 <Directory "/usr/share/webapps/phpMyAdmin">
     DirectoryIndex index.php
     AllowOverride All
@@ -1644,9 +1645,14 @@ For an easier access, we can redirect the port 80 to the port 443 with the follo
 
 Dont forget to forward these TCP ports on your router and local firewall to enable public access.  
 
-If you need to access an external drive, make sure to add the folder to open_basedir and give write permissions to the 'http' user.  
+If you need to access an external drive, make sure to add the folder to open_basedir and give write permissions to the 'http' user. If the files are not being refreshed, you can force it ba going to phpmyadmin and truncate the tables:
 
-The log is located in the GUI interface is locaded herein: `/usr/share/webapps/owncloud/data/owncloud.log`
+```
+TRUNCATE oc_filecache;
+TRUNCATE oc_storages;
+```
+
+The log in the GUI interface is locaded in: `/usr/share/webapps/owncloud/data/owncloud.log`
 
 <sub><sup>
 References:   
