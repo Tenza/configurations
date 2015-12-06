@@ -59,21 +59,21 @@ id
 
 Remove comments from [multilib]:
 <pre>
-sudo nano /etc/pacman.conf  
-sudo pacman -Syy
+nano /etc/pacman.conf  
+pacman -Syy
 </pre>
 
-##### Install Packer
+#### Install Packer
 
 First install the components needed to use `wget` and `git`, then get the tarball and extract.  
 Finally, build the package with makepkg and install it using pacman.
 
 <pre>
-sudo pacman -S wget git jshon expac  
+pacman -S wget git jshon expac  
 wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz  
 tar zxvf packer.tar.gz  
 cd packer && makepkg  
-sudo pacman -U packer (press tab)
+pacman -U packer (press tab)
 </pre>
 
 Once installed, cleanup:
@@ -88,27 +88,44 @@ References:
 http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
 </sup></sub>
 
-##### Sound drivers
+#### ALSA
 
-ALSA is already apart of the Kernel, but the channels are muted by default.
+ALSA is a set of build-in GNU/Linux kernel modules. Therefore, manual installation is not necessary. 
+But the channels are muted by default, so we install `alsa-utils` that contains alsamixer to unmute the audio.
+The `alsa-utils` package also comes with systemd unit configuration files alsa-restore.service and alsa-store.service by default. These are automatically installed and activated during installation. Therefore, there is no further action needed. Though, you can check their status using systemctl
 
 <pre>
-sudo pacman -S alsa-utils  
-run `alsamixer`  
-Press H to unmute. Press F1 for help.  
-run `speaker-test`
+pacman -S alsa-utils
+run alsamixer
+Press H to unmute. Press F1 for help.
+run speaker-test
 </pre>
 
-(TO CONTINUE)
+If you need high quality resampling install the `alsa-plugins` package to enable upmixing/downmixing and other advanced features. When software mixing is enabled, ALSA is forced to resample everything to the same frequency (48 kHz by default when supported). To do so, install the plugins for high quality resampling:
+<pre>
+pacman -S alsa-plugins
+</pre>
 
-Install the plugins for high quality resampling:
-> sudo pacman -S alsa-plugins
+To test stereo audio (for more channels change the -c parameter) use:
+<pre>
+speaker-test -c 2
+</pre>
+
+#### PulseAudio
+
+Now we need a sound server, it serves as a proxy to sound applications using existing kernel sound components like ALSA.
+Since ALSA is included in Arch Linux by default, the most common deployment scenarios include PulseAudio with ALSA. 
 
 Now lets install the pulseaudio server:
-> sudo pacman -S pulseaudio pulseaudio-alsa 
+<pre>
+pacman -S pulseaudio 
+</pre>
 
-If we are in a x86_64 system we need to have sound for 32-bit multilib programs like Wine, Skype and Steam: 
-> sudo pacman -S lib32-libpulse lib32-alsa-plugins
+Install the `pulseaudio-alsa` package. It contains the necessary /etc/asound.conf for configuring ALSA to use PulseAudio.
+Also install `lib32-libpulse` and `lib32-alsa-plugins`if you run a x86_64 system and want to have sound for 32-bit multilib programs like Wine, Skype and Steam. 
+<pre>
+pacman -S pulseaudio-alsa lib32-libpulse lib32-alsa-plugins
+</pre>
 
 <sub><sup>
 References:  
@@ -116,13 +133,49 @@ https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#High_qual
 https://wiki.archlinux.org/index.php/PulseAudio#Back-end_configuration
 </sup></sub>
 
-##### XOrg
+#### PulseAudio Audiophile
 
-> sudo pacman -S xorg-server xorg-server-utils xorg-xinit mesa
+By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
+
+<pre>
+nano /etc/pulse/daemon.conf
+add: default-sample-format = s32le 
+add: default-sample-rate = 96000 
+add: resample-method = speex-float-5 
+</pre>
+
+For the most geniune resampling at the cost of high CPU usage (even on 2011 CPUs) you can add: 
+
+<pre>
+nano /etc/pulse/daemon.conf
+resample-method = src-sinc-best-quality 
+</pre>
+
+If you are having problems with the channels set by pulseaudio, you can set them manually by adding:
+
+<pre>
+nano /etc/pulse/daemon.conf
+default-sample-channels = 3
+default-channel-map = front-left,front-right,lfe
+</pre>
 
 <sub><sup>
-References:
-https://wiki.archlinux.org/index.php/xorg#Installation
+References: 
+http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
+</sup></sub>
+
+##### XOrg
+
+Now we need to install XOrg, a display server for the X Window System. We will also install `xorg-xinit` that will provide  xinit and startx. For more configurations see `~/.xinitrc` file is a shell script read by xinit and by its front-end startx. The xinit program starts the X Window System server and works as first client program on systems that are not using a display manager. 
+
+<pre>
+pacman -S xorg-server xorg-server-utils xorg-xinit mesa
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/xorg#Installation  
+https://wiki.archlinux.org/index.php/Xinitrc
 </sup></sub>
 
 ##### Graphic drivers
