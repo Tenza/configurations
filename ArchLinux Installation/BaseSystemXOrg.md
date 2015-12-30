@@ -180,18 +180,23 @@ https://wiki.archlinux.org/index.php/Xinitrc
 
 ##### Graphic drivers
 
-Get graphics card:
-> lspci | grep VGA
+First, identify your card: 
+<pre>
+lspci | grep VGA
+</pre>
+
+If you need open-souce drivers you can search the package database for a complete list of open-source video drivers: 
+<pre>
+pacman -Ss xf86-video | less
+</pre>
 
 Desktop:
 
 The graphics card is too old, and there is no support for it, so I use the open-source drivers.
 
-Find open-source driver:
-> sudo pacman -Ss xf86-video | less
-
-Install:
-> sudo pacman -S mesa-dri xf86-video-vesa xf86-video-ati
+<pre>
+pacman -S mesa-dri xf86-video-vesa xf86-video-ati
+</pre>
 
 <sub><sup>
 References: 
@@ -202,14 +207,18 @@ https://wiki.archlinux.org/index.php/Xorg#Driver_installation
 Notebook:
 
 This notebook has two graphics cards, intel and nvidia.
-In order to manage them we use `bumblebee` that is Optimus for GNU/Linux.
+In order to manage them we use `bumblebee` that is Optimus for GNU/Linux. We also install bbswitch, has the goal of power management to turn off the NVIDIA card when not used by Bumblebee. It will be detected automatically when the Bumblebee daemon starts. So, no additional configuration is necessary. 
 
-> sudo pacman -S mesa-dri xf86-video-intel nvidia bumblebee bbswitch
+<pre>
+pacman -S mesa-dri xf86-video-intel nvidia bumblebee bbswitch
+</pre>
 
-Configure bumblebee:
+In order to use Bumblebee, it is necessary to add your regular user to the bumblebee group and also enable bumblebeed.service
 
-> sudo gpasswd -a filipe bumblebee  
-sudo systemctl enable bumblebeed.service 
+<pre>
+gpasswd -a filipe bumblebee  
+systemctl enable bumblebeed.service 
+</pre>
 
 <sub><sup>
 References:  
@@ -221,17 +230,23 @@ https://wiki.archlinux.org/index.php/Hybrid_graphics#ATI_Dynamic_Switchable_Grap
 ##### Input drivers
 
 Desktop and Notebook:
-> sudo pacman -S xf86-input-mouse xf86-input-keyboard
+<pre>
+pacman -S xf86-input-mouse xf86-input-keyboard
+</pre>
 
 Notebook:
-> sudo pacman -S xf86-input-synaptics 
+<pre>
+pacman -S xf86-input-synaptics 
+</pre>
 
 ##### Test default enviroment
 
 Make sure XOrg is working before we install a desktop enviroment.
 
-> sudo pacman -S xorg-twm xorg-xclock xterm  
+<pre>
+pacman -S xorg-twm xorg-xclock xterm  
 startx
+</pre>
 
 <sub><sup>
 References:
