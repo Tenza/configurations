@@ -7,12 +7,14 @@
    * Administration → System → Enable JFFS custom scripts and configs: Yes 
    * Administration → System → Enable SSH: Yes
 3. Reboot.
-4. SSH into the router:
+4. SSH into the router, and create the following script:
    * `vi /jffs/scripts/services-start`
    * Type `i` to enter edit mode, then paste the code bellow with your SSH client paste shortcut.  
 Press `esc` to exit edit mode, type `:` to enter command mode, and type `wq` to save and exit.
+   * `chmod a+rx /jffs/scripts/services-start`
 
-```bash
+```
+bash
 #!/bin/sh
 logger "Starting configuration of VLans 100 (NET) 101 (VOIP) and 105 (IPTV)"
 
@@ -358,7 +360,8 @@ Press `esc` to exit edit mode, type `:` to enter command mode, and type `wq` to 
 Also, note that the script has to be called **services-start** so that Merlin can invoke it.  
 [Refer to the documentation for details.](https://github.com/RMerl/asuswrt-merlin/wiki/User-scripts)
 
-```bash
+```
+bash
 #!/bin/sh
 logger "Starting configuration of VLans 100 (NET) 101 (VOIP) and 105 (IPTV)"
 
