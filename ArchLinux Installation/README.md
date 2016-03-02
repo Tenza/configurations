@@ -1,68 +1,799 @@
 # ArchLinux Instalation Notes
 
-### Post-Install to XOrg
+***DO NOT USE THESE NOTES BLINDLY.***  
+***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
-##### Add new user
+These notes were created for my desktop and notebook (Asus UX51VZ) installations.  
+The desktop uses a **single SSD** and the notebook uses **two SSD's on a RAID 0** configuration.  
+Both have **dualboot with Windows 7**, and since both use SSD drives we will make some recommend optimizations.  
 
-It is good practice to use a normal user and elevate to root only when necessary.
-Also, decide if you want to create a new primary group or add to the existing `users` group
+# Base System Installation
 
-> useradd -m -G wheel -s /bin/bash filipe OR useradd -m -g users -G wheel -s /bin/bash filipe
+## Create bootable USB
+
+##### Windows
+
+This method does not require any workaround and is as straightforward as `dd` under Linux.  
+Just download the Arch Linux ISO, and with local administrator rights use the USBwriter utility to write to your USB flash memory. 
+
+<pre>
+Download: <a href="http://sourceforge.net/projects/usbwriter/">http://sourceforge.net/projects/usbwriter/</a>
+</pre>
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#Using_USBwriter
+</sup></sub>
+
+##### Linux
+
+Find out the name of the USB drive with `lsblk`.  
+Do **not** append partition a number and make sure the drive is not mounted.  
+
+<pre>
+dd bs=4M if=<b>/path/to/archlinux.iso</b> of=/dev/<b>sdX</b> && sync
+</pre>
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#In_GNU.2FLinux
+</sup></sub>
+
+## Restore partitions on the USB
+
+##### Windows
+
+<pre>
+Open an elevated command prompt
+Type <b>diskpart</b>
+Type <b>List disk</b>
+Find the disk number of the USB drive (it should be obvious going by the size)
+Type <b>Select disk X</b>
+Type <b>List partition</b>
+Type <b>Select partition X</b>
+Type <b>Delete partition</b>
+Type <b>Create partition primary</b>
+Type <b>Exit</b>
+</pre>
+
+<sub><sup>
+References:
+http://superuser.com/questions/536813/how-to-delete-a-partition-on-a-usb-drive
+</sup></sub>
+
+##### Linux
+
+<pre>
+Open a terminal and type <b>sudo su</b> to enter root.
+Type <b>fdisk -l</b> and note your USB drive letter.
+Type <b>fdisk /dev/sdX</b>
+Type <b>d</b> to proceed to delete a partition
+Type <b>1</b> to select the 1st partition and press enter
+Type <b>d</b> to proceed to delete another partition (fdisk should automatically select the second partition)
+</pre>
+
+Next we need to create the new partition:
+
+<pre>
+Type <b>n</b> to make a new partition
+Type <b>p</b> to make this partition primary and press enter
+Type <b>1</b> to make this the first partition and then press enter
+Press enter to accept the default first cylinder
+Press enter again to accept the default last cylinder
+Type <b>w</b> to write the new partition information to the USB key
+Type <b>umount /dev/sdX</b>
+</pre>
+
+The last step is to create the fat filesystem:
+
+<pre>
+Type <b>mkfs.vfat -F 32 /dev/sdX</b>
+</pre>
+
+<sub><sup>
+References:
+http://dottheslash.wordpress.com/2011/11/29/deleting-all-partitions-on-a-usb-drive/
+</sup></sub>
+
+## Install base system
+
+Once we boot from the USB, we start by setting up the system.
+
+##### Check avalable keyboard layouts
+
+<pre>
+ls /usr/share/kbd/keymaps/i386/qwerty
+</pre>
+
+##### Load keyboard layout
+
+<pre>
+loadkeys pt-latin9
+</pre>
+
+###### (Optional) (RAID) Create file to assembly RAID arrays
+
+This is required, for the RAID 0 configuration. The module `mdadm` will use the information generated here to assemble the array on boot. Later we will have to enable the `mdadm` module itself, in order to load these configurations. Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards.  
+Start by finding out where your RAID array is located with:
+
+<pre>
+mdadm --detail-platform
+mdadm -E /dev/<b>mdX</b>
+</pre>
+
+In my case the array is located on md127 and uses Intel Matrix Storage Manager (imsm).  
+Now we generate the file that `mdadm` will use to assemble the array on boot.
+
+<pre>
+mdadm -I -e imsm /dev/<b>md127</b>
+mdadm --examine --scan >> /mnt/etc/mdadm.conf
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz  
+https://wiki.archlinux.org/index.php/RAID#Installing_Arch_Linux_on_RAID  
+https://forums.gentoo.org/viewtopic-t-888520.html
+</sup></sub>
+
+###### (Optional) Partition plan
+
+Before any change we should get to know the details of each recommended partition.
+
+> https://wiki.archlinux.org/index.php/partitioning#Partition_scheme  
+> http://en.wikipedia.org/wiki/Disk_partitioning#Benefits_of_multiple_partitions
+
+Now you have to make any changes you would like and set your partitions.
+
+##### Check existing partitions
+
+<pre>
+fdisk -l
+</pre>
+
+##### (1) Change MBR partitions
+
+<pre>
+cfdisk /dev/<b>sdX</b>
+</pre>
+
+##### (2) Change GPT partitions
+
+<pre>
+cgdisk /dev/<b>sdX</b>
+</pre>
+
+###### (Optional) (RAID) Find out chunk and block size
+
+This is needed to correctly format the raid array.  
+Use the following command and find out the chunk size (128k in my case).  
+The blocksize is normally 4k, it is used for somewhat large files.  
+
+<pre>
+mdadm -E /dev/<b>md127</b>
+</pre>
+
+* Stride = (chunk size/block size). 
+ * Stride = 128 / 4 = 32
+* Stripe-width = (number of physical data disks * stride). 
+ * Stripe-width = 2 * 32 = 64
+
+##### Format the filesystem with SSD and RAID optimizations
+
+After the partitions have been set, format the filesystem to EXT4.  
+In my case, the commands are the following:
+
+Dektop:
+<pre>
+mkfs.ext4 -v -L Arch -E discard /dev/<b>sda1</b>
+</pre>
+
+Notebook:
+<pre>
+mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/<b>md125p4</b>
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.debian.org/SSDOptimization#Mounting_SSD_filesystems  
+http://blog.nuclex-games.com/2009/12/aligning-an-ssd-on-linux/  
+</sup></sub>
+
+##### Create folders and mount partitions
+
+Now we need to create the mount-point for the installation of the system.  
+In my case, the commands are the following:
+
+Dektop:
+<pre>
+mount /dev/<b>sda1</b> /mnt
+</pre>
+
+Notebook:
+<pre>
+mount /dev/<b>md125p4</b> /mnt
+</pre>
+
+(Optional) Folders for other partitions
+
+<pre>
+mkdir /mnt/boot /mnt/home /mnt/var
+mount /dev/<b>sdaX</b> /mnt/boot
+mount /dev/<b>sdaX</b> /mnt/home
+mount /dev/<b>sdaX</b> /mnt/var
+</pre>
+
+##### SWAP
+
+A SWAP is used for moving data in memory to disk and to enable the hibernate functionality. In this case, I will be using a swap file instead of a partition because it is easer to resize and having a dedicated partition for this does not seem useful. Note that the file should have at least the same size of the physical RAM, although for me, I do not plan on hibernate with my RAM full, so I will give less space.
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Swap#Swap_file
+</sup></sub>
+
+##### (1) Create SWAP file
+
+<pre>
+fallocate -l 6G /mnt/swapfile  
+chmod 600 /mnt/swapfile  
+mkswap /mnt/swapfile  
+swapon /mnt/swapfile  
+</pre>
+
+##### (2) Create SWAP partition
+
+<pre>
+mkswap /mnt/<b>sda1</b>
+swapon /mnt/<b>sda1</b>
+</pre>
+
+##### Check SWAP status
+
+<pre>
+swapon -s
+</pre>
+##### Check network
+
+Before we start with the installation of the base system, we need to make sure that the network is working.
+If we are using a wired connection, DHCP should be activated by default.
+
+<pre>
+ping -c 3 google.com
+</pre>
+
+###### (Optional) Activate wireless connectivity
+
+If you do not have a wired network use the following command to activate wireless.
+
+<pre>
+wifi-menu
+</pre>
+
+##### Install base system
+
+<pre>
+pacstrap -i /mnt base base-devel
+</pre>
+
+##### Install bootloader
+
+The bootloader to be installed depends on the partition style and the board firmware type.
+
+Example 1, if we have a board with UEFI, and Windows 7 installed, we can assume that the CMS mode is enabled and the partition style is MBR. Knowing this, we should use a bootloader for a BIOS system.
+
+Example 2, if we have a board with UEFI, and Windows 8 installed, we can assume that the CMS mode is disabled and the partition style is GPT. Knowing this, we should use a bootloader for a UEFI system.
+
+https://wiki.archlinux.org/index.php/Windows_and_Arch_Dual_Boot#Bootloader_UEFI_vs_BIOS_limitations
+
+---
+
+The NT bootloader is located on a 100MB "System Reserved" partition. This cannot be erased even with a diferent bootloader because other bootloaders cannot directly start the OS. They have to chainload with the NT bootloader in order to start Windows.
+
+---
+
+Using `pacstrap` or `pacman -S grub` is the same thing. But the former will get the correct package if the name changes.
+
+##### Install GRUB2 for BIOS-MBR system
+
+<pre>
+pacstrap -i /mnt grub-bios 
+</pre>
+
+##### Generate filesystem table
+
+<pre>
+genfstab -p /mnt >> /mnt/etc/fstab
+</pre>
+
+<sub><sup>
+References:
+http://unix.stackexchange.com/questions/124733/what-does-genfstabs-p-option-do
+</sup></sub>
+
+###### (Optional) Change filesystem table flags for SSD optimization.
+
+<pre>
+nano /mnt/etc/fstab
+</pre>
+
+> Add to the SSD disk parameters: `discard` to activate TRIM. **Only if you are sure that the SSD has support.**  
+> Update the SSD disk parameters: `realatime` for `noatime` it eliminates the need by the system to make writes to the file system for files which are simply being read.  
+> Also make sure the SWAP file is not on `/mnt` and rather on `/`  
+
+Check if the kernel knows about SSDs:  
+<pre>
+/sys/block/sd?/queue/rotational
+</pre>
+
+Check for TRIM support:  
+<pre>
+hdparm -I /dev/sd? | grep TRIM
+</pre>
+
+My desktop, without the my storage disks, has the following parameters:
+<pre>
+/dev/sda1               /               ext4            rw,noatime,discard      0 1
+/swapfile               none            swap            defaults,noatime,discard        0 0
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Solid_State_Drives#noatime_Mount_Flag  
+https://wiki.archlinux.org/index.php/Solid_State_Drives#Enable_TRIM_by_Mount_Flags
+</sup></sub>
+
+##### Enter change-root
+
+Once we change root we will be inside our system.  
+From this moment, we no longer refer to the `/mnt` mount point .
+
+<pre>
+arch-chroot /mnt
+</pre>
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Change_root
+</sup></sub>
+
+###### (Optional) (RAID) Activate RAID module
+
+As said before, we need to enable `mdadm` uppon boot in order to assemble the RAID arrays.
+
+<pre>
+nano /etc/mkinitcpio.conf  
+</pre>
+
+Edit the following like, in the correct position.
+
+<pre>
+HOOKS="... block <b>mdadm_udev</b> filesystems ..."
+</pre>
+
+###### (Optional) Create initial ramdisk
+
+This was already created when the base system was installed.  
+This is only needed if we add any modules, like the above step.
+
+<pre>
+mkinitcpio -p linux
+</pre>
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/mkinitcpio
+</sup></sub>
+
+##### Configure GRUB2
+
+<pre>
+grub-mkconfig -o /boot/grub/grub.cfg
+</pre>
+
+The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a wrapper.
+
+##### Install GRUB2 to the MBR
+
+This will install the bootloader to the first sector of the disk.  
+It is possible to install to a partition, but is not recommended.
+
+The parameter `--target=i386-pc` instructs grub-install to install for BIOS systems only.  
+It is recommended to always use this option to remove ambiguity in grub-install. 
+
+Desktop:  
+<pre>
+grub-install -target=i386-pc --recheck /dev/<b>sda</b>
+</pre>
+
+Notebook:  
+<pre>
+grub-install --target=i386-pc --recheck /dev/<b>md125</b>
+</pre>
+
+##### Change the root password
+
+<pre>
+passwd
+</pre>
+
+###### (Optional) Install necessary wireless drivers
+
+You will not be able to access `wifi-menu`, without the following packages once we reboot.
+<pre>
+pacman -S iw wpa_supplicant dialog wpa_actiond
+</pre>
+
+##### Exit change-root
+
+<pre>
+exit
+</pre>
+
+##### Reboot
+
+Now we can reboot and remove the USB drive.
+
+<pre>
+systemctl reboot
+</pre>
+
+<sub><sup>
+General References:  
+[Video - System Installation](https://www.youtube.com/watch?v=kQFzVG4wZEg)  
+[Video - From Post-Install to Xorg](https://www.youtube.com/watch?v=DAmXKDJ3D7M)  
+[Video - Using AUI](https://www.youtube.com/watch?v=TLh44czUea0) 
+[Install script AUI](https://github.com/helmuthdu/aui)
+</sup></sub>
+
+# Base System Configuration
+
+***DO NOT USE THESE NOTES BLINDLY.***  
+***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
+
+#### Configure hostname
+
+This is the name that will show-up in the console, for example: `filipe@filipe-desktop`
+
+<pre>
+hostnamectl set-hostname filipe-desktop
+</pre>
+
+#### Configure persistent keymap
+
+<pre>
+localectl set-keymap pt-latin9
+localectl set-x11-keymap pt
+localectl status
+</pre>
+
+Result:
+<pre>
+[filipe@filipe-desktop ~]$ localectl status  
+System Locale: LANG=pt_PT.UTF-8  
+VC Keymap: pt-latin9  
+X11 Layout: pt
+</pre>
+
+#### Configure timezone 
+
+Get time zone info:  
+<pre>
+ls /usr/share/zoneinfo
+</pre>
+
+In my case is `Portugal`, so:
+<pre>
+timedatectl set-timezone Portugal
+</pre>
+
+#### Configure locale
+
+<pre>
+nano /etc/locale.gen
+</pre>
+
+Remove the comment from the lines with the country code `pt_PT`, there are 3.
+
+<pre>
+locale-gen  
+localectl set-locale LANG="pt_PT-UTF-8"
+</pre>
+
+#### Start network cards
+
+DHCP is not enabled by default like when we boot from the USB, so we have to start it manually.
+
+Get interfaces name:
+<pre>
+ip link
+</pre>
+
+In my case the interfaces needed are:  
+<pre>
+Wired: enp2s0  
+Wireless: wlp3s0
+</pre>
+
+#### Start wired connection with DHCP
+
+<pre>
+systemctl start dhcpcd@enp2s0.service
+</pre>
+
+#### Start wireless connection with wifi-menu
+
+<pre>
+wifi-menu -o wlp3s0
+</pre>
+
+###### (Optional) (Not recommended) Start network at boot
+
+This will activate the connections on boot, but keep in mind, that these will have to be **stopped and disabled** when we install the `networkmanager` package once we have a graphical environment.
+
+<pre>
+systemctl enable dhcpcd@enp2s0.service  
+systemctl enable netctl-auto@wlp3s0.service
+</pre>
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Beginners%27_guide#Configure_the_network
+</sup></sub>
+
+#### (1) Configure hardware clock for UTC
+
+By default linux uses UTC, so we should instal NTP to sync the time online.
+
+<pre>
+pacman -S ntp  
+systemctl enable ndpd.service
+</pre>
+
+##### (2) (Not recommended) Configure hardware clock for Localtime
+
+The only reason to ever do this, is if we are in a dualboot configuration and there is already an OS managing time and DST switching while storing the RTC time in localtime, such as Windows. But even so, it would be preferable to force Windows to use UTC, rather than forcing Linux to localtime. To do this, just install the Meinberg NTP Software.
+
+With this said, keep in mind that we still have to logon in Windows at least two times a year (in Spring and Autumn) when DST kicks i.n
+
+<pre>
+timedatectl set-local-rtc true
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Time  
+http://www.satsignal.eu/ntp/setup.html  
+http://www.meinbergglobal.com/english/sw/ntp.htm
+</sup></sub>
+
+#### Dualboot
+
+First we install the package responsible for detecting other OS installations:
+
+<pre>
+pacman -S os-prober
+</pre>
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/GRUB#Dual-booting
+</sup></sub>
+
+#### Windows already instaled:
+
+If we are installing Arch and Windows is already on the machine, assuming the bootloader was already installed to the MBR, we simply need to refresh the config file.
+
+<pre>
+grub-mkconfig -o /boot/grub/grub.cfg
+</pre>
+
+The os-prober will be automatically called by `grub-mkconfig` and will add an entry to Windows. This has worked for me even on a dualboot with a RAID array.
+
+But if for some reason it failed we can try and add a custom entry:
+
+<pre>
+nano /etc/grub.d/40_custom
+</pre>
+
+<pre>
+menuentry{
+	echo “Loading Windows 7”
+	insmod part_msdos
+	insmod ntfs
+	search --fs-uuid --no-floppy -set=root XXXXXXXXXXXXXX
+	chainloader +1
+}
+</pre>
+
+Use `blkid` to get the uuid of the disk and replace the 'XXX'. And re-run the command:
+
+<pre>
+grub-mkconfig -o /boot/grub/grub.cfg
+</pre>
+
+#### Arch already instaled:
+
+If we are installing Windows and Arch is already on the machine, we have to reinstall the bootloader because Windows automatically overwrites the MBR. To do so, we have to start Arch Live and do: 
+
+<pre>
+loadkeys pt-latin9
+mount /dev/<b>sdX</b> /mnt
+arch-chroot /mnt
+cfdisk /dev/<b>sdX</b>  (if you need to set the bootflag)
+grub-mkconfig -o /boot/grub/grub.cfg
+grub-install -target=i386-pc --recheck /dev/<b>sdX</b>
+</pre>
+
+If you need any extra package additionally use:
+<pre>
+wifi-menu
+pacman -Syy
+pacman -S os-prober
+</pre>
+
+#### Custom Entries
+
+> nano /etc/grub.d/40_custom
+
+<pre>
+menuentry "System restart" {
+	echo "System rebooting..."
+	reboot
+}
+
+menuentry "System shutdown" {
+	echo "System shutting down..."
+	halt
+}
+</pre>
+
+<pre>
+grub-mkconfig -o /boot/grub/grub.cfg
+</pre>
+
+We can also change the text displayed on the bootloader if we manually edit the file.
+Keep in mind that these changes will be lost when we rebuild the file. **Do this with extreme caution.**
+If we delete something needed, the machine might not boot (you can always try to fix it with a live cd).
+
+<pre>
+nano /boot/grub/grub.cfg
+</pre>
+
+#### Reboot
+
+<pre>
+systemctl reboot
+</pre>
+
+# Base System XOrg
+
+***DO NOT USE THESE NOTES BLINDLY.***  
+***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
+
+#### Add new user
+
+It is good practice to use a normal user and elevate to root only when necessary.  
+There are a few ways to do it, but the most common ones are the following.
+
+<pre>
+useradd -m -G wheel -s /bin/bash filipe 
+</pre>
+
+This command will also automatically create a group called `filipe` with the same GID as the UID of the user `filipe`
+and makes this the default group for `filipe` on login. Making each user have their own group (with group name same as 
+user name and GID same as UID) is the preferred way to add users. 
+
+You could also make the default group something else, e.g. users. 
+
+<pre>
+useradd -m -g users -G wheel -s /bin/bash filipe
+</pre>
+
+However, using a single default group (users in the example above) is not recommended for multi-user systems. 
+The reason is that typically, the method for facilitating shared write access for specific groups of users is 
+setting user umask value to 002, which means that the default group will by default always have write access 
+to any file you create. 
+
+Change your finger information and password  
+<pre>
 chfn filipe  
 passwd filipe
+</pre>
 
-##### Give sudo permissons to new user
+#### Give sudo permissons to new user
 
 Trick visudo to open with nano:
-> EDITOR=nano visudo
+<pre>
+EDITOR=nano visudo
+</pre>
 
-Add user to the section “User privilegie specification”:
-> Filipe ALL=(ALL) ALL
+Add user to the section “User privilege specification”:
+<pre>
+Filipe ALL=(ALL) ALL
+</pre>
 
 Logout from root and enter the new account:
-> logout
+<pre>
+logout
+</pre>
 
-##### Activate multilib repo
+Once you login with the new user, you can checkout the groups information with the command:
+<pre>
+id
+</pre>
+
+#### Activate multilib repo
 
 Remove comments from [multilib]:
-> sudo nano /etc/pacman.conf  
-sudo pacman -Syy
+<pre>
+nano /etc/pacman.conf  
+pacman -Syy
+</pre>
 
-##### Install Packer
+#### Install Packer
 
-> sudo pacman -S wget git jshon expac  
+First install the components needed to use `wget` and `git`, then get the tarball and extract.  
+Finally, build the package with makepkg and install it using pacman.
+
+<pre>
+pacman -S wget git jshon expac  
 wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz  
 tar zxvf packer.tar.gz  
 cd packer && makepkg  
-sudo pacman -U packer (press tab)
+pacman -U packer (press tab)
+</pre>
 
 Once installed, cleanup:
 
-> rm -R packer  
+<pre>
+rm -R packer  
 rm packer.tar.gz
+</pre>
 
 <sub><sup>
 References:
 http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
 </sup></sub>
 
-##### Sound drivers
+#### ALSA
 
-ALSA is already apart of the Kernel, but the channels are muted by default.
+ALSA is a set of build-in GNU/Linux kernel modules. Therefore, manual installation is not necessary. 
+But the channels are muted by default, so we install `alsa-utils` that contains alsamixer to unmute the audio.
+The `alsa-utils` package also comes with systemd unit configuration files alsa-restore.service and alsa-store.service by default. These are automatically installed and activated during installation. Therefore, there is no further action needed. Though, you can check their status using systemctl
 
-> sudo pacman -S alsa-utils  
-run `alsamixer`  
-Press H to unmute. Press F1 for help.  
-run `speaker-test`
+<pre>
+pacman -S alsa-utils
+run alsamixer
+Press H to unmute. Press F1 for help.
+run speaker-test
+</pre>
 
-Install the plugins for high quality resampling:
-> sudo pacman -S alsa-plugins
+If you need high quality resampling install the `alsa-plugins` package to enable upmixing/downmixing and other advanced features. When software mixing is enabled, ALSA is forced to resample everything to the same frequency (48 kHz by default when supported). To do so, install the plugins for high quality resampling:
+<pre>
+pacman -S alsa-plugins
+</pre>
+
+To test stereo audio (for more channels change the -c parameter) use:
+<pre>
+speaker-test -c 2
+</pre>
+
+#### PulseAudio
+
+Now we need a sound server, it serves as a proxy to sound applications using existing kernel sound components like ALSA.
+Since ALSA is included in Arch Linux by default, the most common deployment scenarios include PulseAudio with ALSA. 
 
 Now lets install the pulseaudio server:
-> sudo pacman -S pulseaudio pulseaudio-alsa 
+<pre>
+pacman -S pulseaudio 
+</pre>
 
-If we are in a x86_64 system we need to have sound for 32-bit multilib programs like Wine, Skype and Steam: 
-> sudo pacman -S lib32-libpulse lib32-alsa-plugins
+Install the `pulseaudio-alsa` package. It contains the necessary /etc/asound.conf for configuring ALSA to use PulseAudio.
+Also install `lib32-libpulse` and `lib32-alsa-plugins`if you run a x86_64 system and want to have sound for 32-bit multilib programs like Wine, Skype and Steam. 
+<pre>
+pacman -S pulseaudio-alsa lib32-libpulse lib32-alsa-plugins
+</pre>
 
 <sub><sup>
 References:  
@@ -70,29 +801,70 @@ https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#High_qual
 https://wiki.archlinux.org/index.php/PulseAudio#Back-end_configuration
 </sup></sub>
 
-##### XOrg
+#### PulseAudio Audiophile
 
-> sudo pacman -S xorg-server xorg-server-utils xorg-xinit mesa
+By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
+
+<pre>
+nano /etc/pulse/daemon.conf
+add: default-sample-format = s32le 
+add: default-sample-rate = 96000 
+add: resample-method = speex-float-5 
+</pre>
+
+For the most geniune resampling at the cost of high CPU usage (even on 2011 CPUs) you can add: 
+
+<pre>
+nano /etc/pulse/daemon.conf
+resample-method = src-sinc-best-quality 
+</pre>
+
+If you are having problems with the channels set by pulseaudio, you can set them manually by adding:
+
+<pre>
+nano /etc/pulse/daemon.conf
+default-sample-channels = 3
+default-channel-map = front-left,front-right,lfe
+</pre>
 
 <sub><sup>
-References:
-https://wiki.archlinux.org/index.php/xorg#Installation
+References: 
+http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
+</sup></sub>
+
+##### XOrg
+
+Now we need to install XOrg, a display server for the X Window System. We will also install `xorg-xinit` that will provide  xinit and startx. For more configurations see `~/.xinitrc` file is a shell script read by xinit and by its front-end startx. The xinit program starts the X Window System server and works as first client program on systems that are not using a display manager. 
+
+<pre>
+pacman -S xorg-server xorg-server-utils xorg-xinit mesa
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/xorg#Installation  
+https://wiki.archlinux.org/index.php/Xinitrc
 </sup></sub>
 
 ##### Graphic drivers
 
-Get graphics card:
-> lspci | grep VGA
+First, identify your card: 
+<pre>
+lspci | grep VGA
+</pre>
+
+If you need open-souce drivers you can search the package database for a complete list of open-source video drivers: 
+<pre>
+pacman -Ss xf86-video | less
+</pre>
 
 Desktop:
 
 The graphics card is too old, and there is no support for it, so I use the open-source drivers.
 
-Find open-source driver:
-> sudo pacman -Ss xf86-video | less
-
-Install:
-> sudo pacman -S mesa-dri xf86-video-vesa xf86-video-ati
+<pre>
+pacman -S mesa-dri xf86-video-vesa xf86-video-ati
+</pre>
 
 <sub><sup>
 References: 
@@ -103,14 +875,18 @@ https://wiki.archlinux.org/index.php/Xorg#Driver_installation
 Notebook:
 
 This notebook has two graphics cards, intel and nvidia.
-In order to manage them we use `bumblebee` that is Optimus for GNU/Linux.
+In order to manage them we use `bumblebee` that is Optimus for GNU/Linux. We also install bbswitch, has the goal of power management to turn off the NVIDIA card when not used by Bumblebee. It will be detected automatically when the Bumblebee daemon starts. So, no additional configuration is necessary. 
 
-> sudo pacman -S mesa-dri xf86-video-intel nvidia bumblebee bbswitch
+<pre>
+pacman -S mesa-dri xf86-video-intel nvidia bumblebee bbswitch
+</pre>
 
-Configure bumblebee:
+In order to use Bumblebee, it is necessary to add your regular user to the bumblebee group and also enable bumblebeed.service
 
-> sudo gpasswd -a filipe bumblebee  
-sudo systemctl enable bumblebeed.service 
+<pre>
+gpasswd -a filipe bumblebee  
+systemctl enable bumblebeed.service 
+</pre>
 
 <sub><sup>
 References:  
@@ -122,85 +898,109 @@ https://wiki.archlinux.org/index.php/Hybrid_graphics#ATI_Dynamic_Switchable_Grap
 ##### Input drivers
 
 Desktop and Notebook:
-> sudo pacman -S xf86-input-mouse xf86-input-keyboard
+<pre>
+pacman -S xf86-input-mouse xf86-input-keyboard
+</pre>
 
 Notebook:
-> sudo pacman -S xf86-input-synaptics 
+<pre>
+pacman -S xf86-input-synaptics 
+</pre>
 
 ##### Test default enviroment
 
 Make sure XOrg is working before we install a desktop enviroment.
 
-> sudo pacman -S xorg-twm xorg-xclock xterm  
+<pre>
+pacman -S xorg-twm xorg-xclock xterm  
 startx
+</pre>
 
 <sub><sup>
 References:
 https://wiki.archlinux.org/index.php/Xorg#Manually
 </sup></sub>
 
-###### (1) Install KDE 4
+###### Install KDE5
 
-> sudo pacman -S kdebase kde-l10n-pt  
-sudo systemctl enable kdm.service  
-sudo systemctl reboot
+KDE4 has been removed from the repos and is no longer suported. KDE5 is now in a stable state so this is prefered.
+The past problems with the tray bar have been fixed and the applications are working as they should.
 
-For the photon backend, use VLC because it has the best upstream support.  
-For the Kactivities, use the new `kactivities-frameworks`instead of `kactivities4`  
-For the fonts, use ttf-oxygen because it is KDE.
+If you have KDE4 is installed, and since KDE4 and KDE5 cannot run together we need to remove it.  
+Also, disable KDM from staring, KDE5 recommends SDDM instead and remove KDE4 specific packages
 
-<sub><sup>
-References:
-https://wiki.archlinux.org/index.php/KDE
-</sup></sub>
+<pre>
+pacman -Rnc kdebase-workspace 
+systemctl disable kdm
+sudo pacman -Rns oxygen-gtk2 oxygen-gtk3-git kde-gtk-config-kde4
+</pre>
 
-###### (2) Install KDE 5
+Install KDE5, system language, display manager SDDM and the oficial theme breeze:
 
-At the moment this is just experimental. There are still some problems regarding the tray area being changed, as well as the look on some Qt4 applications. Even though there is a themes for them.
+<pre>
+pacman -S plasma-meta kde-l10n-pt sddm sddm-kcm
+pacman -S breeze-kde4 gtk-theme-orion
+</pre>
 
-If KDE4 is installed, and since KDE4 and KDE5 cannot run together we need to remove it first:
+Activate SDDM and create the default config file:
 
-> sudo pacman -Rnc kdebase-workspace 
+<pre>
+systemctl enable sddm
+sddm --example-config > /etc/sddm.conf
+</pre>
 
-Install KDE 5:
+Finally, apply the newer `breeze` theme to the display manager:
 
-> sudo pacman -S plasma kde-l10n-pt
-
-Instead of KDM it is recommended to use the newer SDDM display manager
-
-> sudo pacman -S sddm
-
-Activate SDDM and create the config file
-
-> systemctl disable kdm && systemctl enable sddm  
-> sddm --example-config > /etc/sddm.conf
-
-Finally, apply the newer `breeze` theme to the display manager, because the default one is just ugly
-
-> sudo nano /etc/sddm.conf
+<pre>
+sudo nano /etc/sddm.conf
+</pre>
 
 And change the theme section according to this:
-```
+
+<pre>
 [Theme]
 Current=breeze
 CursorTheme=breeze_cursors
 FacesDir=/usr/share/sddm/faces
 ThemeDir=/usr/share/sddm/themes
-```
+</pre>
 
-OR you can do it with GUI, just install:
+You can do it with GUI because we already installed the `sddm-kcm` package, but I recomend editing the file manually for the first use, I had some problems starting with the default theme in the past. After reboot, to use the GUI go to `Setting > Startup and Shutdown > Login Screen. (2nd tab)` and choose the `Breeze` theme.
 
-> sudo pacman -S sddm-kcm
+Since KDE5 uses a new tray system, we need to change QSystemTrayIcon to StatusNotifierItems the package that does this is `sni-qt` and we need to install libindicator packages as well.
 
-Reboot and go to `Setting > Startup and Shutdown > Login Screen. (2nd tab)` and choose the `Breeze` theme.
+<pre>
+packer -S gtk-sharp-2 libdbusmenu-gtk2 libdbusmenu-gtk3 libindicator-gtk2 libindicator-gtk3
+packer -S libappindicator-gtk2
+packer -S libappindicator-gtk3
+packer -S sni-qt lib32-sni-qt
+pacman -S kde-gtk-config
+</pre>
 
-To make things look better and more uniform install and select the following themes.
-Before instalation tt is better to look on the wiki, because at the moment there are no breeze-based themes for GTK, and this might be totally diferent. 
+Even if you are upgrading, configurations will be lost so here are some of my settings:
 
-> sudo pacman -S breeze-kde4 qtconfig-qt4 
+<pre>
+localectl set-keymap pt-latin9
+localectl set-x11-keymap pt 
+Add shortcut Windows+L
+Fix firefox and dolphin and terminal on bar
+Hide Unmounnted Drivers
+Change single to double click, in system settings
+Change User Avatar 
+Disable program preview 
+Disable default multimédia player (bar options)
+</pre>
+
+For the photon backend, use VLC because it has the best upstream support.  
+But multiple backends can be installed at once and prioritized at System Settings > Multimedia > Backend, so I install both.
+
+<pre>
+pacman -S phonon-qt5 phonon-qt5-gstreamer phonon-qt5-vlc
+</pre>
 
 <sub><sup>
 References:  
+https://wiki.archlinux.org/index.php/KDE
 https://wiki.archlinux.org/index.php/Plasma  
 https://wiki.archlinux.org/index.php/SDDM  
 http://www.linuxveda.com/2015/02/27/how-to-install-kdes-plasma-5-on-arch-linux/
