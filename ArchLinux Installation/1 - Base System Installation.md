@@ -109,39 +109,14 @@ ls /usr/share/kbd/keymaps/i386/qwerty
 loadkeys pt-latin9
 </pre>
 
-###### (Optional) (RAID) Create file to assembly RAID arrays
-
-This is required, for the RAID 0 configuration. The module `mdadm` will use the information generated here to assemble the array on boot. Later we will have to enable the `mdadm` module itself, in order to load these configurations. Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards.  
-Start by finding out where your RAID array is located with:
-
-<pre>
-mdadm --detail-platform
-mdadm -E /dev/<b>mdX</b>
-</pre>
-
-In my case the array is located on md127 and uses Intel Matrix Storage Manager (imsm).  
-Now we generate the file that `mdadm` will use to assemble the array on boot.
-
-<pre>
-mdadm -I -e imsm /dev/<b>md127</b>
-mdadm --examine --scan >> /mnt/etc/mdadm.conf
-</pre>
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz  
-https://wiki.archlinux.org/index.php/RAID#Installing_Arch_Linux_on_RAID  
-https://forums.gentoo.org/viewtopic-t-888520.html
-</sup></sub>
-
 ###### (Optional) Partition plan
 
-Before any change we should get to know the details of each recommended partition.
+Before any change, we should get to know the details of each recommended partition.
+
+I personally don't use any partition scheme because it reduces the total space available, and because I have an external HDD with a full partition backup of my system in case anything goes wrong.
 
 > https://wiki.archlinux.org/index.php/partitioning#Partition_scheme  
 > http://en.wikipedia.org/wiki/Disk_partitioning#Benefits_of_multiple_partitions
-
-Now you have to make any changes you would like and set your partitions.
 
 ##### Check existing partitions
 
@@ -163,9 +138,9 @@ cgdisk /dev/<b>sdX</b>
 
 ###### (Optional) (RAID) Find out chunk and block size
 
-This is needed to correctly format the raid array.  
+This is needed to correctly format and align the raid array.  
 Use the following command and find out the chunk size (128k in my case).  
-The blocksize is normally 4k, it is used for somewhat large files.  
+The blocksize is normally 4096, it is used for somewhat large files.  
 
 <pre>
 mdadm -E /dev/<b>md127</b>
@@ -199,7 +174,7 @@ http://blog.nuclex-games.com/2009/12/aligning-an-ssd-on-linux/
 
 ##### Create folders and mount partitions
 
-Now we need to create the mount-point for the installation of the system.  
+Now create a mount-point for the installation of the system.  
 In my case, the commands are the following:
 
 Dektop:
@@ -213,6 +188,8 @@ mount /dev/<b>md125p4</b> /mnt
 </pre>
 
 (Optional) Folders for other partitions
+
+With a partition schema, keep in mind the following commands:
 
 <pre>
 mkdir /mnt/boot /mnt/home /mnt/var
@@ -251,6 +228,7 @@ swapon /mnt/<b>sda1</b>
 <pre>
 swapon -s
 </pre>
+
 ##### Check network
 
 Before we start with the installation of the base system, we need to make sure that the network is working.
@@ -274,6 +252,8 @@ wifi-menu
 pacstrap -i /mnt base base-devel
 </pre>
 
+The -i switch ensures prompting before package installation. With the base group, the first initramfs will be generated and installed to the new system's boot path; double-check output prompts ==> Image creation successful for it. 
+
 ##### Install bootloader
 
 The bootloader to be installed depends on the partition style and the board firmware type.
@@ -290,13 +270,13 @@ The NT bootloader is located on a 100MB "System Reserved" partition. This cannot
 
 ---
 
-Using `pacstrap` or `pacman -S grub` is the same thing. But the former will get the correct package if the name changes.
-
 ##### Install GRUB2 for BIOS-MBR system
 
 <pre>
 pacstrap -i /mnt grub-bios 
 </pre>
+
+Using `pacstrap` or `pacman -S grub` is the same thing. But the former will get the correct package if the name changes.
 
 ##### Generate filesystem table
 
@@ -355,9 +335,24 @@ References:
 https://wiki.archlinux.org/index.php/Change_root
 </sup></sub>
 
-###### (Optional) (RAID) Activate RAID module
+###### (Optional) (RAID) Create file to assembly RAID arrays
 
-As said before, we need to enable `mdadm` uppon boot in order to assemble the RAID arrays.
+This is required, for the RAID 0 configuration. The module `mdadm` will use the information generated here to assemble the array on boot. Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards. Start by finding out where your RAID array is located with:
+
+<pre>
+mdadm --detail-platform
+mdadm -E /dev/<b>mdX</b>
+</pre>
+
+In my case the array is located on md127 and uses Intel Matrix Storage Manager (imsm).  
+Now we generate the file that `mdadm` will use to assemble the array on boot.
+
+<pre>
+mdadm -I -e imsm /dev/<b>md127</b>
+mdadm --examine --scan >> /mnt/etc/mdadm.conf
+</pre>
+
+Now, we need to enable `mdadm` uppon boot in order to assemble the RAID array.
 
 <pre>
 nano /etc/mkinitcpio.conf  
@@ -369,10 +364,17 @@ Edit the following like, in the correct position.
 HOOKS="... block <b>mdadm_udev</b> filesystems ..."
 </pre>
 
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz  
+https://wiki.archlinux.org/index.php/RAID#Installing_Arch_Linux_on_RAID  
+https://forums.gentoo.org/viewtopic-t-888520.html
+</sup></sub>
+
 ###### (Optional) Create initial ramdisk
 
 This was already created when the base system was installed.  
-This is only needed if we add any modules, like the above step.
+This is only needed if we add any modules, like adding the `mdadm` module.
 
 <pre>
 mkinitcpio -p linux
@@ -395,6 +397,7 @@ The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a 
 
 This will install the bootloader to the first sector of the disk.  
 It is possible to install to a partition, but is not recommended.
+This will be needed if you formated the partition where `/etc/default/grub` or `/etc/grub.d/` was in.
 
 The parameter `--target=i386-pc` instructs grub-install to install for BIOS systems only.  
 It is recommended to always use this option to remove ambiguity in grub-install. 
@@ -418,6 +421,7 @@ passwd
 ###### (Optional) Install necessary wireless drivers
 
 You will not be able to access `wifi-menu`, without the following packages once we reboot.
+
 <pre>
 pacman -S iw wpa_supplicant dialog wpa_actiond
 </pre>
