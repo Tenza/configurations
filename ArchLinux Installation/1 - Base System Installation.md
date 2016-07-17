@@ -5,7 +5,7 @@
 
 These notes were created for my desktop and notebook (Asus UX51VZ) installations.  
 The desktop uses a **single SSD** and the notebook uses **two SSD's on a RAID 0** configuration.  
-Both have **dualboot with Windows 7**, and since both use SSD drives we will make some recommend optimizations.  
+Both have **dualboot with Windows 7**, and since both use SSD drives I will use some recommend optimizations.  
 
 ## Create bootable USB
 
@@ -396,7 +396,7 @@ The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a 
 ##### Install GRUB2 to the MBR
 
 This will install the bootloader to the first sector of the disk.  
-It is possible to install to a partition, but is not recommended.
+It is possible to install to a partition, but is not recommended.  
 This will be needed if you formated the partition where `/etc/default/grub` or `/etc/grub.d/` was in.
 
 The parameter `--target=i386-pc` instructs grub-install to install for BIOS systems only.  
