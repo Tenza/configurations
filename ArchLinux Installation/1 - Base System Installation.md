@@ -25,7 +25,7 @@ https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#Using_USBwrite
 #### Linux
 
 Find out the name of the USB drive with `lsblk`.  
-Do **not** append partition a number and make sure the drive is not mounted.  
+Do **not** append a partition number and make sure the drive is not mounted.  
 
 <pre>
 dd bs=4M if=<b>/path/to/archlinux.iso</b> of=/dev/<b>sdX</b> && sync
@@ -61,17 +61,12 @@ http://superuser.com/questions/536813/how-to-delete-a-partition-on-a-usb-drive
 #### Linux
 
 <pre>
-Open a terminal and type <b>sudo su</b> to enter root.
-Type <b>fdisk -l</b> and note your USB drive letter.
+Open a terminal and type <b>sudo su</b> to enter root
+Type <b>fdisk -l</b> and note your USB drive letter
 Type <b>fdisk /dev/sdX</b>
 Type <b>d</b> to proceed to delete a partition
 Type <b>1</b> to select the 1st partition and press enter
 Type <b>d</b> to proceed to delete another partition (fdisk should automatically select the second partition)
-</pre>
-
-Next we need to create the new partition.
-
-<pre>
 Type <b>n</b> to make a new partition
 Type <b>p</b> to make this partition primary and press enter
 Type <b>1</b> to make this the first partition and then press enter
@@ -79,12 +74,7 @@ Press enter to accept the default first cylinder
 Press enter again to accept the default last cylinder
 Type <b>w</b> to write the new partition information to the USB key
 Type <b>umount /dev/sdX</b>
-</pre>
-
-The last step is to create the fat filesystem.
-
-<pre>
-Type <b>mkfs.vfat -F 32 /dev/sdX</b>
+Type <b>mkfs.vfat -F 32 /dev/sdX</b> to create a FAT32 filesystem. (Replace the FS type as prefered)
 </pre>
 
 <sub><sup>
@@ -105,6 +95,8 @@ ls /usr/share/kbd/keymaps/i386/qwerty
 <pre>
 loadkeys pt-latin9
 </pre>
+
+I wasn't able to view the diferences between `pt-latin1` and `pt-latin9`, but most of the sites use `pt-latin9`.
 
 #### (Optional) Partition plan
 
@@ -133,6 +125,37 @@ cfdisk /dev/<b>sdX</b>
 cgdisk /dev/<b>sdX</b>
 </pre>
 
+##### (Optional) SSD Alignment
+
+It is also worth mentioning, that once the partitions have been set it is important that they are aligned.
+The alignmnet can be checked using `parted`. If they are not aligned, like already happen to me, [this procedure might help.](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/TODO.md#ssd-alignment)
+
+<pre>
+parted /dev/md125
+(parted) align-check opt 1                                                
+1 aligned
+(check reminder partitions)
+</pre>
+
+#### FDE
+
+<pre>
+cryptsetup -v luksFormat /dev/md125p6
+cryptsetup open /dev/md125p6 ArchCrypt
+mkfs.ext4 -v -L ArchBoot -b 4096 -E stride=32,stripe-width=64,discard <b>/dev/mapper/ArchCrypt</b>
+mount -t ext4 /dev/mapper/ArchCrypt /mnt
+
+mkfs.ext4 -v -L ArchRoot -b 4096 -E stride=32,stripe-width=64,discard <b>/dev/md125p5</b>
+mkdir /mnt/boot
+mount -t ext4 dev/md125p5 /mnt/boot
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Dm-crypt/Device_encryption#Encryption_options_for_LUKS_mode  
+
+</sup></sub>
+
 #### Format the filesystem
 
 After the partitions have been set, we have to format the filesystem. I will use the EXT4 filesystem.
@@ -147,7 +170,7 @@ mkfs.ext4 -v -L Arch -E discard /dev/<b>sda1</b>
 
 ##### Notebook
 
-With a RAID configuration, additional flags should be used in order to correctly format and align the raid array.
+With a RAID configuration, additional flags should be used in order to correctly format and align the raid array.  
 Use the following command to find out the chunk size (128k in my case).  
 The blocksize is normally 4k, it is used for somewhat large files.  
 
@@ -163,7 +186,7 @@ mdadm -E /dev/<b>md127</b>
 Lastly we specify the size of blocks in bytes. Valid block-size values are 1024, 2048 and 4096 bytes per block. If omitted, block-size is heuristically determined by the filesystem size and the expected usage of the filesystem. But since I already used a 4k block size to determine the stride, I will use 4096 bytes.
 
 <pre>
-mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/<b>md125p4</b>
+mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/<b>md125p3</b>
 </pre>
 
 <sub><sup>
@@ -174,8 +197,7 @@ http://blog.nuclex-games.com/2009/12/aligning-an-ssd-on-linux/
 
 #### Create folders and mount partitions
 
-Now create a mount-point for the installation of the system.  
-In my case, the commands are the following:
+We can now create a mount point for the installation of the system.  
 
 ##### Desktop
 
@@ -186,7 +208,7 @@ mount /dev/<b>sda1</b> /mnt
 ##### Notebook
 
 <pre>
-mount /dev/<b>md125p4</b> /mnt
+mount /dev/<b>md125p3</b> /mnt
 </pre>
 
 ##### (Optional) Folders for other partitions
@@ -214,20 +236,16 @@ https://wiki.archlinux.org/index.php/Swap#Swap_file
 <pre>
 fallocate -l 6G /mnt/swapfile  
 chmod 600 /mnt/swapfile  
-mkswap /mnt/swapfile  
+mkswap -L ArchSwap /mnt/swapfile  
 swapon /mnt/swapfile  
+swapon -s
 </pre>
 
 ##### (2) Create SWAP partition
 
 <pre>
-mkswap /mnt/<b>sda1</b>
-swapon /mnt/<b>sda1</b>
-</pre>
-
-##### Check SWAP status
-
-<pre>
+mkswap -L ArchSwap /mnt/<b>sdaX</b>
+swapon /mnt/<b>sdaX</b>  
 swapon -s
 </pre>
 
@@ -254,17 +272,23 @@ wifi-menu
 pacstrap -i /mnt base base-devel
 </pre>
 
-The -i switch ensures prompting before package installation. With the base group, the first initramfs will be generated and installed to the new system's boot path; double-check output prompts ==> Image creation successful for it. 
+The `-i` switch ensures prompting before package installation. With the base group, the first initramfs will be generated and installed to the new system's boot path; double-check output prompts ==> Image creation successful for it. 
+
+Also keep in mind than only the `base` package is needed have a working system, but we also add the `base-devel` package because it will enable us to build extra packages to add to the system.
+
+> If you see a warning regarding `mandb` not being able to set the locale, that is normal because we havent entered chroot yet to set it. Once we enable the desired locales and run `locale-gen` it will be solved. [This is actually flagged as a bug that might be solved by now.](https://bugs.archlinux.org/task/49426).
 
 #### Install bootloader
 
-The bootloader to be installed depends on the partition style and the board firmware type. [Also keep in mind that there are limitations.](https://wiki.archlinux.org/index.php/Windows_and_Arch_Dual_Boot#Bootloader_UEFI_vs_BIOS_limitations)
+The bootloader to be installed depends on the partition style and the board firmware type.
 
 Example 1, if we have a board with UEFI, and Windows 7 installed, we can assume that the CMS mode is enabled and the partition style is MBR. Knowing this, we should use a bootloader for a BIOS system.
 
 Example 2, if we have a board with UEFI, and Windows 8 installed, we can assume that the CMS mode is disabled and the partition style is GPT. Knowing this, we should use a bootloader for a UEFI system.
 
-> The NT bootloader is located on a 100MB "System Reserved" partition. This cannot be erased even with a diferent bootloader because other bootloaders cannot directly start the OS. They have to chainload with the NT bootloader in order to start Windows.
+> The NT bootloader is located on a `100MB "System Reserved"` partition. This cannot be erased even with a diferent bootloader because other bootloaders cannot directly start the OS. They have to chainload with the NT bootloader in order to start Windows.
+
+[Also keep in mind that there are limitations.](https://wiki.archlinux.org/index.php/Windows_and_Arch_Dual_Boot#Bootloader_UEFI_vs_BIOS_limitations)
 
 #### Install GRUB2 for BIOS-MBR system
 
@@ -300,7 +324,7 @@ Moreover, the kernel [even blacklists some devices know to cause problems.](http
 nano /mnt/etc/fstab
 </pre>
 
-According to the [linux fstab page](http://man7.org/linux/man-pages/man5/fstab.5.html), the `defaults` flag sets the following options: `rw, suid, dev, exec, auto, nouser, async` You can check what each of these flags do on the [linux mount page](http://man7.org/linux/man-pages/man8/mount.8.html).
+According to the [linux fstab page](http://man7.org/linux/man-pages/man5/fstab.5.html), the `defaults` flag sets the following options: `rw, suid, dev, exec, auto, nouser, async` you can check what each of these flags do on the [linux mount page](http://man7.org/linux/man-pages/man8/mount.8.html).
 
 The `noatime` flag eliminates the need of the system to make writes to the file system for files which are simply being read. 
 
