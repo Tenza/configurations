@@ -301,8 +301,11 @@ Using `pacstrap` or `pacman -S grub` is the same thing. But the former will get 
 #### Generate filesystem table
 
 <pre>
-genfstab -p /mnt >> /mnt/etc/fstab
+genfstab -L -p /mnt >> /mnt/etc/fstab
 </pre>
+
+The `-L` option indicates Labels. UUIDs can be used instead through the -U option. 
+The `-p` avoids printing pseudofs mounts.
 
 <sub><sup>
 References:
@@ -334,6 +337,11 @@ My configuration, without the my storage disks, has the following parameters.
 
 <pre>
 /dev/sda1               /               ext4            defaults,noatime      0 1
+/swapfile               none            swap            defaults,noatime      0 0
+</pre>
+
+<pre>
+/dev/sda1               /               ext4            rw,noatime,stripe=64,data=ordered      0 1
 /swapfile               none            swap            defaults,noatime      0 0
 </pre>
 
@@ -402,6 +410,9 @@ This is only needed if we add any modules, like adding the `mdadm` module.
 mkinitcpio -p linux
 </pre>
 
+The -p switch specifies a preset to utilize; most kernel packages provide a related mkinitcpio preset file, found in /etc/mkinitcpio.d (e.g. /etc/mkinitcpio.d/linux.preset for linux). A preset is a predefined definition of how to create an initramfs image instead of specifying the configuration file and output file every time.
+Warning: preset files are used to automatically regenerate the initramfs after a kernel update; be careful when editing them.
+
 <sub><sup>
 References:
 https://wiki.archlinux.org/index.php/mkinitcpio
@@ -426,7 +437,7 @@ It is recommended to always use this option to remove ambiguity in grub-install.
 
 ##### Desktop  
 <pre>
-grub-install -target=i386-pc --recheck /dev/<b>sda</b>
+grub-install --target=i386-pc --recheck /dev/<b>sda</b>
 </pre>
 
 ##### Notebook  
