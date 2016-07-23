@@ -3,6 +3,9 @@
 ***DO NOT USE THESE NOTES BLINDLY.***  
 ***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
+This is a followup of the [Base System Installation](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/1%20-%20Base%20System%20Installation.md) guide.  
+The configurations set in here supose that ArchLinux is properly installed on the system.
+
 #### Configure hostname
 
 This is the name that will show-up in the console, for example: `filipe@filipe-desktop`
@@ -11,15 +14,34 @@ This is the name that will show-up in the console, for example: `filipe@filipe-d
 hostnamectl set-hostname filipe-desktop
 </pre>
 
+#### Configure locale
+
+To configure the locale, start by editing the file `locale.gen`.
+
+<pre>
+nano /etc/locale.gen
+</pre>
+
+Then, remove the comment from the lines with the your country code.  
+In my case, it is `pt_PT`, there are 3 of them. Finally, generate and set that locale.
+
+<pre>
+locale-gen  
+localectl set-locale LANG="pt_PT-UTF-8"
+</pre>
+
 #### Configure persistent keymap
+
+Previously we used the command `loadkeys` to load a keyboard layout.  
+But that configuration was lost when we left live system. To make it persistent `localectl` has to be used.
 
 <pre>
 localectl set-keymap pt-latin9
 localectl set-x11-keymap pt
-localectl status
 </pre>
 
-Result:
+If the locale and keymap are properly configured, this should be the output for the command `localectl status`.
+
 <pre>
 [filipe@filipe-desktop ~]$ localectl status  
 System Locale: LANG=pt_PT.UTF-8  
@@ -29,34 +51,25 @@ X11 Layout: pt
 
 #### Configure timezone 
 
-Get time zone info:  
+Then we have to set the timezone, it will be used to determine your localtime correctly.  
+Start by selecting one of the available Zone/SubZone.
+
 <pre>
-ls /usr/share/zoneinfo
+timedatectl list-timezones
 </pre>
 
-In my case is `Portugal`, so:
+In my case is `Portugal`.
+This will create an /etc/localtime symlink that points to a zoneinfo file under `/usr/share/zoneinfo/`.  
+
 <pre>
 timedatectl set-timezone Portugal
-</pre>
-
-#### Configure locale
-
-<pre>
-nano /etc/locale.gen
-</pre>
-
-Remove the comment from the lines with the country code `pt_PT`, there are 3.
-
-<pre>
-locale-gen  
-localectl set-locale LANG="pt_PT-UTF-8"
 </pre>
 
 #### Start network cards
 
 DHCP is not enabled by default like when we boot from the USB, so we have to start it manually.
+Start by selecting an interfaces name.
 
-Get interfaces name:
 <pre>
 ip link
 </pre>
@@ -79,7 +92,7 @@ systemctl start dhcpcd@enp2s0.service
 wifi-menu -o wlp3s0
 </pre>
 
-###### (Optional) (Not recommended) Start network at boot
+#### (Optional) (Not recommended) Start network at boot
 
 This will activate the connections on boot, but keep in mind, that these will have to be **stopped and disabled** when we install the `networkmanager` package once we have a graphical environment.
 
@@ -102,7 +115,7 @@ pacman -S ntp
 systemctl enable ndpd.service
 </pre>
 
-##### (2) (Not recommended) Configure hardware clock for Localtime
+#### (2) (Not recommended) Configure hardware clock for Localtime
 
 The only reason to ever do this, is if we are in a dualboot configuration and there is already an OS managing time and DST switching while storing the RTC time in localtime, such as Windows. But even so, it would be preferable to force Windows to use UTC, rather than forcing Linux to localtime. To do this, just install the Meinberg NTP Software.
 
@@ -119,7 +132,7 @@ http://www.satsignal.eu/ntp/setup.html
 http://www.meinbergglobal.com/english/sw/ntp.htm
 </sup></sub>
 
-#### Dualboot
+## Dualboot
 
 First we install the package responsible for detecting other OS installations:
 
