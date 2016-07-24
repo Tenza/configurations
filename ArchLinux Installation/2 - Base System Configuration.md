@@ -185,14 +185,15 @@ If we are installing Windows and Arch is already on the machine, we have to rein
 loadkeys pt-latin9
 mount /dev/<b>sdX</b> /mnt
 arch-chroot /mnt
-cfdisk /dev/<b>sdX</b>  (if you need to set the bootflag)
+cfdisk /dev/<b>sdX</b>  (if needed to set the bootflag)
 grub-mkconfig -o /boot/grub/grub.cfg
 grub-install -target=i386-pc --recheck /dev/<b>sdX</b>
 </pre>
 
-If you need any extra package additionally use:
+To add any extra packages.
+
 <pre>
-wifi-menu
+wifi-menu (without a wired connection)
 pacman -Syy
 pacman -S os-prober
 </pre>
@@ -213,13 +214,15 @@ menuentry "System shutdown" {
 }
 </pre>
 
+WARNING: The `halt` command might not work if Plug and Play (PnP) is enabled in the BIOS/UEFI settings, in that case the power button has to be pressed.
+
 <pre>
 grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
 We can also change the text displayed on the bootloader if we manually edit the file.
 Keep in mind that these changes will be lost when we rebuild the file. **Do this with extreme caution.**
-If we delete something needed, the machine might not boot (you can always try to fix it with a live cd).
+If something needed is deleted, the machine might not boot. Although it can probably be fixed with live cd.
 
 <pre>
 nano /boot/grub/grub.cfg
