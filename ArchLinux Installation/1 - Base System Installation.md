@@ -441,9 +441,8 @@ nano /etc/mkinitcpio.conf
 HOOKS="... block mdadm_udev <b>encrypt</b> filesystems ..."
 </pre>
 
-Also, other hooks might be necessary depending on your computer physical and encryption setups.  
-For example, for USB keyboards, the hook `keyboard` needs to be added to make sure they work early in userspace. Also, dont forget to add it before the `encrypt` hook, otherwise you will not be able to type the passphase. `HOOKS="... keyboard encrypt ..."`
-For example, if you have a swap partition / LVM the `resume` might be needed. Check the Archwiki.
+Other hooks might be necessary depending on the physical computer and encryption setups.  
+For example, for USB keyboards, the hook `keyboard` needs to be added to make sure it works early in userspace. Also dont forget that this hook needs to be set before the `encrypt`, otherwise it will not be possible to type the passphase.
 
 #### (Optional) Create initial ramdisk
 
