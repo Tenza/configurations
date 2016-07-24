@@ -4,7 +4,7 @@
 ***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
 These notes were created for my desktop and notebook (Asus UX51VZ) installations.  
-The desktop uses a **single SSD** and the notebook uses **two SSD's on a RAID 0** configuration.  
+The desktop uses a **single SSD** and the notebook uses **two SSD's on RAID 0 with dm-crypt+LUKS** configuration.  
 
 ## Create bootable USB
 
@@ -97,16 +97,19 @@ ls /usr/share/kbd/keymaps/i386/qwerty
 loadkeys pt-latin9
 </pre>
 
-In my case there are two keymaps available, `pt-latin1` and `pt-latin9`, the diferences between them, can be seen [here](https://www.cs.tut.fi/~jkorpela/latin9.html). Just keep in mind that the ISO Latin 9 is more recent.  
+In my case there are two keymaps available, `pt-latin1` and `pt-latin9`, the diferences between them, can be seen [here](https://www.cs.tut.fi/~jkorpela/latin9.html).  Just keep in mind that the ISO Latin 9 is more recent.  
 
 #### (Optional) Partition plan
 
 Before any change, get to know the details of each recommended partition.
 
-I personally don't use any partition scheme because it reduces the total space available, and because I have an external HDD with a full partition backup of my system in case anything goes wrong.
-
 > https://wiki.archlinux.org/index.php/partitioning#Partition_scheme  
 > http://en.wikipedia.org/wiki/Disk_partitioning#Benefits_of_multiple_partitions
+
+I personally don't use any partition schema because it reduces the total space available on the SSD drives. Instead, I have an external HDD with a full partition backup of my system in case anything goes wrong.
+
+Although, recently I changed my **notebook** primary partition (`/dev/md125p3`) to an extended partition (still `/dev/md125p3`) to accommodate a  `100MiB /boot` logical partition (`/dev/md125p5`) and a encrypted root logical partition (`/dev/md125p6`).  
+This was done because I added a dm-crypt layer to my system as described below. 
 
 ##### Check existing partitions
 
@@ -138,25 +141,6 @@ parted /dev/md125
 (check reminder partitions)
 </pre>
 
-#### FDE
-
-<pre>
-cryptsetup -v luksFormat /dev/md125p6
-cryptsetup open /dev/md125p6 ArchCrypt
-mkfs.ext4 -v -L ArchBoot -b 4096 -E stride=32,stripe-width=64,discard <b>/dev/mapper/ArchCrypt</b>
-mount -t ext4 /dev/mapper/ArchCrypt /mnt
-
-mkfs.ext4 -v -L ArchRoot -b 4096 -E stride=32,stripe-width=64,discard <b>/dev/md125p5</b>
-mkdir /mnt/boot
-mount -t ext4 dev/md125p5 /mnt/boot
-</pre>
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Dm-crypt/Device_encryption#Encryption_options_for_LUKS_mode  
-
-</sup></sub>
-
 #### Format the filesystem
 
 After the partitions have been set, the filessystem has to be formated. I will use the EXT4 filesystem.
@@ -186,41 +170,90 @@ mdadm -E /dev/<b>md127</b>
 
 Lastly the size of blocks in bytes has to be specified. Valid block-size values are 1024, 2048 and 4096 bytes per block. If omitted, block-size is heuristically determined by the filesystem size and the expected usage of the filesystem. But since I already used a 4k block size to determine the stride, I will use 4096 bytes.
 
-<pre>
-mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/<b>md125p3</b>
-</pre>
-
 <sub><sup>
 References:  
 https://wiki.debian.org/SSDOptimization#Mounting_SSD_filesystems  
 http://blog.nuclex-games.com/2009/12/aligning-an-ssd-on-linux/  
 </sup></sub>
 
+###### (1) Format without dm-crypt
+
+Simply format the partition, with the additional flags, without encryption.
+
+<pre>
+mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/<b>md125p3</b>
+</pre>
+
+###### (2) Format with dm-crypt
+
+There is multiple ways to enable encryption. [This table](https://wiki.archlinux.org/index.php/disk_encryption#Comparison_table) might help to decide on wish to use.  
+Bellow I will describe the setup of `dm-crypt + LUKS` on a single partition layout **without** `LVM`. 
+Keep in mind that I choose not to create a `LVM` volume because I will not take advantage of any of its features, and also that I have a separate `100MiB /boot` logical partition, that I **dont** enable encryption.
+
+First setup a new dm-crypt device in LUKS encryption mode, mapped to the unencrypted partition.  
+This will prompt for a passphrase, that will need to be typed at each boot into Arch.
+
+Note that this command uses the default parameters of LUKS, [click here](https://wiki.archlinux.org/index.php/Dm-crypt/Device_encryption#Encryption_options_for_LUKS_mode) to view the what is being used by default.
+
+<pre>
+cryptsetup -v luksFormat /dev/md125p6
+</pre>
+
+Than open and set the name of the mapped device.  
+The name `ArchCrypt` will be seen when dm-crypt asks for your passphrase at boot.
+
+<pre>
+cryptsetup open /dev/md125p6 ArchCrypt
+</pre>
+
+Format the filesystem of the mapped `/ArchCrypt` partition with the flags desired.
+
+<pre>
+mkfs.ext4 -v -L ArchRoot -b 4096 -E stride=32,stripe-width=64,discard <b>/dev/mapper/ArchCrypt</b>
+</pre>
+
+Also format the logical `/boot` partition.
+
+<pre>
+mkfs.ext4 -v -L ArchBoot -b 4096 -E stride=32,stripe-width=64,discard <b>/dev/md125p5</b>
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/disk_encryption#Comparison_table
+https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#Simple_partition_layout_with_LUKS
+https://wiki.archlinux.org/index.php/Dm-crypt/Device_encryption#Encryption_options_for_LUKS_mode 
+</sup></sub>
+
 #### Create folders and mount partitions
 
-Create a mount point for the installation of the system.  
+Create a mountpoint for the installation of the system.  
 
 ##### Desktop
 
 <pre>
-mount /dev/<b>sda1</b> /mnt
+mount -t ext4 /dev/<b>sda1</b> /mnt
 </pre>
 
 ##### Notebook
 
+###### (1) Mount without dm-crypt
+
 <pre>
-mount /dev/<b>md125p3</b> /mnt
+mount -t ext4 /dev/<b>md125p3</b> /mnt
 </pre>
 
-##### (Optional) Folders for other partitions
-
-With a partition schema, keep in mind the following mount points.
+###### (2) Mount with dm-crypt
 
 <pre>
-mkdir /mnt/boot /mnt/home /mnt/var
-mount /dev/<b>sdaX</b> /mnt/boot
-mount /dev/<b>sdaX</b> /mnt/home
-mount /dev/<b>sdaX</b> /mnt/var
+mount -t ext4 /dev/mapper/ArchCrypt /mnt
+</pre>
+
+Additionaly create and mount the unencrypted `/boot` partition.
+
+<pre>
+mkdir /mnt/boot
+mount -t ext4 dev/md125p5 /mnt/boot
 </pre>
 
 #### SWAP
@@ -259,6 +292,8 @@ If a wired connection in being used, try the ping command because DHCP should be
 ping -c 3 google.com
 </pre>
 
+The `-c` switch stops execution after 3 tries.
+
 ##### (Optional) Activate wireless connectivity
 
 In the absence of a wired network use the following command to activate wireless.
@@ -289,7 +324,7 @@ Example 2, if the board has UEFI, and Windows 8 installed, it is safe to assume 
 
 > The NT bootloader is located on a `100MB "System Reserved"` partition. This cannot be erased even with a diferent bootloader because other bootloaders cannot directly start the OS. They have to chainload with the NT bootloader in order to start Windows.
 
-[Also keep in mind that there are limitations.](https://wiki.archlinux.org/index.php/Windows_and_Arch_Dual_Boot#Bootloader_UEFI_vs_BIOS_limitations)
+[Also keep in mind that there are limitations between the two.](https://wiki.archlinux.org/index.php/Windows_and_Arch_Dual_Boot#Bootloader_UEFI_vs_BIOS_limitations)
 
 #### Install GRUB2 for BIOS-MBR system
 
@@ -305,7 +340,7 @@ Using `pacstrap` or `pacman -S grub` is the same thing. But the former will get 
 genfstab -L -p /mnt >> /mnt/etc/fstab
 </pre>
 
-The `-L` option indicates Labels. UUIDs can be used instead through the -U option. 
+The `-L` option indicates Labels. UUIDs can be used instead through the -U option.  
 The `-p` avoids printing pseudofs mounts.
 
 <sub><sup>
@@ -330,16 +365,10 @@ nano /mnt/etc/fstab
 
 According to the [linux fstab page](http://man7.org/linux/man-pages/man5/fstab.5.html), the `defaults` flag sets the following options: `rw, suid, dev, exec, auto, nouser, async`, check what each of these flags do on the [linux mount page](http://man7.org/linux/man-pages/man8/mount.8.html).
 
-The `noatime` flag eliminates the need of the system to make writes to the file system for files which are simply being read. 
-
+The `noatime` flag eliminates the need of the system to make writes to the filesystem for files which are simply being read.  
 Also make sure the SWAP file is not on `/mnt` and rather on `/`.
 
-My configuration, without the my storage disks, has the following parameters.
-
-<pre>
-/dev/sda1               /               ext4            defaults,noatime      0 1
-/swapfile               none            swap            defaults,noatime      0 0
-</pre>
+My configuration, without any storage disks, has the following parameters.
 
 <pre>
 /dev/sda1               /               ext4            rw,noatime,stripe=64,data=ordered      0 1
@@ -366,9 +395,9 @@ References:
 https://wiki.archlinux.org/index.php/Change_root
 </sup></sub>
 
-#### (Optional) (RAID) Create file to assembly RAID arrays
+#### (Optional) (RAID) Create file to assembly RAID arrays and enable the mdadm mkinitcpio hook
 
-This is required, for the RAID 0 configuration. The module `mdadm` will use the information generated here to assemble the array on boot. Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards. Start by finding out where the RAID array is located.
+This is required for the RAID 0 configuration. The module `mdadm` will use the information generated here to assemble the array on boot. Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards. Start by finding out where the RAID array is located.
 
 <pre>
 mdadm --detail-platform
@@ -383,13 +412,11 @@ mdadm -I -e imsm /dev/<b>md127</b>
 mdadm --examine --scan >> /mnt/etc/mdadm.conf
 </pre>
 
-Now enable `mdadm` uppon boot in order to assemble the RAID array.
+Now enable  the `mdadm` hook uppon boot, **in the correct order** in order to assemble the RAID array.
 
 <pre>
 nano /etc/mkinitcpio.conf  
 </pre>
-
-Edit the following like, in the correct position.
 
 <pre>
 HOOKS="... block <b>mdadm_udev</b> filesystems ..."
@@ -402,6 +429,22 @@ https://wiki.archlinux.org/index.php/RAID#Installing_Arch_Linux_on_RAID
 https://forums.gentoo.org/viewtopic-t-888520.html
 </sup></sub>
 
+#### (Optional) (Encryption) Enable the dm-crypt mkinitcpio hook
+
+Add the `encrypt` hook to mkinitcpio, **in the correct order**.
+
+<pre>
+nano /etc/mkinitcpio.conf  
+</pre>
+
+<pre>
+HOOKS="... block mdadm_udev <b>encrypt</b> filesystems ..."
+</pre>
+
+Also, other hooks might be necessary depending on your computer physical and encryption setups.  
+For example, for USB keyboards, the hook `keyboard` needs to be added to make sure they work early in userspace. Also, dont forget to add it before the `encrypt` hook, otherwise you will not be able to type the passphase. `HOOKS="... keyboard encrypt ..."`
+For example, if you have a swap partition / LVM the `resume` might be needed. Check the Archwiki.
+
 #### (Optional) Create initial ramdisk
 
 This was already created when the base system was installed.  
@@ -411,8 +454,8 @@ This is only needed if any modules were added, like adding the `mdadm` or `encry
 mkinitcpio -p linux
 </pre>
 
-The -p switch specifies a preset to utilize; most kernel packages provide a related mkinitcpio preset file, found in /etc/mkinitcpio.d (e.g. /etc/mkinitcpio.d/linux.preset for linux). A preset is a predefined definition of how to create an initramfs image instead of specifying the configuration file and output file every time.
-Warning: preset files are used to automatically regenerate the initramfs after a kernel update; be careful when editing them.
+The -p switch specifies a preset to utilize; most kernel packages provide a related mkinitcpio preset file, found in `/etc/mkinitcpio.d` (e.g. `/etc/mkinitcpio.d/linux.preset` for linux). A preset is a predefined definition of how to create an initramfs image instead of specifying the configuration file and output file every time.
+> Warning: preset files are used to automatically regenerate the initramfs after a kernel update; be careful when editing them.
 
 <sub><sup>
 References:
@@ -427,13 +470,30 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a wrapper.
 
+##### (Optional) (Encryption) Enable dm-crypt at boot
+
+In order to unlock the encrypted root partition at boot, the following kernel parameters need to be set.
+
+<pre>
+GRUB_CMDLINE_LINUX="cryptdevice=/dev/md125p6:ArchCrypt root=/dev/md125p5"
+</pre>
+
+<pre>
+grub-mkconfig -o /boot/grub/grub.cfg
+</pre>
+
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration#Boot_loader
+</sup></sub>
+
 #### Install GRUB2 to the MBR
 
 This will install the bootloader to the first sector of the disk.  
 Note that it is possible to install to a partition, but is not recommended.  
 Also, this will be needed if the formated partition contained `/etc/default/grub` or `/etc/grub.d/`.
 
-The parameter `--target=i386-pc` instructs grub-install to install for BIOS systems only.  
+The `--target=i386-pc` switch instructs grub-install to install for BIOS systems only.  
 It is recommended to always use this option to remove ambiguity in grub-install. 
 
 ##### Desktop  
