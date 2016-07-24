@@ -482,6 +482,11 @@ GRUB_CMDLINE_LINUX="cryptdevice=/dev/md125p6:ArchCrypt root=/dev/md125p5"
 grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
+The kernel parameters are added to `GRUB_CMDLINE_LINUX` instead of `GRUB_CMDLINE_LINUX_DEFAULT` because:  
+
+Options in `GRUB_CMDLINE_LINUX` are always effective.  
+Options in `GRUB_CMDLINE_LINUX_DEFAULT` are effective ONLY during normal boot (NOT during recovery mode).
+
 <sub><sup>
 References:
 https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration#Boot_loader
