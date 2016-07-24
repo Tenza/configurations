@@ -11,7 +11,7 @@ The desktop uses a **single SSD** and the notebook uses **two SSD's on a RAID 0*
 #### Windows
 
 This method does not require any workaround and is as straightforward as `dd` under Linux.  
-Just download the Arch Linux ISO, and with local administrator rights use the USBwriter utility to write to your USB flash memory. 
+Just download the Arch Linux ISO, and with local administrator rights use the USBwriter utility to write to the USB. 
 
 <pre>
 Download: <a href="http://sourceforge.net/projects/usbwriter/">http://sourceforge.net/projects/usbwriter/</a>
@@ -25,7 +25,7 @@ https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#Using_USBwrite
 #### Linux
 
 Find out the name of the USB drive with `lsblk`.  
-Do **not** append a partition number and make sure the drive is not mounted.  
+Do **not** append a partition number and make sure the drive is **not** mounted.  
 
 <pre>
 dd bs=4M if=<b>/path/to/archlinux.iso</b> of=/dev/<b>sdX</b> && sync
@@ -37,6 +37,9 @@ https://wiki.archlinux.org/index.php/USB_Flash_Installation_Media#In_GNU.2FLinux
 </sup></sub>
 
 ## Restore partitions on the USB
+
+The procedure to create a bootable USB will create a partition on the USB.  
+This methods will help restore the USB to a single primary partition.
 
 #### Windows
 
@@ -62,7 +65,7 @@ http://superuser.com/questions/536813/how-to-delete-a-partition-on-a-usb-drive
 
 <pre>
 Open a terminal and type <b>sudo su</b> to enter root
-Type <b>fdisk -l</b> and note your USB drive letter
+Type <b>fdisk -l</b> and note the USB drive letter
 Type <b>fdisk /dev/sdX</b>
 Type <b>d</b> to proceed to delete a partition
 Type <b>1</b> to select the 1st partition and press enter
@@ -84,8 +87,6 @@ http://dottheslash.wordpress.com/2011/11/29/deleting-all-partitions-on-a-usb-dri
 
 ## Install base system
 
-Once we boot from the USB, we start by setting up the system.
-
 #### Check and load avalable keyboard layouts
 
 <pre>
@@ -96,11 +97,11 @@ ls /usr/share/kbd/keymaps/i386/qwerty
 loadkeys pt-latin9
 </pre>
 
-I wasn't able to view the diferences between `pt-latin1` and `pt-latin9`, but most of the sites use `pt-latin9`.
+In my case there are two keymaps available, `pt-latin1` and `pt-latin9`, the diferences between them, can be seen [here](https://www.cs.tut.fi/~jkorpela/latin9.html). Just keep in mind that the ISO Latin 9 is more recent.  
 
 #### (Optional) Partition plan
 
-Before any change, we should get to know the details of each recommended partition.
+Before any change, get to know the details of each recommended partition.
 
 I personally don't use any partition scheme because it reduces the total space available, and because I have an external HDD with a full partition backup of my system in case anything goes wrong.
 
@@ -158,7 +159,7 @@ https://wiki.archlinux.org/index.php/Dm-crypt/Device_encryption#Encryption_optio
 
 #### Format the filesystem
 
-After the partitions have been set, we have to format the filesystem. I will use the EXT4 filesystem.
+After the partitions have been set, the filessystem has to be formated. I will use the EXT4 filesystem.
 
 Also note that the `discard` flag is used, it will attempt to discard blocks at mkfs time (discarding blocks initially is useful on solid state devices and sparse / thin-provisioned storage). When the device advertises that discard also zeroes data (any subsequent read after the discard and before write returns zero), then mark all not-yet-zeroed inode tables as zeroed. This significantly speeds up filesystem initialization. This is set as default. 
 
@@ -183,7 +184,7 @@ mdadm -E /dev/<b>md127</b>
 * Stripe-width = (number of physical data disks * stride). 
  * Stripe-width = 2 * 32 = 64
 
-Lastly we specify the size of blocks in bytes. Valid block-size values are 1024, 2048 and 4096 bytes per block. If omitted, block-size is heuristically determined by the filesystem size and the expected usage of the filesystem. But since I already used a 4k block size to determine the stride, I will use 4096 bytes.
+Lastly the size of blocks in bytes has to be specified. Valid block-size values are 1024, 2048 and 4096 bytes per block. If omitted, block-size is heuristically determined by the filesystem size and the expected usage of the filesystem. But since I already used a 4k block size to determine the stride, I will use 4096 bytes.
 
 <pre>
 mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/<b>md125p3</b>
@@ -197,7 +198,7 @@ http://blog.nuclex-games.com/2009/12/aligning-an-ssd-on-linux/
 
 #### Create folders and mount partitions
 
-We can now create a mount point for the installation of the system.  
+Create a mount point for the installation of the system.  
 
 ##### Desktop
 
@@ -251,8 +252,8 @@ swapon -s
 
 #### Check network
 
-Before we start with the installation of the base system, we need to make sure that the network is working.
-If we are using a wired connection, DHCP should be activated by default.
+Before the installation of the base system, make sure that the network is working.
+If a wired connection in being used, try the ping command because DHCP should be activated by default.
 
 <pre>
 ping -c 3 google.com
@@ -260,7 +261,7 @@ ping -c 3 google.com
 
 ##### (Optional) Activate wireless connectivity
 
-If you do not have a wired network use the following command to activate wireless.
+In the absence of a wired network use the following command to activate wireless.
 
 <pre>
 wifi-menu
@@ -274,17 +275,17 @@ pacstrap -i /mnt base base-devel
 
 The `-i` switch ensures prompting before package installation. With the base group, the first initramfs will be generated and installed to the new system's boot path; double-check output prompts ==> Image creation successful for it. 
 
-Also keep in mind than only the `base` package is needed have a working system, but we also add the `base-devel` package because it will enable us to build extra packages to add to the system.
+Also keep in mind that only the `base` package is needed have a working system, but the `base-devel` package was added because it will enable us to build extra packages to add to the system.
 
-> If you see a warning regarding `mandb` not being able to set the locale, that is normal because we havent entered chroot yet to set it. Once we enable the desired locales and run `locale-gen` it will be solved. [This is actually flagged as a bug that might be solved by now.](https://bugs.archlinux.org/task/49426).
+> If there is a warning regarding `mandb` not being able to set the locale, that is normal because the locale will only be set inside the system (using chroot). Once the desired locales are enabled and `locale-gen` generates the locales, it will be solved. [This is actually flagged as a bug that might be solved by now.](https://bugs.archlinux.org/task/49426).
 
 #### Install bootloader
 
 The bootloader to be installed depends on the partition style and the board firmware type.
 
-Example 1, if we have a board with UEFI, and Windows 7 installed, we can assume that the CMS mode is enabled and the partition style is MBR. Knowing this, we should use a bootloader for a BIOS system.
+Example 1, if the board has UEFI, and Windows 7 installed, it is safe to assume that the CMS mode is enabled and the partition style is MBR. Knowing this, a bootloader for a BIOS system should be used.
 
-Example 2, if we have a board with UEFI, and Windows 8 installed, we can assume that the CMS mode is disabled and the partition style is GPT. Knowing this, we should use a bootloader for a UEFI system.
+Example 2, if the board has UEFI, and Windows 8 installed, it is safe to assume that the CMS mode is disabled and the partition style is GPT. Knowing this, a bootloader for a UEFI system should be used.
 
 > The NT bootloader is located on a `100MB "System Reserved"` partition. This cannot be erased even with a diferent bootloader because other bootloaders cannot directly start the OS. They have to chainload with the NT bootloader in order to start Windows.
 
@@ -314,7 +315,7 @@ http://unix.stackexchange.com/questions/124733/what-does-genfstabs-p-option-do
 
 #### (Optional) Change filesystem table flags for SSD optimization.
 
-The following flags on the file fstab are used on SSD disks. Start by checking if the kernel knows about your SSDs. 
+The following flags on the file fstab are used on SSD disks. Start by checking if the kernel knows about the SSDs. 
 
 <pre>
 /sys/block/sd?/queue/rotational
@@ -327,7 +328,7 @@ Moreover, the kernel [even blacklists some devices know to cause problems.](http
 nano /mnt/etc/fstab
 </pre>
 
-According to the [linux fstab page](http://man7.org/linux/man-pages/man5/fstab.5.html), the `defaults` flag sets the following options: `rw, suid, dev, exec, auto, nouser, async` you can check what each of these flags do on the [linux mount page](http://man7.org/linux/man-pages/man8/mount.8.html).
+According to the [linux fstab page](http://man7.org/linux/man-pages/man5/fstab.5.html), the `defaults` flag sets the following options: `rw, suid, dev, exec, auto, nouser, async`, check what each of these flags do on the [linux mount page](http://man7.org/linux/man-pages/man8/mount.8.html).
 
 The `noatime` flag eliminates the need of the system to make writes to the file system for files which are simply being read. 
 
@@ -353,8 +354,8 @@ https://wiki.archlinux.org/index.php/Solid_State_Drives#Enable_TRIM_by_Mount_Fla
 
 #### Enter change-root
 
-Once we change root we will be inside the system.  
-From this moment, we no longer refer to the `/mnt` mount point .
+Finnaly run `arch-chroot` to enter the freshly installed system.  
+From this moment forward, there is no need to refer to the `/mnt` mountpoint.
 
 <pre>
 arch-chroot /mnt
@@ -367,7 +368,7 @@ https://wiki.archlinux.org/index.php/Change_root
 
 #### (Optional) (RAID) Create file to assembly RAID arrays
 
-This is required, for the RAID 0 configuration. The module `mdadm` will use the information generated here to assemble the array on boot. Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards. Start by finding out where your RAID array is located.
+This is required, for the RAID 0 configuration. The module `mdadm` will use the information generated here to assemble the array on boot. Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards. Start by finding out where the RAID array is located.
 
 <pre>
 mdadm --detail-platform
@@ -375,14 +376,14 @@ mdadm -E /dev/<b>mdX</b>
 </pre>
 
 In my case the array is located on md127 and uses Intel Matrix Storage Manager (imsm).  
-Now we generate the file that `mdadm` will use to assemble the array on boot.
+Now generate the file that `mdadm` will use to assemble the array on boot.
 
 <pre>
 mdadm -I -e imsm /dev/<b>md127</b>
 mdadm --examine --scan >> /mnt/etc/mdadm.conf
 </pre>
 
-Now, we need to enable `mdadm` uppon boot in order to assemble the RAID array.
+Now enable `mdadm` uppon boot in order to assemble the RAID array.
 
 <pre>
 nano /etc/mkinitcpio.conf  
@@ -404,7 +405,7 @@ https://forums.gentoo.org/viewtopic-t-888520.html
 #### (Optional) Create initial ramdisk
 
 This was already created when the base system was installed.  
-This is only needed if we add any modules, like adding the `mdadm` module.
+This is only needed if any modules were added, like adding the `mdadm` or `encrypt` module.
 
 <pre>
 mkinitcpio -p linux
@@ -429,8 +430,8 @@ The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a 
 #### Install GRUB2 to the MBR
 
 This will install the bootloader to the first sector of the disk.  
-It is possible to install to a partition, but is not recommended.  
-This will be needed if you formated the partition where `/etc/default/grub` or `/etc/grub.d/` was in.
+Note that it is possible to install to a partition, but is not recommended.  
+Also, this will be needed if the formated partition contained `/etc/default/grub` or `/etc/grub.d/`.
 
 The parameter `--target=i386-pc` instructs grub-install to install for BIOS systems only.  
 It is recommended to always use this option to remove ambiguity in grub-install. 
@@ -453,7 +454,7 @@ passwd
 
 #### (Optional) Install necessary wireless drivers
 
-You will not be able to access `wifi-menu`, without the following packages once we reboot.
+Without a wired connection, install the following packages to enable access to `wifi-menu` after the reboot.
 
 <pre>
 pacman -S iw wpa_supplicant dialog wpa_actiond
@@ -467,7 +468,7 @@ exit
 
 #### Reboot
 
-Now we can reboot and remove the USB drive.
+Finally reboot and remove the USB drive.
 
 <pre>
 systemctl reboot
