@@ -16,31 +16,26 @@ hostnamectl set-hostname filipe-desktop
 
 #### Configure locale
 
-To configure the locale, start by editing the file `locale.gen`.
+To configure the locale, start by editing the file `locale.gen` and remove the comment from the lines with the desired country code. In my case, it's `pt_PT`, and there are 3 of them. 
 
 <pre>
 nano /etc/locale.gen
 </pre>
 
-Then, remove the comment from the lines with the your country code.  
-In my case, it is `pt_PT`, there are 3 of them. Finally, generate and set that locale.
+Now generate and set that locales.
+Note that previously the command `loadkeys` was used to load the keyboard layout, but that configuration was lost when the live system exited. To make it persistent `localectl` has to be used.  
+Also keep in mind that what `set-locale` actualy does, is add the text passed to the file `/etc/locale.conf`, the text has to be one of the uncommented lines from the previous step.  
+List functions are also available within `localectl`.
 
 <pre>
 locale-gen  
 localectl set-locale LANG="pt_PT-UTF-8"
-</pre>
-
-#### Configure persistent keymap
-
-Previously we used the command `loadkeys` to load a keyboard layout.  
-But that configuration was lost when we left live system. To make it persistent `localectl` has to be used.
-
-<pre>
 localectl set-keymap pt-latin9
 localectl set-x11-keymap pt
+localectl status 
 </pre>
 
-If the locale and keymap are properly configured, this should be the output for the command `localectl status`.
+If the locale is properly configured, this should be the output for the command `localectl status`.
 
 <pre>
 [filipe@filipe-desktop ~]$ localectl status  
@@ -51,18 +46,12 @@ X11 Layout: pt
 
 #### Configure timezone 
 
-Then we have to set the timezone, it will be used to determine your localtime correctly.  
-Start by selecting one of the available Zone/SubZone.
+Set the timezone as it will be used to determine the localtime correctly.  
+This will create an `/etc/localtime` symlink that points to a zoneinfo file under `/usr/share/zoneinfo/`.  
 
 <pre>
 timedatectl list-timezones
-</pre>
-
-In my case is `Portugal`.
-This will create an /etc/localtime symlink that points to a zoneinfo file under `/usr/share/zoneinfo/`.  
-
-<pre>
-timedatectl set-timezone Portugal
+timedatectl set-timezone Europe/Lisbon
 </pre>
 
 #### Start network cards
