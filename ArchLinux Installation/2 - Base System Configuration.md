@@ -69,7 +69,7 @@ systemctl start dhcpcd@enp2s0.service
 
 ##### Wireless interface
 
-The wureless interface, can be started exactly like Archlive.
+The wireless interface, can be started exactly like Archlive.
 The `-o` flag can be additionaly used, to save the profile in `netctl`.
 
 <pre>
@@ -92,7 +92,7 @@ https://wiki.archlinux.org/index.php/Beginners%27_guide#Configure_the_network
 
 #### (1) Configure hardware clock for UTC
 
-By default linux uses UTC, so we should instal NTP to sync the time online.
+By default linux uses UTC, so a NTP deamon is required to sync the time online.
 
 <pre>
 pacman -S ntp  
@@ -101,9 +101,9 @@ systemctl enable ndpd.service
 
 #### (2) (Not recommended) Configure hardware clock for Localtime
 
-The only reason to ever do this, is if we are in a dualboot configuration and there is already an OS managing time and DST switching while storing the RTC time in localtime, such as Windows. But even so, it would be preferable to force Windows to use UTC, rather than forcing Linux to localtime. To do this, just install the Meinberg NTP Software.
+The only reason to ever do this, is if the system is in a dualboot configuration and there is already an OS managing time and DST switching while storing the RTC time in localtime, such as Windows. But even so, it would be preferable to force Windows to use UTC, rather than forcing Linux to localtime. To do this, just install the Meinberg NTP Software.
 
-With this said, keep in mind that we still have to logon in Windows at least two times a year (in Spring and Autumn) when DST kicks i.n
+If you still want to force Linux use localtime, keep in mind that the OS managing time needs to be initialized to update the RTC clock at least two times a year (in Spring and Autumn) when DST kicks in.
 
 <pre>
 timedatectl set-local-rtc true
@@ -118,7 +118,7 @@ http://www.meinbergglobal.com/english/sw/ntp.htm
 
 ## Dualboot
 
-First we install the package responsible for detecting other OS installations:
+The package responsible for detecting other OS installations is `os-prober`, and it should be installed before any aditional configuration.
 
 <pre>
 pacman -S os-prober
@@ -131,15 +131,15 @@ https://wiki.archlinux.org/index.php/GRUB#Dual-booting
 
 #### Windows already instaled:
 
-If we are installing Arch and Windows is already on the machine, assuming the bootloader was already installed to the MBR, we simply need to refresh the config file.
+If Arch was installed while Windows was already on the machine, and assuming the GRUB2 bootloader was already installed to the MBR, we simply need to refresh the config file.
 
 <pre>
 grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
-The os-prober will be automatically called by `grub-mkconfig` and will add an entry to Windows. This has worked for me even on a dualboot with a RAID array.
+The os-prober will be automatically called by `grub-mkconfig` and it will add an entry to Windows on the bootloader menu. This has worked for me even on a dualboot with a RAID array over dm-crypt. but I also report a problem where `os-prober` tries to mount my Linux extended partition, although everything was properly configured, a error still showed up.
 
-But if for some reason it failed we can try and add a custom entry:
+But if for some reason `os-prober` fails to detect other OS, it is possible to add a custom entry in `40_custom` file.
 
 <pre>
 nano /etc/grub.d/40_custom
@@ -163,7 +163,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 #### Arch already instaled:
 
-If we are installing Windows and Arch is already on the machine, we have to reinstall the bootloader because Windows automatically overwrites the MBR. To do so, we have to start Arch Live and do: 
+If Windows was installed while Arch was already on the machine, the bootloader has to be reinstalled because Windows automatically overwrites the MBR. To do so, start Arch Live to enter `chroot` and reinstall the bootloader to the first sector of the disk.
 
 <pre>
 loadkeys pt-latin9
@@ -174,15 +174,9 @@ grub-mkconfig -o /boot/grub/grub.cfg
 grub-install -target=i386-pc --recheck /dev/<b>sdX</b>
 </pre>
 
-To add any extra packages.
-
-<pre>
-wifi-menu (without a wired connection)
-pacman -Syy
-pacman -S os-prober
-</pre>
-
 #### Custom Entries
+
+Handy custom entries might be a good optino
 
 > nano /etc/grub.d/40_custom
 
