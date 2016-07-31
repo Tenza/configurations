@@ -56,26 +56,21 @@ timedatectl set-timezone Europe/Lisbon
 
 #### Start network cards
 
-DHCP is not enabled by default like when we boot from the USB, so we have to start it manually.
-Start by selecting an interfaces name.
+##### Wiered interface
+
+DHCP is not enabled by default like Archlive, so it has to be started manually.  
+Identify the name of the network interface and then start the DHCP service.
+In my case, the wired interface is `enp2s0`. wlp3s0
 
 <pre>
 ip link
-</pre>
-
-In my case the interfaces needed are:  
-<pre>
-Wired: enp2s0  
-Wireless: wlp3s0
-</pre>
-
-#### Start wired connection with DHCP
-
-<pre>
 systemctl start dhcpcd@enp2s0.service
 </pre>
 
-#### Start wireless connection with wifi-menu
+##### Wireless interface
+
+The wureless interface, can be started exactly like Archlive.
+The `-o` flag can be additionaly used, to save the profile in `netctl`.
 
 <pre>
 wifi-menu -o wlp3s0
@@ -83,7 +78,7 @@ wifi-menu -o wlp3s0
 
 #### (Optional) (Not recommended) Start network at boot
 
-This will activate the connections on boot, but keep in mind, that these will have to be **stopped and disabled** when we install the `networkmanager` package once we have a graphical environment.
+This will activate the connections at boot, but keep in mind, that these will have to be **stopped and disabled** when the package  `networkmanager` is instaled with the KDE graphical environment.
 
 <pre>
 systemctl enable dhcpcd@enp2s0.service  
