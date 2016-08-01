@@ -314,7 +314,7 @@ The `-i` switch ensures prompting before package installation. With the base gro
 
 Also keep in mind that only the `base` package is needed have a working system, but the `base-devel` package was added because it will enable us to build extra packages to add to the system.
 
-> If there is a warning regarding `mandb` not being able to set the locale, that is normal because the locale will only be set inside the system (using chroot). Once the desired locales are enabled and `locale-gen` generates the locales, it will be solved. [This is actually flagged as a bug that might be solved by now.](https://bugs.archlinux.org/task/49426).
+> If there is a warning regarding `mandb` not being able to set the locale, that is normal because the locale will only be set inside the system (using chroot). Once the desired locales are enabled and `locale-gen` generates the locales, it will be solved. [This is actually flagged as a bug that might be solved by now](https://bugs.archlinux.org/task/49426).
 
 #### Install bootloader
 
