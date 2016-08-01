@@ -186,7 +186,9 @@ mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/<b>md125p
 
 ###### (2) Format with dm-crypt
 
-There is multiple ways to enable encryption. [This table](https://wiki.archlinux.org/index.php/disk_encryption#Comparison_table) might help to decide on wish to use.  
+There are multiple ways to enable encryption. [This table](https://wiki.archlinux.org/index.php/disk_encryption#Comparison_table) might help to decide on wish to use. Also, if necessary, [prepare the disk](https://wiki.archlinux.org/index.php/Dm-crypt/Drive_preparation) by overwriting the entire partition/drive with random data, this will enable protection from cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt. 
+
+
 Bellow I will describe the setup of `dm-crypt + LUKS` on a single partition layout **without** `LVM`. 
 Keep in mind that I choose not to create a `LVM` volume because I will not take advantage of any of its features, and also that I have a separate `100MiB /boot` logical partition, that I **dont** enable encryption.
 
