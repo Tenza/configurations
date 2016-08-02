@@ -140,7 +140,7 @@ The package responsible for detecting other OS installations is `os-prober`, and
 pacman -S os-prober
 </pre>
 
-> but I also report a problem where `os-prober` tries to mount my Linux extended partition, although everything was properly configured, a error still showed up.
+> I also report a problem where `os-prober` tried to mount my Linux extended partition, probably because it is a mapped partition given that this is a RAID system. The detection of other OS worked, and the entry was added, but a error showed up when it tried to examine that particular partition.
 
 <sub><sup>
 References:
