@@ -3,13 +3,13 @@
 ***DO NOT USE THESE NOTES BLINDLY.***  
 ***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
-This is a followup of the [Base System Installation](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/1%20-%20Base%20System%20Installation.md) guide.  
-The configurations set in here supose that ArchLinux is properly installed on the system.
+This is a follow-up of the [Base System Installation](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/1%20-%20Base%20System%20Installation.md) guide.  
+The configurations set in here suppose that ArchLinux is properly installed on the system.
 
 #### Configure hostname
 
 Let's start by setting the hostname, this is the name that will show-up in the console, for example: `filipe@filipe-desktop`.
-The switch `set-hostname` actualy sets the three hostnames that `hostnamectl` manages, [click here](https://www.freedesktop.org/software/systemd/man/hostnamectl.html) to view the details.
+The switch `set-hostname` actually sets the three hostnames that `hostnamectl` manages, [click here](https://www.freedesktop.org/software/systemd/man/hostnamectl.html) to view the details.
 
 <pre>
 hostnamectl set-hostname filipe-desktop
@@ -18,7 +18,7 @@ hostnamectl set-hostname filipe-desktop
 #### Configure locale
 
 To configure the locale, start by editing the file `locale.gen` and remove the comment from the lines with the desired country code.  
-In my case, it's `pt_PT`, and there are 3 comented lines.
+In my case, it's `pt_PT`, and there are 3 commented lines.
 
 <pre>
 nano /etc/locale.gen
@@ -27,7 +27,7 @@ nano /etc/locale.gen
 Now generate and set that locales.
 Note that previously the command `loadkeys` was used to load the keyboard layout, but that configuration was lost when the live system exited. To make it persistent `localectl` has to be used.  
 
-Also, keep in mind that what `set-locale` actualy does, is add the text passed as an argument, to the file `/etc/locale.conf`, the text has to be one of the uncommented lines from the previous step, in this case `pt_PT-UTF-8` will be used.  
+Also, keep in mind that what `set-locale` actually does, is add the text passed as an argument, to the file `/etc/locale.conf`, the text has to be one of the uncommented lines from the previous step, in this case `pt_PT-UTF-8` will be used.  
 List functions are also available within `localectl`.
 
 <pre>
@@ -52,7 +52,7 @@ X11 Layout: pt
 #### Configure timezone 
 
 The timezone will be used to determine the localtime correctly.  
-What `timedatectl set-timezone` actualy does is create a `/etc/localtime` symlink that points to a zoneinfo file under `/usr/share/zoneinfo/` and if the Real Time Clock (RTC) is configured to be in the localtime, this will also update the RTC time.  
+What `timedatectl set-timezone` actually does is create a `/etc/localtime` symlink that points to a zoneinfo file under `/usr/share/zoneinfo/` and if the Real Time Clock (RTC) is configured to be in the localtime, this will also update the RTC time.  
 
 <pre>
 timedatectl list-timezones
@@ -61,7 +61,7 @@ timedatectl set-timezone Europe/Lisbon
 
 #### (1) Configure hardware clock for UTC
 
-By default linux uses UTC, so a NTP deamon is required to sync the time online.
+By default linux uses UTC, so a NTP daemon is required to sync the time online.
 The `systemd-timesyncd` service is available with systemd, use `timedatectl` to start and enable it.
 
 <pre>
@@ -134,7 +134,7 @@ https://wiki.archlinux.org/index.php/Beginners%27_guide#Configure_the_network
 
 ## Dualboot
 
-The package responsible for detecting other OS installations is `os-prober`, and it should be installed before any aditional configurations.
+The package responsible for detecting other OS installations is `os-prober`, and it should be installed before any additional configurations.
 
 <pre>
 pacman -S os-prober
@@ -214,7 +214,7 @@ menuentry "System shutdown" {
 
 The displayed text set by `grub-mkconfig` and `os-prober` can be changed by manually editing the `/boot/grub/grub.cfg` file.
 Just keep in mind that these changes will be lost when the file is rebuilded by `grub-mkconfig`.
-Also **do this with caution** because if something needed is deleted, the machine might not boot, and the file will have to be manually fixed fixed with a live cd.
+Also **do this with caution** because if something needed is deleted, the machine might not boot, and the file will have to be manually fixed with a live cd.
 
 #### Reboot
 
