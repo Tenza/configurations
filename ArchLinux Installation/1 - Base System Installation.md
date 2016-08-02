@@ -87,7 +87,7 @@ http://dottheslash.wordpress.com/2011/11/29/deleting-all-partitions-on-a-usb-dri
 
 ## Install base system
 
-#### Check and load avalable keyboard layouts
+#### Check and load available keyboard layouts
 
 <pre>
 ls /usr/share/kbd/keymaps/i386/qwerty
@@ -97,7 +97,7 @@ ls /usr/share/kbd/keymaps/i386/qwerty
 loadkeys pt-latin9
 </pre>
 
-In my case there are two keymaps available, `pt-latin1` and `pt-latin9`, the diferences between them, can be seen [here](https://www.cs.tut.fi/~jkorpela/latin9.html).  Just keep in mind that the ISO Latin 9 is more recent.  
+In my case there are two keymaps available, `pt-latin1` and `pt-latin9`, the differences between them, can be seen [here](https://www.cs.tut.fi/~jkorpela/latin9.html).  Just keep in mind that the ISO Latin 9 is more recent.  
 
 #### (Optional) Partition plan
 
@@ -132,7 +132,7 @@ cgdisk /dev/<b>sdX</b>
 ##### (Optional) SSD Alignment
 
 It is also worth mentioning, that once the partitions have been set it is important that they are aligned.
-The alignmnet can be checked using `parted`. If they are not aligned, like already happen to me, [this procedure might help.](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/TODO.md#ssd-alignment)
+The alignment can be checked using `parted`. If they are not aligned, like already happen to me, [this procedure might help.](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/TODO.md#ssd-alignment)
 
 <pre>
 parted /dev/md125
@@ -143,7 +143,7 @@ parted /dev/md125
 
 #### Format the filesystem
 
-After the partitions have been set, the filessystem has to be formated. I will use the EXT4 filesystem.
+After the partitions have been set, the filesystem has to be formatted. I will use the EXT4 filesystem.
 
 Also note that the `discard` flag is used, it will attempt to discard blocks at mkfs time (discarding blocks initially is useful on solid state devices and sparse / thin-provisioned storage). When the device advertises that discard also zeroes data (any subsequent read after the discard and before write returns zero), then mark all not-yet-zeroed inode tables as zeroed. This significantly speeds up filesystem initialization. This is set as default. 
 
@@ -188,12 +188,11 @@ mkfs.ext4 -v -L Arch -b 4096 -E stride=32,stripe-width=64,discard /dev/<b>md125p
 
 There are multiple ways to enable encryption. [This table](https://wiki.archlinux.org/index.php/disk_encryption#Comparison_table) might help to decide on wish to use. Also, if necessary, [prepare the disk](https://wiki.archlinux.org/index.php/Dm-crypt/Drive_preparation) by overwriting the entire partition/drive with random data, this will enable protection from cryptographic attacks or unwanted file recovery, this data is ideally indistinguishable from data later written by dm-crypt. 
 
-
 Bellow I will describe the setup of `dm-crypt + LUKS` on a single partition layout **without** `LVM`. 
-Keep in mind that I choose not to create a `LVM` volume because I will not take advantage of any of its features, and also that I have a separate `100MiB /boot` logical partition, that I **dont** enable encryption.
+Keep in mind that I choose not to create a `LVM` volume because I will not take advantage of any of its features, and also that I have a separate `100MiB /boot` logical partition, that I **don't** enable encryption.
 
 First setup a new dm-crypt device in LUKS encryption mode, mapped to the unencrypted partition.  
-This will prompt for a passphrase, that will need to be typed at each boot into Arch.
+This will prompt for a passphrase that will need to be typed at each boot into Arch.
 
 Note that this command uses the default parameters of LUKS, [click here](https://wiki.archlinux.org/index.php/Dm-crypt/Device_encryption#Encryption_options_for_LUKS_mode) to view the what is being used by default.
 
@@ -251,7 +250,7 @@ mount -t ext4 /dev/<b>md125p3</b> /mnt
 mount -t ext4 /dev/mapper/ArchCrypt /mnt
 </pre>
 
-Additionaly create and mount the unencrypted `/boot` partition.
+Additionally create and mount the unencrypted `/boot` partition.
 
 <pre>
 mkdir /mnt/boot
@@ -324,7 +323,7 @@ Example 1, if the board has UEFI, and Windows 7 installed, it is safe to assume 
 
 Example 2, if the board has UEFI, and Windows 8 installed, it is safe to assume that the CMS mode is disabled and the partition style is GPT. Knowing this, a bootloader for a UEFI system should be used.
 
-> The NT bootloader is located on a `100MB "System Reserved"` partition. This cannot be erased even with a diferent bootloader because other bootloaders cannot directly start the OS. They have to chainload with the NT bootloader in order to start Windows.
+> The NT bootloader is located on a `100MB "System Reserved"` partition. This cannot be erased even with a different bootloader because other bootloaders cannot directly start the OS. They have to chainload with the NT bootloader in order to start Windows.
 
 [Also keep in mind that there are limitations between the two.](https://wiki.archlinux.org/index.php/Windows_and_Arch_Dual_Boot#Bootloader_UEFI_vs_BIOS_limitations)
 
@@ -358,7 +357,7 @@ The following flags on the file fstab are used on SSD disks. Start by checking i
 /sys/block/sd?/queue/rotational
 </pre>
 
-The `discard` flag within the fstab file is used to enable continuously TRIM support. Unfortunatly, this is known to cause data corruption problems. Even more frequent problems arrise on top of a RAID configuration. [In here are some good arguments against the use of TRIM, and why it should be avoided.](http://www.spinics.net/lists/raid/msg40916.html)
+The `discard` flag within the fstab file is used to enable continuously TRIM support. Unfortunately, this is known to cause data corruption problems. Even more frequent problems arise on top of a RAID configuration. [In here are some good arguments against the use of TRIM, and why it should be avoided.](http://www.spinics.net/lists/raid/msg40916.html)
 Moreover, the kernel [even blacklists some devices know to cause problems.](https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/ata/libata-core.c#n4270)
 
 <pre>
@@ -385,7 +384,7 @@ https://wiki.archlinux.org/index.php/Solid_State_Drives#Enable_TRIM_by_Mount_Fla
 
 #### Enter change-root
 
-Finnaly run `arch-chroot` to enter the freshly installed system.  
+Finally run `arch-chroot` to enter the freshly installed system.  
 From this moment forward, there is no need to refer to the `/mnt` mountpoint.
 
 <pre>
@@ -414,7 +413,7 @@ mdadm -I -e imsm /dev/<b>md127</b>
 mdadm --examine --scan >> /mnt/etc/mdadm.conf
 </pre>
 
-Now enable  the `mdadm` hook uppon boot, **in the correct order** in order to assemble the RAID array.
+Now enable  the `mdadm` hook upon boot, **in the correct order** in order to assemble the RAID array.
 
 <pre>
 nano /etc/mkinitcpio.conf  
@@ -444,7 +443,7 @@ HOOKS="... block mdadm_udev <b>encrypt</b> filesystems ..."
 </pre>
 
 Other hooks might be necessary depending on the physical computer and encryption setups.  
-For example, for USB keyboards, the hook `keyboard` needs to be added to make sure it works early in userspace. Also dont forget that this hook needs to be set before the `encrypt`, otherwise it will not be possible to type the passphase.
+For example, for USB keyboards, the hook `keyboard` needs to be added to make sure it works early in userspace. Also don't forget that this hook needs to be set before the `encrypt`, otherwise it will not be possible to type the passphrase.
 
 #### (Optional) Create initial ramdisk
 
@@ -497,7 +496,7 @@ https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration#Boot_loader
 
 This will install the bootloader to the first sector of the disk.  
 Note that it is possible to install to a partition, but is not recommended.  
-Also, this will be needed if the formated partition contained `/etc/default/grub` or `/etc/grub.d/`.
+Also, this will be needed if the formatted partition contained `/etc/default/grub` or `/etc/grub.d/`.
 
 The `--target=i386-pc` switch instructs grub-install to install for BIOS systems only.  
 It is recommended to always use this option to remove ambiguity in grub-install. 
