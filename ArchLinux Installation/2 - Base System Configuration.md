@@ -90,9 +90,9 @@ http://www.satsignal.eu/ntp/setup.html
 http://www.meinbergglobal.com/english/sw/ntp.htm
 </sup></sub>
 
-#### Start network cards
+#### Network interfaces
 
-##### Wiered interface
+##### Wired interface
 
 DHCP is not enabled by default like when Archlive was booted, it has to be started manually.  
 First identify the name of the network interface and then start the DHCP service.
@@ -118,7 +118,7 @@ This profile can be used by `netctl-auto` to auto connect to a network. If a pro
 systemctl start netctl-auto@wlp3s0.service
 </pre>
 
-#### (Optional) (Not recommended) Start network at boot
+#### (Optional) (Not recommended) Start network connections at boot
 
 The above commands can be enabled at boot to activate the connections. But note that these will have to be **stopped and disabled** when another package is installed to manage the network (for instance, the package `networkmanager` installed on the KDE graphical environment), otherwise it will likely cause a disruption in connectivity. 
 
@@ -134,18 +134,20 @@ https://wiki.archlinux.org/index.php/Beginners%27_guide#Configure_the_network
 
 ## Dualboot
 
-The package responsible for detecting other OS installations is `os-prober`, and it should be installed before any aditional configuration.
+The package responsible for detecting other OS installations is `os-prober`, and it should be installed before any aditional configurations.
 
 <pre>
 pacman -S os-prober
 </pre>
+
+> but I also report a problem where `os-prober` tries to mount my Linux extended partition, although everything was properly configured, a error still showed up.
 
 <sub><sup>
 References:
 https://wiki.archlinux.org/index.php/GRUB#Dual-booting
 </sup></sub>
 
-#### Windows already instaled:
+#### Windows already installed
 
 If Arch was installed while Windows was already on the machine, and assuming the GRUB2 bootloader was already installed to the MBR, the only thing left to do, is refresh the GRUB2 configuration file.
 
@@ -153,12 +155,15 @@ If Arch was installed while Windows was already on the machine, and assuming the
 grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
-The os-prober will be automatically called by `grub-mkconfig` and it will add an entry to Windows on the bootloader menu. This has worked for me even on a dualboot with a RAID array over dm-crypt. but I also report a problem where `os-prober` tries to mount my Linux extended partition, although everything was properly configured, a error still showed up.
+The `os-prober` will be automatically called by `grub-mkconfig` and it will add an entry to Windows on the bootloader menu. This has worked for me even on a dualboot with a RAID array over dm-crypt.
 
-But if for some reason `os-prober` fails to detect other OS, it is possible to add a custom entry in `40_custom` file.
+But if for some reason `os-prober` fails to detect other OS, it is possible to manually add a custom entry in `40_custom` file.  
+Start by getting the uuid of the disk, and replace the `XXXXXXXXXXXXXX` on the menuentry, lastly refresh the GRUB2 configuration file.
 
 <pre>
+blkid
 nano /etc/grub.d/40_custom
+grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
 <pre>
@@ -171,13 +176,7 @@ menuentry{
 }
 </pre>
 
-Use `blkid` to get the uuid of the disk and replace the 'XXX'. And re-run the command:
-
-<pre>
-grub-mkconfig -o /boot/grub/grub.cfg
-</pre>
-
-#### Arch already instaled:
+#### Arch already installed
 
 If Windows was installed while Arch was already on the machine, the bootloader has to be reinstalled because Windows automatically overwrites the MBR. To do so, start Arch Live to enter `chroot` and reinstall the bootloader to the first sector of the disk.
 
@@ -192,9 +191,12 @@ grub-install -target=i386-pc --recheck /dev/<b>sdX</b>
 
 #### Custom Entries
 
-Handy custom entries might be a good optino
+The following custom entries might be worth adding to the GRUB2 menu.
 
-> nano /etc/grub.d/40_custom
+<pre>
+nano /etc/grub.d/40_custom
+grub-mkconfig -o /boot/grub/grub.cfg
+</pre>
 
 <pre>
 menuentry "System restart" {
@@ -208,19 +210,11 @@ menuentry "System shutdown" {
 }
 </pre>
 
-WARNING: The `halt` command might not work if Plug and Play (PnP) is enabled in the BIOS/UEFI settings, in that case the power button has to be pressed.
+> The `halt` command might not work if Plug and Play (PnP) is enabled in the BIOS/UEFI settings, in that case the power button has to be pressed.
 
-<pre>
-grub-mkconfig -o /boot/grub/grub.cfg
-</pre>
-
-We can also change the text displayed on the bootloader if we manually edit the file.
-Keep in mind that these changes will be lost when we rebuild the file. **Do this with extreme caution.**
-If something needed is deleted, the machine might not boot. Although it can probably be fixed with live cd.
-
-<pre>
-nano /boot/grub/grub.cfg
-</pre>
+The displayed text set by `grub-mkconfig` and `os-prober` can be changed by manually editing the `/boot/grub/grub.cfg` file.
+Just keep in mind that these changes will be lost when the file is rebuilded by `grub-mkconfig`.
+Also **do this with caution** because if something needed is deleted, the machine might not boot, and the file will have to be manually fixed fixed with a live cd.
 
 #### Reboot
 
