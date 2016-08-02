@@ -17,18 +17,16 @@ hostnamectl set-hostname filipe-desktop
 
 #### Configure locale
 
-To configure the locale, start by editing the file `locale.gen` and remove the comment from the lines with the desired country code.  
-In my case, it's `pt_PT`, and there are 3 commented lines.
+To configure the locale, start by editing the file `locale.gen` and remove the comment from the lines with the desired country code. In my case, it's `pt_PT`, and there are 3 commented lines.
 
 <pre>
 nano /etc/locale.gen
 </pre>
 
-Now generate and set that locales.
-Note that previously the command `loadkeys` was used to load the keyboard layout, but that configuration was lost when the live system exited. To make it persistent `localectl` has to be used.  
+It is now possible to generate and set that locales, note that previously the command `loadkeys` was used to load the keyboard layout, but that configuration was lost when the live system exited. To make it persistent `localectl` has to be used.  
 
 Also, keep in mind that what `set-locale` actually does, is add the text passed as an argument, to the file `/etc/locale.conf`, the text has to be one of the uncommented lines from the previous step, in this case `pt_PT-UTF-8` will be used.  
-List functions are also available within `localectl`.
+If in doubt, use the list functions available within `localectl`.
 
 <pre>
 locale-gen  
@@ -74,7 +72,7 @@ There are other implementations of the NTP protocol, but for a simple client sid
 
 The only reason to ever do this, is if the system is in a dualboot configuration and there is already an OS managing time and DST switching while storing the RTC time in localtime, such as Windows. 
 
-But even so, it would be preferable to force Windows to use UTC, rather than forcing Linux to localtime. There are registry modifications as well as software to manage time in UTC under Windows. Consider installing the [Meinberg NTP Software](http://www.meinbergglobal.com/english/sw/ntp.htm) for instance. Also, keep in mind that the OS managing time still needs to be booted to update the RTC clock at least two times a year (in Spring and Autumn) when DST kicks in.
+But even so, it would be preferable to force Windows to use UTC, rather than forcing Linux to localtime. There are registry modifications as well as software to manage time in UTC under Windows, consider for instance installing the [Meinberg NTP Software](http://www.meinbergglobal.com/english/sw/ntp.htm). Also, keep in mind that the OS managing time still needs to be booted to update the RTC clock at least two times a year (in Spring and Autumn) when DST kicks in.
 
 To still force Linux use to localtime, set `set-local-rtc` to `true`.
 
@@ -84,8 +82,8 @@ timedatectl set-local-rtc true
 
 <sub><sup>
 References:  
-https://www.freedesktop.org/software/systemd/man/timedatectl.html
 https://wiki.archlinux.org/index.php/Time  
+https://www.freedesktop.org/software/systemd/man/timedatectl.html  
 http://www.satsignal.eu/ntp/setup.html  
 http://www.meinbergglobal.com/english/sw/ntp.htm
 </sup></sub>
@@ -105,16 +103,17 @@ systemctl start dhcpcd@enp2s0.service
 
 ##### Wireless interface
 
-The wireless interface, can be started exactly like Archlive.  
+The wireless interface, can be started exactly like Archlive, if the [needed packges were installed](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/1%20-%20Base%20System%20Installation.md#optional-install-necessary-wireless-drivers).  
 Keep in mind that `wifi-menu` is a tool included with `netctl`, and once it is used to connect to a network, a profile will be saved under `/etc/netctl` with the network details. 
 
 <pre>
 wifi-menu
 </pre>
 
-This profile can be used by `netctl-auto` to auto connect to a network. If a profile is already available, it is possible to simply start `netctl-auto` to use any of the saved profiles.
+This profile can be used by `netctl-auto` to auto connect to a network. If a profile is already available, it is possible to simply start `netctl-auto` to use any of the saved profiles. In my case, the wireless interface is `wlp3s0`.
 
 <pre>
+ip link
 systemctl start netctl-auto@wlp3s0.service
 </pre>
 
@@ -140,7 +139,7 @@ The package responsible for detecting other OS installations is `os-prober`, and
 pacman -S os-prober
 </pre>
 
-> I also report a problem where `os-prober` tried to mount my Linux extended partition, probably because it is a mapped partition given that this is a RAID system. The detection of other OS worked, and the entry was added, but a error showed up when it tried to examine that particular partition.
+> I had a problem where `os-prober` tried to mount my Linux extended partition, probably because it is a mapped partition given that this is a RAID system. The detection of other OS worked, and the entry was added, but a error showed up when it tried to examine that particular partition.
 
 <sub><sup>
 References:
@@ -149,15 +148,15 @@ https://wiki.archlinux.org/index.php/GRUB#Dual-booting
 
 #### Windows already installed
 
-If Arch was installed while Windows was already on the machine, and assuming the GRUB2 bootloader was already installed to the MBR, the only thing left to do, is refresh the GRUB2 configuration file.
+If Arch was installed while Windows was already on the machine, and assuming the GRUB2 bootloader was properly installed to the MBR, the only thing left to do, is refresh the GRUB2 configuration file.
 
 <pre>
 grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
-The `os-prober` will be automatically called by `grub-mkconfig` and it will add an entry to Windows on the bootloader menu. This has worked for me even on a dualboot with a RAID array over dm-crypt.
+The `os-prober` will be automatically called by `grub-mkconfig` and it will add an entry to Windows on the bootloader menu.
 
-But if for some reason `os-prober` fails to detect other OS, it is possible to manually add a custom entry in `40_custom` file.  
+This has worked for me even on a dualboot with a RAID array over dm-crypt, but if for some reason `os-prober` fails to detect other OS, it is possible to manually add a custom entry in `40_custom` file.  
 Start by getting the uuid of the disk, and replace the `XXXXXXXXXXXXXX` on the menuentry, lastly refresh the GRUB2 configuration file.
 
 <pre>
