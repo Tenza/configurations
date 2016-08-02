@@ -156,8 +156,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 The `os-prober` will be automatically called by `grub-mkconfig` and it will add an entry to Windows on the bootloader menu.
 
-This has worked for me even on a dualboot with a RAID array over dm-crypt, but if for some reason `os-prober` fails to detect other OS, it is possible to manually add a custom entry in `40_custom` file.  
-Start by getting the uuid of the disk, and replace the `XXXXXXXXXXXXXX` on the menuentry, lastly refresh the GRUB2 configuration file.
+This has worked for me even on a dualboot with a RAID array over dm-crypt, but if for some reason `os-prober` fails to detect other OS, it is possible to manually add a custom entry in `40_custom` file. Start by getting the uuid of the disk, and replace the `XXXXXXXXXXXXXX` on the menuentry, lastly refresh the GRUB2 configuration file.
 
 <pre>
 blkid
@@ -188,7 +187,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 grub-install -target=i386-pc --recheck /dev/<b>sdX</b>
 </pre>
 
-#### Custom Entries
+#### (Optional) Custom Entries
 
 The following custom entries might be worth adding to the GRUB2 menu.
 
@@ -211,9 +210,10 @@ menuentry "System shutdown" {
 
 > The `halt` command might not work if Plug and Play (PnP) is enabled in the BIOS/UEFI settings, in that case the power button has to be pressed.
 
+#### (Optional) Change the displayed text in the GRUB menu. 
+
 The displayed text set by `grub-mkconfig` and `os-prober` can be changed by manually editing the `/boot/grub/grub.cfg` file.
-Just keep in mind that these changes will be lost when the file is rebuilded by `grub-mkconfig`.
-Also **do this with caution** because if something needed is deleted, the machine might not boot, and the file will have to be manually fixed with a live cd.
+Just keep in mind that these changes will be lost when the file is rebuilded by `grub-mkconfig`. Also, edit **with caution** because if something needed is deleted, the system might not boot, and the file will have to be manually fixed with a live cd.
 
 #### Reboot
 
