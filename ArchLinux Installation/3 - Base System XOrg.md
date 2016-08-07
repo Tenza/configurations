@@ -1,4 +1,4 @@
-# Base System to XOrg
+# Base System XOrg
 
 ***DO NOT USE THESE NOTES BLINDLY.***  
 ***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
@@ -83,7 +83,7 @@ su - root
 
 #### Login on the new user account
 
-Once the new account has been properly created and configured, `logout` from the root account and check the user and groups information with the `id` command, to confirm that everything is properly configured.
+Once the new account has been properly created and configured, `logout` from the root account and check the new user/groups information with the `id` command to confirm that everything is as it should be. From this point forward all commands will be done using the new account, using `sudo`.
 
 <pre>
 logout
@@ -92,11 +92,18 @@ id
 
 #### Activate multilib repo
 
-Remove comments from [multilib]:
+The multilib repository is an official repository which allows the user to run and build 32-bit applications on 64-bit installations of Arch Linux. A 64-bit installation of Arch Linux with multilib enabled follows a directory structure similar to Debian. The 32-bit compatible libraries are located under `/usr/lib32/`, and the native 64-bit libraries under `/usr/lib/`. 
+
+To use the multilib repository, uncomment the `[multilib]` section in `/etc/pacman.conf`, be sure to uncomment both lines.
+
 <pre>
 nano /etc/pacman.conf  
 pacman -Syy
 </pre>
+
+#### Install Yaourt
+
+
 
 #### Install Packer
 
