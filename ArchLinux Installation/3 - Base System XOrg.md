@@ -41,23 +41,32 @@ passwd filipe
 
 ##### Privilege escalation
 
-Trick visudo to open with nano:
+There are two main ways to escalate the privileges conseled to the newly created user. The `su` (substitute user) command allows the user to assume the identity of another user on the system (usually root) from an existing login. Whereas the `sudo` (substitute user do) command grants temporary privilege escalation for a specific command. 
+
+From a security perspective, it is arguably better to set up and use `sudo` instead of `su`. The `sudo` system will prompt for the users own password (or no password at all) rather than the target user (the user account you are attempting to use). This way there is no need to share passwords between users, and if it is ever needed to stop a user from having root access (or access to any other account), there is no need to change the root password. It is only needed to revoke that user's `sudo` access.
+
+First, to grant `sudo` access to the new user, the `sudo` configuration file `/etc/sudoers` has to be edited with the `visudo` command. The `visudo` command locks the sudoers file, saves edits to a temporary file, and checks that file's grammar before copying it to `/etc/sudoers`. Any error in this file can render the `sudo` command unusable, so always edit it with `visudo` to prevent errors. Also, the `visudo` opens by default with the `vi` editor, but it also honors use of the `VISUAL` and `EDITOR` enviroment variables. So in order to open `visudo` with `nano`, set the `EDITOR` before calling `visudo`.
+
 <pre>
 EDITOR=nano visudo
 </pre>
 
-Add user to the section “User privilege specification”:
+To allow the user to gain full root privileges when `sudo` precedes a command, add user to the section `User privilege specification`.
+
 <pre>
 Filipe ALL=(ALL) ALL
 </pre>
 
-Logout from root and enter the new account:
+Alternatively, allow the `wheel` group to gain full root privileges. Keep in mind that the most customized option should go at the end of the file, as the later lines overrides the previous ones. In particular, the previous command where the `filipe` user was set, should be after the `%wheel` line if the user is in this group.
+
 <pre>
-logout
+%wheel ALL=(ALL) ALL
 </pre>
 
-Once you login with the new user, you can checkout the groups information with the command:
+Finaly logout from the root account and enter the new account. Once logged, checkout the user and groups information with the `id` command.
+
 <pre>
+logout
 id
 </pre>
 
