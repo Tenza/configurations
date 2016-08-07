@@ -3,37 +3,43 @@
 ***DO NOT USE THESE NOTES BLINDLY.***  
 ***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
+This is a follow-up of the [Base System Configuration](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/2%20-%20Base%20System%20Configuration.md) guide.  
+The configurations and installations set in here suppose that ArchLinux is properly installed and configured on the system.
+
 #### Add new user
 
-It is good practice to use a normal user and elevate to root only when necessary.  
-There are a few ways to do it, but the most common ones are the following.
+It is a good practice to use a normal user and elevate to root only when necessary.
+
+> Keep ownership of personal files separate from the root user.  
+> Some applications prevent themselves from running as root.  
+> Prevent applications to have full access to the computer.  
+> Protect the system against user mistakes.  
+> Simply unnecessary.  
 
 <pre>
 useradd -m -G wheel -s /bin/bash filipe 
 </pre>
 
-This command will also automatically create a group called `filipe` with the same GID as the UID of the user `filipe`
-and makes this the default group for `filipe` on login. Making each user have their own group (with group name same as 
-user name and GID same as UID) is the preferred way to add users. 
+The `-m` switch creates the user home directory as `/home/filipe`. Within the home directory, a non-root user can read, write and execute.  
+The `-G` switch introduces a list of supplementary groups which the user will also be a member of. The default is for the user to belong only to the initial group, defined by the `-g` switch, but we also want this user to be an administrator, so we add the `wheel` group.  
+The `-s` switch defines the path and file name of the user's default login shell. After the boot process is complete, the default login shell is the one specified here. The bash shell is used in here, but others are available.  
 
-You could also make the default group something else, e.g. users. 
+The `-g` switch defines the user's initial group. If ommited, the behaviour of `useradd` will depend on the `USERGROUPS_ENAB` variable contained in `/etc/login.defs`. The default behaviour is to create a group with the same name as the username,and a GID equal to UID. Making each user have their own group is the preferred way to add users. 
 
-<pre>
-useradd -m -g users -G wheel -s /bin/bash filipe
-</pre>
+If specified, the group name must already exist. For example `useradd -m -g users -G wheel -s /bin/bash filipe` makes the default group `users`. However, using a single default group is not recommended for multi-user systems. Because typically the method for facilitating shared write access for specific groups of users is setting user umask value to 002, which means that the default group will by default always have write access to any file created by the used. 
 
-However, using a single default group (users in the example above) is not recommended for multi-user systems. 
-The reason is that typically, the method for facilitating shared write access for specific groups of users is 
-setting user umask value to 002, which means that the default group will by default always have write access 
-to any file you create. 
+##### (Optional) (Recommended) Change user details
 
-Change your finger information and password  
+The local user information is stored as plain-text in `/etc/passwd` file. Each of its lines represents a user account, and has seven fields delimited by colons. The `GECOS` field is optional, and is used for informational purposes only. The `chfn` command is used to manage this finger information.
+
+Although it is not required to protect the newly user with a password, it is recommend to do so.
+
 <pre>
 chfn filipe  
 passwd filipe
 </pre>
 
-#### Give sudo permissons to new user
+##### Privilege escalation
 
 Trick visudo to open with nano:
 <pre>
