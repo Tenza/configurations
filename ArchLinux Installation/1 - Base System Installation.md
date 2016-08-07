@@ -454,7 +454,7 @@ This is only needed if any modules were added, like adding the `mdadm` or `encry
 mkinitcpio -p linux
 </pre>
 
-The -p switch specifies a preset to utilize; most kernel packages provide a related mkinitcpio preset file, found in `/etc/mkinitcpio.d` (e.g. `/etc/mkinitcpio.d/linux.preset` for linux). A preset is a predefined definition of how to create an initramfs image instead of specifying the configuration file and output file every time.
+The `-p` switch specifies a preset to utilize; most kernel packages provide a related mkinitcpio preset file, found in `/etc/mkinitcpio.d` (e.g. `/etc/mkinitcpio.d/linux.preset` for linux). A preset is a predefined definition of how to create an initramfs image instead of specifying the configuration file and output file every time.
 > Warning: preset files are used to automatically regenerate the initramfs after a kernel update; be careful when editing them.
 
 <sub><sup>
