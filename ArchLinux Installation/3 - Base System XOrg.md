@@ -8,13 +8,13 @@ The configurations and installations set in here suppose that ArchLinux is prope
 
 #### Add new user
 
-It is a good practice to use a normal user and elevate to root only when necessary.
+It is a good practice to use a normal user and elevate to root only when necessary.  
+There are a few reasons on why this should be done.
 
 > Keep ownership of personal files separate from the root user.  
 > Some applications prevent themselves from running as root.  
 > Prevent applications to have full access to the computer.  
 > Protect the system against user mistakes.  
-> Simply unnecessary.  
 
 <pre>
 useradd -m -G wheel -s /bin/bash filipe 
