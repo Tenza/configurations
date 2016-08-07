@@ -39,11 +39,13 @@ chfn filipe
 passwd filipe
 </pre>
 
-##### Privilege escalation
+#### Privilege escalation
 
 There are two main ways to escalate the privileges conseled to the newly created user. The `su` (substitute user) command allows the user to assume the identity of another user on the system (usually root) from an existing login. Whereas the `sudo` (substitute user do) command grants temporary privilege escalation for a specific command. 
 
 From a security perspective, it is arguably better to set up and use `sudo` instead of `su`. The `sudo` system will prompt for the users own password (or no password at all) rather than the target user (the user account you are attempting to use). This way there is no need to share passwords between users, and if it is ever needed to stop a user from having root access (or access to any other account), there is no need to change the root password. It is only needed to revoke that user's `sudo` access.
+
+##### Sudo
 
 First, to grant `sudo` access to the new user, the `sudo` configuration file `/etc/sudoers` has to be edited with the `visudo` command. The `visudo` command locks the sudoers file, saves edits to a temporary file, and checks that file's grammar before copying it to `/etc/sudoers`. Any error in this file can render the `sudo` command unusable, so always edit it with `visudo` to prevent errors. Also, the `visudo` opens by default with the `vi` editor, but it also honors use of the `VISUAL` and `EDITOR` enviroment variables. So in order to open `visudo` with `nano`, set the `EDITOR` before calling `visudo`.
 
@@ -63,7 +65,25 @@ Alternatively, allow the `wheel` group to gain full root privileges. Keep in min
 %wheel ALL=(ALL) ALL
 </pre>
 
-Finaly logout from the root account and enter the new account. Once logged, checkout the user and groups information with the `id` command.
+##### Su
+
+Sometimes can be advantageous for a system administrator to use the shell account of an ordinary user rather than its own. In particular, occasionally the most efficient way to solve a user's problem is to log into that user's account in order to reproduce or debug the problem.
+
+However, in many situations it is not desirable, or it can even be dangerous, for the root user to be operating from an ordinary user's shell account and with that account's environmental variables rather than from its own. While inadvertently using an ordinary user's shell account, root could install a program or make other changes to the system that would not have the same result as if they were made while using the root account. For instance, a program could be installed that could give the ordinary user power to accidentally damage the system or gain unauthorized access to certain data.
+
+Thus, it is advisable that administrative users, as well as any other users that are authorized to use su, acquire the habit of always following the su command with a space and then a hyphen, the hyphen has two effects.
+
+> Switches from the current directory to the home directory of the new user (e.g., to /root in the case of the root user) by logging in as that user.
+
+> Changes the environmental variables to those of the new user as dictated by their ~/.bashrc. That is, if the first argument to su is a hyphen, the current directory and environment will be changed to what would be expected if the new user had actually logged on to a new session (rather than just taking over an existing session).
+
+<pre>
+su - root
+</pre>
+
+#### Login on the new user account
+
+Once the new account has been properly created and configured, `logout` from the root account and check the user and groups information with the `id` command, to confirm that everything is properly configured.
 
 <pre>
 logout
