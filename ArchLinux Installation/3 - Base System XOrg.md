@@ -21,10 +21,10 @@ useradd -m -G wheel -s /bin/bash filipe
 </pre>
 
 The `-m` switch creates the user home directory as `/home/filipe`. Within the home directory, a non-root user can read, write and execute.  
-The `-G` switch introduces a list of supplementary groups which the user will also be a member of. The default is for the user to belong only to the initial group, defined by the `-g` switch, but we also want this user to be an administrator, so we add the `wheel` group.  
+The `-G` switch introduces a list of supplementary groups which the user will also be a member of. The default is for the user to belong only to the initial group, defined by the `-g` switch. In this case, the user is going to be an administrator of the system, so he should be a member of the `wheel` group.  
 The `-s` switch defines the path and file name of the user's default login shell. After the boot process is complete, the default login shell is the one specified here. The bash shell is used in here, but others are available.  
 
-The `-g` switch defines the user's initial group. If ommited, the behaviour of `useradd` will depend on the `USERGROUPS_ENAB` variable contained in `/etc/login.defs`. The default behaviour is to create a group with the same name as the username,and a GID equal to UID. Making each user have their own group is the preferred way to add users. 
+The `-g` switch defines the user's initial group. If omitted, the behavior of `useradd` will depend on the `USERGROUPS_ENAB` variable contained in `/etc/login.defs`. The default behavior is to create a group with the same name as the username, and a GID equal to UID. Making each user have their own group is the preferred way to add users. 
 
 If specified, the group name must already exist. For example `useradd -m -g users -G wheel -s /bin/bash filipe` makes the default group `users`. However, using a single default group is not recommended for multi-user systems. Because typically the method for facilitating shared write access for specific groups of users is setting user umask value to 002, which means that the default group will by default always have write access to any file created by the used. 
 
@@ -41,7 +41,7 @@ passwd filipe
 
 #### Privilege escalation
 
-There are two main ways to escalate the privileges conseled to the newly created user. The `su` (substitute user) command allows the user to assume the identity of another user on the system (usually root) from an existing login. Whereas the `sudo` (substitute user do) command grants temporary privilege escalation for a specific command. 
+There are two main ways to escalate the privileges of the newly created user. The `su` (substitute user) command allows the user to assume the identity of another user on the system (usually root) from an existing login. Whereas the `sudo` (substitute user do) command grants temporary privilege escalation for a specific command. 
 
 From a security perspective, it is arguably better to set up and use `sudo` instead of `su`. The `sudo` system will prompt for the users own password (or no password at all) rather than the target user (the user account you are attempting to use). This way there is no need to share passwords between users, and if it is ever needed to stop a user from having root access (or access to any other account), there is no need to change the root password. It is only needed to revoke that user's `sudo` access.
 
