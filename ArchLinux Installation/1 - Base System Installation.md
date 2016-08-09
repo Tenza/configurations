@@ -463,16 +463,6 @@ References:
 https://wiki.archlinux.org/index.php/mkinitcpio
 </sup></sub>
 
-#### Configure GRUB2
-
-<pre>
-grub-mkconfig -o /boot/grub/grub.cfg
-</pre>
-
-The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a wrapper.  
-
-> Note that if you already installed the package `os-prober` in order to dualboot, it might not detect other OS's installations until the system is rebooted, to a non-live environment.
-
 ##### (Optional) (Encryption) Enable dm-crypt at boot
 
 In order to unlock the encrypted root partition at boot, the following kernel parameters need to be set.
@@ -487,14 +477,22 @@ GRUB_CMDLINE_LINUX="cryptdevice=/dev/md125p6:ArchCrypt root=/dev/mapper/ArchCryp
 
 The kernel parameters are added to `GRUB_CMDLINE_LINUX` are always effective, and the  `GRUB_CMDLINE_LINUX_DEFAULT` are effective ONLY during normal boot (NOT during recovery mode). Since these hooks are an integral part of the system setup, they need to be always executed.
 
-<pre>
-grub-mkconfig -o /boot/grub/grub.cfg
-</pre>
-
 <sub><sup>
 References:
 https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration#Boot_loader
 </sup></sub>
+
+#### Configure GRUB2
+
+Even if no kernel parameters were added to `/etc/default/grub` the grub configuration file still needs to be generated. This command will essencially build the file `/boot/grub/grub.cfg` that contains the menu used by the bootloader.
+
+<pre>
+grub-mkconfig -o /boot/grub/grub.cfg
+</pre>
+
+The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a wrapper.  
+
+> Note that if you already installed the package `os-prober` in order to dualboot, it might not detect other OS's installations until the system is rebooted, to a non-live environment.
 
 #### Install GRUB2 to the MBR
 
