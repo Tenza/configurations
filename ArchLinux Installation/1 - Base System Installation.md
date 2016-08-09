@@ -477,6 +477,10 @@ Note that if you already installed the package `os-prober` in order to dualboot,
 In order to unlock the encrypted root partition at boot, the following kernel parameters need to be set.
 
 <pre>
+nano /etc/default/grub
+</pre>
+
+<pre>
 GRUB_CMDLINE_LINUX="cryptdevice=/dev/md125p6:ArchCrypt root=/dev/mapper/ArchCrypt"
 </pre>
 
