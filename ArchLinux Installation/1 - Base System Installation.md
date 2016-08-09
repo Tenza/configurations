@@ -254,7 +254,7 @@ Additionally create and mount the unencrypted `/boot` partition.
 
 <pre>
 mkdir /mnt/boot
-mount -t ext4 dev/md125p5 /mnt/boot
+mount -t ext4 /dev/md125p5 /mnt/boot
 </pre>
 
 #### SWAP
@@ -398,22 +398,23 @@ https://wiki.archlinux.org/index.php/Change_root
 
 #### (Optional) (RAID) Create file to assembly RAID arrays and enable the mdadm mkinitcpio hook
 
-This is required for the RAID 0 configuration. The module `mdadm` will use the information generated here to assemble the array on boot. Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards. Start by finding out where the RAID array is located.
+This is required for the RAID 0 configuration. The module `mdadm_udev` will use the information generated here to assemble the array on boot. Also, note that even if the wiki says that `mdraid` is used for fake raid systems, Intel advises the use of `mdadm` for their boards. Start by finding out where the RAID array is located.
 
 <pre>
+mdadm --misc --help
 mdadm --detail-platform
-mdadm -E /dev/<b>mdX</b>
+mdadm --examine /dev/<b>mdX</b>
 </pre>
 
-In my case the array is located on md127 and uses Intel Matrix Storage Manager (imsm).  
-Now generate the file that `mdadm` will use to assemble the array on boot.
+In my case the array is located on md127, and the md125 and md126 are the members of the Intel Matrix Storage Manager (imsm) controler. Now simply get the identity of the members with the help of `mdadm`, and add them to the file `/etc/mdadm.conf` in order to assemble the array on boot. These instructions can be read in the `/etc/mdadm.conf` file itself.
 
 <pre>
-mdadm -I -e imsm /dev/<b>md127</b>
-mdadm --examine --scan >> /mnt/etc/mdadm.conf
+mdadm --examine --scan >> /etc/mdadm.conf
 </pre>
 
-Now enable  the `mdadm` hook upon boot, **in the correct order** in order to assemble the RAID array.
+Now enable the `mdadm_udev` hook upon boot, **in the correct order** in order to assemble the RAID array. 
+
+> Although the wiki advocates for the use of `mdadm_udev`, I also tried using the module `mdadm`, but unfortunatly it generated a segmentation fault, and my system did not boot.
 
 <pre>
 nano /etc/mkinitcpio.conf  
@@ -469,23 +470,21 @@ grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
 The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a wrapper.
+Note that if you already installed the package `os-prober` in order to dualboot, it might not detect other OS's installations until the system is rebooted, to a non-live environment.
 
 ##### (Optional) (Encryption) Enable dm-crypt at boot
 
 In order to unlock the encrypted root partition at boot, the following kernel parameters need to be set.
 
 <pre>
-GRUB_CMDLINE_LINUX="cryptdevice=/dev/md125p6:ArchCrypt root=/dev/md125p5"
+GRUB_CMDLINE_LINUX="cryptdevice=/dev/md125p6:ArchCrypt root=/dev/mapper/ArchCrypt"
 </pre>
 
 <pre>
 grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
-The kernel parameters are added to `GRUB_CMDLINE_LINUX` instead of `GRUB_CMDLINE_LINUX_DEFAULT` because:  
-
-Options in `GRUB_CMDLINE_LINUX` are always effective.  
-Options in `GRUB_CMDLINE_LINUX_DEFAULT` are effective ONLY during normal boot (NOT during recovery mode).
+The kernel parameters are added to `GRUB_CMDLINE_LINUX` are always effective, and the  `GRUB_CMDLINE_LINUX_DEFAULT` are effective ONLY during normal boot (NOT during recovery mode). Since these hooks are an integral part of the system setup, they need to be always executed.
 
 <sub><sup>
 References:
