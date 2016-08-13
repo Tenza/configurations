@@ -170,7 +170,7 @@ mdadm -E /dev/<b>md127</b>
 
 Lastly the size of blocks in bytes has to be specified. Valid block-size values are 1024, 2048 and 4096 bytes per block. If omitted, block-size is heuristically determined by the filesystem size and the expected usage of the filesystem. But since I already used a 4k block size to determine the stride, I will use 4096 bytes.
 
-> I also tried letting the `mkfs` use its defaults (`mkfs.ext4 -v -L Arch /dev/md125p3`) in order to determine the above parameters. And it correctly guessed everything, so if you are unsure about something, trust the defaults. 
+> I also tried letting the `mkfs` use its defaults (`mkfs.ext4 -v -L Arch /dev/md125p3`) in order to determine the above parameters. And it correctly guessed everything, so if there is any doughbt about something, just trust the defaults. 
 
 <sub><sup>
 References:  
@@ -495,7 +495,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 The `grub-mkconfig` command is equal to `update-grub` on Ubuntu, that is just a wrapper.  
 
-> Note that if you already installed the package `os-prober` in order to dualboot, it might not detect other OS's installations until the system is rebooted, to a non-live environment.
+> Note that if `os-prober` was already installed in order to dualboot, it might not detect other OS's installations until the system is rebooted to a non-live environment.
 
 #### Install GRUB2 to the MBR
 
