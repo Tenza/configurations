@@ -426,6 +426,7 @@ HOOKS="... block <b>mdadm_udev</b> filesystems ..."
 
 <sub><sup>
 References:  
+http://www.intel.com/content/www/us/en/intelligent-systems/software/rst-linux-paper.html
 https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz  
 https://wiki.archlinux.org/index.php/RAID#Installing_Arch_Linux_on_RAID  
 https://forums.gentoo.org/viewtopic-t-888520.html
@@ -433,7 +434,7 @@ https://forums.gentoo.org/viewtopic-t-888520.html
 
 #### (Optional) (Encryption) Enable the dm-crypt mkinitcpio hook
 
-Add the `encrypt` hook to mkinitcpio, **in the correct order**.
+If encryption was setup, the hook needs to be loaded on boot. Add the `encrypt` hook to mkinitcpio, **in the correct order**. It should be after the `mdadm_udev` if a raid array is present, because the array needs to be assembled before the encryption layer can be loaded.
 
 <pre>
 nano /etc/mkinitcpio.conf  
