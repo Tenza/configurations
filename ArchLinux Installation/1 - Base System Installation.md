@@ -170,6 +170,8 @@ mdadm -E /dev/<b>md127</b>
 
 Lastly the size of blocks in bytes has to be specified. Valid block-size values are 1024, 2048 and 4096 bytes per block. If omitted, block-size is heuristically determined by the filesystem size and the expected usage of the filesystem. But since I already used a 4k block size to determine the stride, I will use 4096 bytes.
 
+> I also tried letting the `mkfs` use its defaults (`mkfs.ext4 -v -L Arch /dev/md125p3`) in order to determine the above parameters. And it correctly guessed everything, so if you are unsure about something, trust the defaults. 
+
 <sub><sup>
 References:  
 https://wiki.debian.org/SSDOptimization#Mounting_SSD_filesystems  
