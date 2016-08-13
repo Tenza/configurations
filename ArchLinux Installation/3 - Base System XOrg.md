@@ -100,7 +100,7 @@ pacman -Syy
 
 #### AUR Helper
 
-There a a few helpers scripts to automatize the task of installing software from the AUR repository. I've personally tried `packer`, `yaourt` and `pacaur`, they are all pretty decent and this basically comes down to personal choice. [Here is a table](https://wiki.archlinux.org/index.php/AUR_helpers#Comparison_table) that can help with that decision. At the moment I'm using `pacaur` and the following instructions are for this helper, but they should be similar to any other.
+There are a few helpers scripts to automatize the task of installing software from the AUR repository. I've personally tried `packer`, `yaourt` and `pacaur`, they are all pretty decent and this basically comes down to personal choice. [Here is a table](https://wiki.archlinux.org/index.php/AUR_helpers#Comparison_table) that can help with that decision. At the moment I'm using `pacaur` and the following instructions are for this helper, but they should be similar to any other.
 
 Without any helper script, the manual building process to download and install software from the AUR has to be used because these helper scripts are in the AUR itself. Before anything, make sure that the package `base-devel` is installed, it is required in order to manually build the packages. Then, start of by downloading the helper script, and the dependencies that are also in the AUR, unpack the tarballs, build the packages and finally install the dependencies and the helper script.
 
