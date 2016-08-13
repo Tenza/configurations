@@ -24,9 +24,7 @@ The `-m` switch creates the user home directory as `/home/filipe`. Within the ho
 The `-G` switch introduces a list of supplementary groups which the user will also be a member of. The default is for the user to belong only to the initial group, defined by the `-g` switch. In this case, the user is going to be an administrator of the system, so he should be a member of the `wheel` group.  
 The `-s` switch defines the path and file name of the user's default login shell. After the boot process is complete, the default login shell is the one specified here. The bash shell is used in here, but others are available.  
 
-The `-g` switch defines the user's initial group. If omitted, the behavior of `useradd` will depend on the `USERGROUPS_ENAB` variable contained in `/etc/login.defs`. The default behavior is to create a group with the same name as the username, and a GID equal to UID. Making each user have their own group is the preferred way to add users. 
-
-If specified, the group name must already exist. For example `useradd -m -g users -G wheel -s /bin/bash filipe` makes the default group `users`. However, using a single default group is not recommended for multi-user systems. Because typically the method for facilitating shared write access for specific groups of users is setting user umask value to 002, which means that the default group will by default always have write access to any file created by the used. 
+The `-g` switch defines the user's initial group. If omitted, the behavior of `useradd` will depend on the `USERGROUPS_ENAB` variable contained in `/etc/login.defs`. The default behavior is to create a group with the same name as the username, and a GID equal to UID. Making each user have their own group is the preferred way to add users. If specified, the group name must already exist. For example `useradd -m -g users -G wheel -s /bin/bash filipe` makes the default group `users`. However, using a single default group is not recommended for multi-user systems. Because typically the method for facilitating shared write access for specific groups of users is setting user umask value to 002, which means that the default group will by default always have write access to any file created by the used. 
 
 ##### (Optional) (Recommended) Change user details
 
@@ -45,9 +43,9 @@ There are two main ways to escalate the privileges of the newly created user. Th
 
 From a security perspective, it is arguably better to set up and use `sudo` instead of `su`. The `sudo` system will prompt for the users own password (or no password at all) rather than the target user (the user account you are attempting to use). This way there is no need to share passwords between users, and if it is ever needed to stop a user from having root access (or access to any other account), there is no need to change the root password. It is only needed to revoke that user's `sudo` access.
 
-##### Sudo
+##### (1) (Recommended) Sudo
 
-First, to grant `sudo` access to the new user, the `sudo` configuration file `/etc/sudoers` has to be edited with the `visudo` command. The `visudo` command locks the sudoers file, saves edits to a temporary file, and checks that file's grammar before copying it to `/etc/sudoers`. Any error in this file can render the `sudo` command unusable, so always edit it with `visudo` to prevent errors. Also, the `visudo` opens by default with the `vi` editor, but it also honors use of the `VISUAL` and `EDITOR` enviroment variables. So in order to open `visudo` with `nano`, set the `EDITOR` before calling `visudo`.
+To grant `sudo` access to the new user, the `sudo` configuration file `/etc/sudoers` has to be edited with the `visudo` command. The `visudo` command locks the sudoers file, saves edits to a temporary file, and checks that file's grammar before copying it to `/etc/sudoers`. Any error in this file can render the `sudo` command unusable, so always edit it with `visudo` to prevent errors. Also, the `visudo` opens by default with the `vi` editor, but it also honors use of the `VISUAL` and `EDITOR` enviroment variables. So in order to open `visudo` with `nano`, set the `EDITOR` before calling `visudo`.
 
 <pre>
 EDITOR=nano visudo
@@ -56,7 +54,7 @@ EDITOR=nano visudo
 To allow the user to gain full root privileges when `sudo` precedes a command, add user to the section `User privilege specification`.
 
 <pre>
-Filipe ALL=(ALL) ALL
+filipe ALL=(ALL) ALL
 </pre>
 
 Alternatively, allow the `wheel` group to gain full root privileges. Keep in mind that the most customized option should go at the end of the file, as the later lines overrides the previous ones. In particular, the previous command where the `filipe` user was set, should be after the `%wheel` line if the user is in this group.
@@ -65,17 +63,16 @@ Alternatively, allow the `wheel` group to gain full root privileges. Keep in min
 %wheel ALL=(ALL) ALL
 </pre>
 
-##### Su
+##### (2) (Not Recommended) Su
 
 Sometimes can be advantageous for a system administrator to use the shell account of an ordinary user rather than its own. In particular, occasionally the most efficient way to solve a user's problem is to log into that user's account in order to reproduce or debug the problem.
 
 However, in many situations it is not desirable, or it can even be dangerous, for the root user to be operating from an ordinary user's shell account and with that account's environmental variables rather than from its own. While inadvertently using an ordinary user's shell account, root could install a program or make other changes to the system that would not have the same result as if they were made while using the root account. For instance, a program could be installed that could give the ordinary user power to accidentally damage the system or gain unauthorized access to certain data.
 
-Thus, it is advisable that administrative users, as well as any other users that are authorized to use su, acquire the habit of always following the su command with a space and then a hyphen, the hyphen has two effects.
+Thus, it is advisable that administrative users, as well as any other users that are authorized to use `su`, acquire the habit of always following the su command with a space and then a hyphen, the hyphen has two effects.
 
-> Switches from the current directory to the home directory of the new user (e.g., to /root in the case of the root user) by logging in as that user.
-
-> Changes the environmental variables to those of the new user as dictated by their ~/.bashrc. That is, if the first argument to su is a hyphen, the current directory and environment will be changed to what would be expected if the new user had actually logged on to a new session (rather than just taking over an existing session).
+1. Switches from the current directory to the home directory of the new user (e.g., to /root in the case of the root user) by logging in as that user.  
+2. Changes the environmental variables to those of the new user as dictated by their ~/.bashrc. That is, if the first argument to su is a hyphen, the current directory and environment will be changed to what would be expected if the new user had actually logged on to a new session (rather than just taking over an existing session).
 
 <pre>
 su - root
@@ -101,29 +98,28 @@ nano /etc/pacman.conf
 pacman -Syy
 </pre>
 
-#### Install Yaourt
+#### AUR Helper
 
+There a a few helpers scripts to automatize the task of installing software from the AUR repository. I've personally tried `packer`, `yaourt` and `paraur`, they are all pretty decent and this basically comes down to personal choise. [Here is a table](https://wiki.archlinux.org/index.php/AUR_helpers#Comparison_table) that can help with that desision. At the moment I'm using `pacaur` and the following instructions are for this helper, but they should be similar to any other.
 
-
-#### Install Packer
-
-First install the components needed to use `wget` and `git`, then get the tarball and extract.  
-Finally, build the package with makepkg and install it using pacman.
+Without any helper script, the manual building process to download and install software from the AUR has to be used because these helper scripts are in the AUR itself. Before anything, make sure that the package `base-devel` is installed, it is requiered in order to manually build the packages. Then, start of by downloading the helper script, and the dependencies that are also in the AUR, unpack the tarballs, build the packages and finally install the dependencies and the helper script.
 
 <pre>
-pacman -S wget git jshon expac  
-wget https://aur.archlinux.org/packages/pa/packer/packer.tar.gz  
-tar zxvf packer.tar.gz  
-cd packer && makepkg  
-pacman -U packer (press tab)
+mkdir temp && cd temp
+curl - O https://aur.archlinux.org/cgit/aur.git/snapshot/cower.tar.gz
+curl - O https://aur.archlinux.org/cgit/aur.git/snapshot/pacaur.tar.gz
+tar zxvf cower.tar.gz
+tar zxvf pacaur.tar.gz
+cd cower && makepkg -sri
+cd pacaur && makepkg -sri
+pacman -U cower (press tab)
+pacman -U packaur (press tab)
+rm -R temp
 </pre>
 
-Once installed, cleanup:
-
-<pre>
-rm -R packer  
-rm packer.tar.gz
-</pre>
+The `makepkg -s` switch delegates that missing dependencies to be installed using pacman.  
+The `makepkg -s` switch delegates that upon successful build, remove any dependencies installed by makepkg during dependency auto-resolution and installation when using `-s`.  
+The `makepkg -i` switch delegates to install or upgrade the package after a successful build using pacman.  
 
 <sub><sup>
 References:
