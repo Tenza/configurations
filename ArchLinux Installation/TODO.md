@@ -1,3 +1,34 @@
+#### PulseAudio Audiophile
+
+By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
+
+<pre>
+nano /etc/pulse/daemon.conf
+add: default-sample-format = s32le 
+add: default-sample-rate = 96000 
+add: resample-method = speex-float-5 
+</pre>
+
+For the most geniune resampling at the cost of high CPU usage (even on 2011 CPUs) you can add: 
+
+<pre>
+nano /etc/pulse/daemon.conf
+resample-method = src-sinc-best-quality 
+</pre>
+
+If you are having problems with the channels set by pulseaudio, you can set them manually by adding:
+
+<pre>
+nano /etc/pulse/daemon.conf
+default-sample-channels = 3
+default-channel-map = front-left,front-right,lfe
+</pre>
+
+<sub><sup>
+References: 
+http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
+</sup></sub>
+
 ### Configure X11 system
 
 ##### Fonts
