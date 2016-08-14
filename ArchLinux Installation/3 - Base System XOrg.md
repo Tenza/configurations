@@ -20,11 +20,12 @@ There are a few reasons on why this should be done.
 useradd -m -G wheel -s /bin/bash filipe 
 </pre>
 
-The `-m` switch creates the user home directory as `/home/filipe`. Within the home directory, a non-root user can read, write and execute.  
-The `-G` switch introduces a list of supplementary groups which the user will also be a member of. The default is for the user to belong only to the initial group, defined by the `-g` switch. In this case, the user is going to be an administrator of the system, so he should be a member of the `wheel` group.  
-The `-s` switch defines the path and file name of the user's default login shell. After the boot process is complete, the default login shell is the one specified here. The bash shell is used in here, but others are available.  
-
-The `-g` switch defines the user's initial group. If omitted, the behavior of `useradd` will depend on the `USERGROUPS_ENAB` variable contained in `/etc/login.defs`. The default behavior is to create a group with the same name as the username, and a GID equal to UID. Making each user have their own group is the preferred way to add users. If specified, the group name must already exist. For example `useradd -m -g users -G wheel -s /bin/bash filipe` makes the default group `users`. However, using a single default group is not recommended for multi-user systems. Because typically the method for facilitating shared write access for specific groups of users is setting user umask value to 002, which means that the default group will by default always have write access to any file created by the used. 
+| Switch | Description | 
+| --- | --- | 
+| -m | Creates the user home directory as `/home/filipe`. Within the home directory, a non-root user can read, write and execute. | 
+| -G | Introduces a list of supplementary groups which the user will also be a member of. The default is for the user to belong only to the initial group, defined by the `-g` switch. In this case, the user is going to be an administrator of the system, so he should be a member of the `wheel` group. | 
+| -s | Defines the path and file name of the user's default login shell. After the boot process is complete, the default login shell is the one specified here. The bash shell is used in here, but others are available.  |
+| -g | Defines the user's initial group. If omitted, the behavior of `useradd` will depend on the `USERGROUPS_ENAB` variable contained in `/etc/login.defs`. The default behavior is to create a group with the same name as the username, and a GID equal to UID. Making each user have their own group is the preferred way to add users. If specified, the group name must already exist. For example `useradd -m -g users -G wheel -s /bin/bash filipe` makes the default group `users`. However, using a single default group is not recommended for multi-user systems. Because typically the method for facilitating shared write access for specific groups of users is setting user umask value to 002, which means that the default group will by default always have write access to any file created by the used. |
 
 ##### (Optional) (Recommended) Change user details
 
@@ -112,14 +113,21 @@ tar zxvf cower.tar.gz
 tar zxvf pacaur.tar.gz
 cd cower && makepkg -sri
 cd pacaur && makepkg -sri
-pacman -U cower (press tab)
-pacman -U packaur (press tab)
 rm -R temp
 </pre>
 
-The `makepkg -s` switch delegates that missing dependencies to be installed using pacman.  
-The `makepkg -s` switch delegates that upon successful build, remove any dependencies installed by makepkg during dependency auto-resolution and installation when using `-s`.  
-The `makepkg -i` switch delegates to install or upgrade the package after a successful build using pacman.  
+| Switch | Description | 
+| --- | --- | 
+| tar -z | Filter the archive through gzip | 
+| tar -x | Extract files from an archive | 
+| tar -v | Verbosely list files processed |
+| tar -f | The following argument is a f̱ilename |
+
+| Switch | Description | 
+| --- | --- | 
+| makepkg -s | Installs missing dependencies using pacman | 
+| makepkg -s | Upon successful build, removes any dependencies installed by `makepkg` | 
+| makepkg -i | Install or upgrade the package after a successful build using pacman |
 
 <sub><sup>
 References:
@@ -128,26 +136,26 @@ http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
 
 #### ALSA
 
-ALSA is a set of build-in GNU/Linux kernel modules. Therefore, manual installation is not necessary. 
-But the channels are muted by default, so we install `alsa-utils` that contains alsamixer to unmute the audio.
-The `alsa-utils` package also comes with systemd unit configuration files alsa-restore.service and alsa-store.service by default. These are automatically installed and activated during installation. Therefore, there is no further action needed. Though, you can check their status using systemctl
+ALSA is a set of build-in GNU/Linux kernel modules. Therefore, manual installation is not necessary. Channels are muted by default, in order to unmute the audio `alsa-utils` can be installed. The `alsa-utils` package also comes with systemd unit configuration files `alsa-restore.service` and `alsa-store.service` by default. These are automatically installed and activated during installation, no further action needed, except for a reboo to activate the services. They can be checked with `systemctl status alsa-store.service` and `systemctl status alsa-restore.service`.
 
 <pre>
 pacman -S alsa-utils
-run alsamixer
-Press H to unmute. Press F1 for help.
-run speaker-test
-</pre>
-
-If you need high quality resampling install the `alsa-plugins` package to enable upmixing/downmixing and other advanced features. When software mixing is enabled, ALSA is forced to resample everything to the same frequency (48 kHz by default when supported). To do so, install the plugins for high quality resampling:
-<pre>
-pacman -S alsa-plugins
-</pre>
-
-To test stereo audio (for more channels change the -c parameter) use:
-<pre>
+alsamixer
+Press F1 for help.
 speaker-test -c 2
 </pre>
+
+When software mixing is enabled, ALSA is forced to resample everything to the same frequency (48 kHz by default when supported). By default, it will try to use the speexrate converter to do so, and fallback to low-quality linear interpolation if it is not available.
+So, if for some reason the audio quality is poor, install the `alsa-plugins` package to enable upmixing/downmixing and other advanced features.
+
+<pre>
+pacman -S alsa-plugins
+speaker-test -c 2
+</pre>
+
+| Switch | Description | 
+| --- | --- | 
+| -c X | Number of channels |
 
 #### PulseAudio
 
