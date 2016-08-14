@@ -295,7 +295,9 @@ If a wired connection in being used, try the ping command because DHCP should be
 ping -c 3 google.com
 </pre>
 
-The `-c` switch stops execution after 3 tries.
+| Switch | Description | 
+| --- | --- | 
+| -c X | Number of data packets to send |
 
 ##### (Optional) Activate wireless connectivity
 
@@ -311,7 +313,9 @@ wifi-menu
 pacstrap -i /mnt base base-devel
 </pre>
 
-The `-i` switch ensures prompting before package installation. With the base group, the first initramfs will be generated and installed to the new system's boot path; double-check output prompts ==> Image creation successful for it. 
+| Switch | Description | 
+| --- | --- | 
+| -i | Ensures prompting before package installation. With the base group, the first initramfs will be generated and installed to the new system's boot path; double-check output prompts ==> Image creation successful for it. |
 
 Also keep in mind that only the `base` package is needed have a working system, but the `base-devel` package was added because it will enable us to build extra packages to add to the system.
 
@@ -458,8 +462,9 @@ This is only needed if any modules were added, like adding the `mdadm` or `encry
 mkinitcpio -p linux
 </pre>
 
-The `-p` switch specifies a preset to utilize; most kernel packages provide a related mkinitcpio preset file, found in `/etc/mkinitcpio.d` (e.g. `/etc/mkinitcpio.d/linux.preset` for linux). A preset is a predefined definition of how to create an initramfs image instead of specifying the configuration file and output file every time.
-> Warning: preset files are used to automatically regenerate the initramfs after a kernel update; be careful when editing them.
+| Switch | Description | 
+| --- | --- | 
+| -p | Specifies a preset to utilize; most kernel packages provide a related mkinitcpio preset file, found in `/etc/mkinitcpio.d` (e.g. `/etc/mkinitcpio.d/linux.preset` for linux). A preset is a predefined definition of how to create an initramfs image instead of specifying the configuration file and output file every time. |
 
 <sub><sup>
 References:
@@ -503,8 +508,9 @@ This will install the bootloader to the first sector of the disk.
 Note that it is possible to install to a partition, but is not recommended.  
 Also, this will be needed if the formatted partition contained `/etc/default/grub` or `/etc/grub.d/`.
 
-The `--target=i386-pc` switch instructs grub-install to install for BIOS systems only.  
-It is recommended to always use this option to remove ambiguity in grub-install. 
+| Switch | Description | 
+| --- | --- | 
+| --target=i386-pc | instructs grub-install to install for BIOS systems only. It is recommended to always use this option to remove ambiguity in grub-install. |
 
 ##### Desktop  
 <pre>
