@@ -87,7 +87,7 @@ logout
 id
 </pre>
 
-#### Activate multilib repo
+#### Activate [multilib] repository
 
 The multilib repository is an official repository which allows the user to run and build 32-bit applications on 64-bit installations of Arch Linux. A 64-bit installation of Arch Linux with multilib enabled follows a directory structure similar to Debian. The 32-bit compatible libraries are located under `/usr/lib32/`, and the native 64-bit libraries under `/usr/lib/`. 
 
@@ -135,14 +135,17 @@ References:
 http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
 </sup></sub>
 
-#### ALSA
+#### Audio Drivers
 
-ALSA is a set of build-in GNU/Linux kernel modules. Therefore, manual installation is not necessary. Channels are muted by default, in order to unmute the audio `alsa-utils` can be installed. The `alsa-utils` package also comes with systemd unit configuration files `alsa-restore.service` and `alsa-store.service` by default. These are automatically installed and activated during installation, no further action needed, except for a reboo to activate the services. They can be checked with `systemctl status alsa-store.service` and `systemctl status alsa-restore.service`.
+##### ALSA
+
+ALSA is a set of build-in GNU/Linux kernel modules. Therefore, manual installation is not necessary. Channels are muted by default, and in order to unmute the audio `alsamixer`, a application within `alsa-utils` can be installed. The `alsa-utils` package also comes with systemd unit configuration files `alsa-restore.service` and `alsa-state.service` by default. These are automatically installed and activated during installation, no further action needed. They can be checked with `systemctl status alsa-restore.service` and `systemctl status alsa-state.service`.
 
 <pre>
 pacman -S alsa-utils
 alsamixer
 Press F1 for help.
+reboot
 speaker-test -c 2
 </pre>
 
@@ -158,21 +161,23 @@ speaker-test -c 2
 | --- | --- | 
 | -c X | Number of channels |
 
-#### PulseAudio
+##### PulseAudio
 
-Now we need a sound server, it serves as a proxy to sound applications using existing kernel sound components like ALSA.
-Since ALSA is included in Arch Linux by default, the most common deployment scenarios include PulseAudio with ALSA. 
+PulseAudio is a sound server, it serves as a proxy to sound applications using existing kernel sound components like ALSA.
+Since ALSA is included in ArchLinux by default, the most common deployment scenarios include PulseAudio with ALSA. Some confusion can be made between ALSA and PulseAudio. ALSA includes both Linux kernel component with sound card drivers, and a userspace component, `libalsa`. PulseAudio builds only on the kernel component, but offers compatibility with `libalsa` through `pulseaudio-alsa`.
 
-Now lets install the pulseaudio server:
 <pre>
 pacman -S pulseaudio 
 </pre>
 
-Install the `pulseaudio-alsa` package. It contains the necessary /etc/asound.conf for configuring ALSA to use PulseAudio.
-Also install `lib32-libpulse` and `lib32-alsa-plugins`if you run a x86_64 system and want to have sound for 32-bit multilib programs like Wine, Skype and Steam. 
+Also install the `pulseaudio-alsa` package, it contains the necessary `/etc/asound.conf` for configuring ALSA to use PulseAudio.
+The packages `lib32-libpulse` and `lib32-alsa-plugins` are also needed in x86_64 systems that want to have sound for 32-bit multilib programs like Wine, Skype or Steam. 
+
 <pre>
 pacman -S pulseaudio-alsa lib32-libpulse lib32-alsa-plugins
 </pre>
+
+By default, PulseAudio is configured to automatically detect all sound cards and manage them. It takes control of all detected ALSA devices and redirect all audio streams to itself, making the PulseAudio daemon the central configuration point. The daemon should work mostly out of the box.
 
 <sub><sup>
 References:  
@@ -180,69 +185,29 @@ https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#High_qual
 https://wiki.archlinux.org/index.php/PulseAudio#Back-end_configuration
 </sup></sub>
 
-#### PulseAudio Audiophile
+#### Graphics Drivers
 
-By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
+When installing graphics drivers, the choice comes to proprietary vs open-source drivers. 
+For ATI, there is `Catalyst` with proprietary drivers and `ATI` with open-source drivers. 
+For NVIDIA, there is `Nvidia` with proprietary drivers and `Nouveau` with open-source drivers.
 
-<pre>
-nano /etc/pulse/daemon.conf
-add: default-sample-format = s32le 
-add: default-sample-rate = 96000 
-add: resample-method = speex-float-5 
-</pre>
+Catalyst is generally bad, it has a very poor support, quality and speed of development. Catalyst drivers have also been dropped from the oficial Arch repository. NVIDIA is a bit better, but still has problems with Optimus, with hybrid systems.
+If everything fails, there are generic drivers like `xf86-video-vesa`.
 
-For the most geniune resampling at the cost of high CPU usage (even on 2011 CPUs) you can add: 
+Start by knowing the hardware in order to choose the driver.
 
-<pre>
-nano /etc/pulse/daemon.conf
-resample-method = src-sinc-best-quality 
-</pre>
-
-If you are having problems with the channels set by pulseaudio, you can set them manually by adding:
-
-<pre>
-nano /etc/pulse/daemon.conf
-default-sample-channels = 3
-default-channel-map = front-left,front-right,lfe
-</pre>
-
-<sub><sup>
-References: 
-http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
-</sup></sub>
-
-##### XOrg
-
-Now we need to install XOrg, a display server for the X Window System. We will also install `xorg-xinit` that will provide  xinit and startx. For more configurations see `~/.xinitrc` file is a shell script read by xinit and by its front-end startx. The xinit program starts the X Window System server and works as first client program on systems that are not using a display manager. 
-
-<pre>
-pacman -S xorg-server xorg-server-utils xorg-xinit mesa
-</pre>
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/xorg#Installation  
-https://wiki.archlinux.org/index.php/Xinitrc
-</sup></sub>
-
-##### Graphic drivers
-
-First, identify your card: 
 <pre>
 lspci | grep VGA
 </pre>
 
-If you need open-souce drivers you can search the package database for a complete list of open-source video drivers: 
-<pre>
-pacman -Ss xf86-video | less
-</pre>
+##### Desktop
 
-Desktop:
+The desktop has an old graphics card (ATI Radeon HD 4000 series), there are proprietary legacy drivers (`catalyst-total-hd234k` in AUR) and open-source drivers available. 
 
-The graphics card is too old, and there is no support for it, so I use the open-source drivers.
+When choosing what to use, I would choose Catalyst drivers for newer graphics cards because they perform better in both 2D and 3D rendering, also having better power management when compared with the open source drivers. But for older cards, I prefer the open source drivers, they work generally very well.
 
 <pre>
-pacman -S mesa-dri xf86-video-vesa xf86-video-ati
+pacman -S mesa mesa-libgl lib32-mesa-libgl xf86-video-ati
 </pre>
 
 <sub><sup>
@@ -251,9 +216,10 @@ https://wiki.archlinux.org/index.php/ATI#Installation
 https://wiki.archlinux.org/index.php/Xorg#Driver_installation
 </sup></sub>
 
-Notebook:
+##### Notebook
 
-This notebook has two graphics cards, intel and nvidia.
+The notebook has a hybrid system with two graphics cards, Intel and Nvidia.
+
 In order to manage them we use `bumblebee` that is Optimus for GNU/Linux. We also install bbswitch, has the goal of power management to turn off the NVIDIA card when not used by Bumblebee. It will be detected automatically when the Bumblebee daemon starts. So, no additional configuration is necessary. 
 
 <pre>
@@ -285,6 +251,20 @@ Notebook:
 <pre>
 pacman -S xf86-input-synaptics 
 </pre>
+
+##### XOrg
+
+Now we need to install XOrg, a display server for the X Window System. We will also install `xorg-xinit` that will provide  xinit and startx. For more configurations see `~/.xinitrc` file is a shell script read by xinit and by its front-end startx. The xinit program starts the X Window System server and works as first client program on systems that are not using a display manager. 
+
+<pre>
+pacman -S xorg-server xorg-server-utils xorg-xinit mesa
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/xorg#Installation  
+https://wiki.archlinux.org/index.php/Xinitrc
+</sup></sub>
 
 ##### Test default enviroment
 
