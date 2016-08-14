@@ -309,6 +309,8 @@ wifi-menu
 
 #### Install base system
 
+This is the command that will download and install the ArchLinux operating system. Keep in mind that only the `base` package is needed have a working system, but the `base-devel` package was also added because it will enable us to build packages to add to the system.
+
 <pre>
 pacstrap -i /mnt base base-devel
 </pre>
@@ -316,8 +318,6 @@ pacstrap -i /mnt base base-devel
 | Switch | Description | 
 | --- | --- | 
 | -i | Ensures prompting before package installation. With the base group, the first initramfs will be generated and installed to the new system's boot path; double-check output prompts ==> Image creation successful for it. |
-
-Also keep in mind that only the `base` package is needed have a working system, but the `base-devel` package was added because it will enable us to build extra packages to add to the system.
 
 > If there is a warning regarding `mandb` not being able to set the locale, that is normal because the locale will only be set inside the system (using chroot). Once the desired locales are enabled and `locale-gen` generates the locales, it will be solved. [This is actually flagged as a bug that might be solved by now](https://bugs.archlinux.org/task/49426).
 
