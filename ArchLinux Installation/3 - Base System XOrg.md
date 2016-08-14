@@ -128,6 +128,8 @@ rm -R temp
 | makepkg -s | Upon successful build, removes any dependencies installed by `makepkg` | 
 | makepkg -i | Install or upgrade the package after a successful build using pacman |
 
+> When I tried to install `cower` if failed in the verification of the package signature. In order to solve the problem I added the key from the developer of `cower` with `gpg --recv-keys --keyserver hkp://pgp.mit.edu 1EB2638FF56C0C53`.
+
 <sub><sup>
 References:
 http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
