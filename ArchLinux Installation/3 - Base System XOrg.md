@@ -187,24 +187,24 @@ https://wiki.archlinux.org/index.php/PulseAudio#Back-end_configuration
 
 #### Graphics Drivers
 
-When installing graphics drivers, the choice comes to proprietary vs open-source drivers. 
-For ATI, there is `Catalyst` with proprietary drivers and `ATI` with open-source drivers. 
-For NVIDIA, there is `Nvidia` with proprietary drivers and `Nouveau` with open-source drivers.
+When selecting graphic drivers, the choice comes down to proprietary vs open-source drivers. 
+For ATI, there is `catalyst` with proprietary drivers and `xf86-video-ati` for open-source drivers. 
+For NVIDIA, there is `nvidia` with proprietary drivers and `xf86-video-nouveau` for open-source drivers.
+For Generic drivers, there is `xf86-video-vesa`.
 
-Catalyst is generally bad, it has a very poor support, quality and speed of development. Catalyst drivers have also been dropped from the oficial Arch repository. NVIDIA is a bit better, but still has problems with Optimus, with hybrid systems.
-If everything fails, there are generic drivers like `xf86-video-vesa`.
-
-Start by knowing the hardware in order to choose the driver.
+Start by knowing the hardware in order to choose the driver appropriate driver.
 
 <pre>
 lspci | grep VGA
 </pre>
 
+> All of the proprietary drivers are generally bad on legacy hardware. On newer hardware they might be better, but not without problems. ATI Catalyst proprietary drivers have a very poor support, quality and speed of development. Catalyst drivers have also been dropped from the oficial Arch repository. NVIDIA proprietary drivers at the moment suffer possible screen-tearing issues, and when it comes to hybrid systems, they do not offer support for dynamic switching like they do on Windows.
+
 ##### Desktop
 
 The desktop has an old graphics card (ATI Radeon HD 4000 series), there are proprietary legacy drivers (`catalyst-total-hd234k` in AUR) and open-source drivers available. 
 
-When choosing what to use, I would choose Catalyst drivers for newer graphics cards because they perform better in both 2D and 3D rendering, also having better power management when compared with the open source drivers. But for older cards, I prefer the open source drivers, they work generally very well.
+When choosing what to use, I would choose Catalyst drivers for newer graphics cards because they perform better in both 2D and 3D rendering, also having better power management when compared with the open source drivers. But for older cards, I prefer the open-source drivers, they work generally very well.
 
 <pre>
 pacman -S mesa mesa-libgl lib32-mesa-libgl xf86-video-ati
@@ -218,19 +218,46 @@ https://wiki.archlinux.org/index.php/Xorg#Driver_installation
 
 ##### Notebook
 
-The notebook has a hybrid system with two graphics cards, Intel and Nvidia.
+The notebook has a hybrid system with two graphics cards, Intel and NVIDIA. The software that manages the GPU's is called NVIDIA Optimus, in Windows it works by dynamicaly switching between the GPU's, based on a whilelist provided by the driver of NVIDIA. In Linux, there is no actual official NVIDIA support for the Optimus technology, or at least not completely. 
 
-In order to manage them we use `bumblebee` that is Optimus for GNU/Linux. We also install bbswitch, has the goal of power management to turn off the NVIDIA card when not used by Bumblebee. It will be detected automatically when the Bumblebee daemon starts. So, no additional configuration is necessary. 
+This subject is complex, but basically there are two softwares that attempt to deal with the lack of official support, one is called [PRIME](https://wiki.archlinux.org/index.php/PRIME), the other one is called [Bumblebee](https://wiki.archlinux.org/index.php/Bumblebee). I will leave here a few bullet points to ilustrate the senario.
+
+1. PRIME requiers a `xrandr` command to switch GPU's and than a logout to efectively change the GPU.
+2. Bumblebee requiers a `optirun` or `primusrun` command to execute a specific aplication with the dedicated GPU.
+3. PRIME integrates better with open-source drivers, that have poor performance compared with the proprietary drivers.
+4. Bumblebee integrates better with proprietary drivers, but is reported to have poor performance compared with PRIME.
+5. Bumblebee can be integrated with [Primus](https://github.com/amonakov/primus) (not PRIME) for better performance.
+6. Bumblebee can be integrated with [bbswitch](https://wiki.archlinux.org/index.php/Bumblebee#Power_management) to have better power management.
+8. There are [scripts](https://devtalk.nvidia.com/default/topic/705993/easy-switch-between-bumblebee-and-nvidia-prime/) for Ubuntu to integrate both solutions.
+9. There is also [nvidia-xrun](https://aur.archlinux.org/packages/nvidia-xrun/) that tries to ditch Bumblebee to gain a bit of performance.
+10. Read more [here](http://www.pcworld.com/article/2944964/how-to-use-nvidia-optimus-to-switch-active-gpus-and-save-power-on-linux-laptops.html), [here](http://www.thelinuxrain.com/articles/the-state-of-nvidia-optimus-on-linux), [here](http://www.webupd8.org/2012/11/primus-better-performance-and-less.html) and [here](https://support.steampowered.com/kb_article.php?ref=6316-GJKC-7437) 
+
+After consideration, I want the system to run with Bumblebee, bbswitch and Primus.
 
 <pre>
-pacman -S mesa-dri xf86-video-intel nvidia bumblebee bbswitch
+pacman -S mesa mesa-libgl lib32-mesa-libgl xf86-video-intel 
+pacman -S nvidia nvidia-libgl 
+pacman -S bumblebee lib32-virtualgl lib32-nvidia-utils 
+pacman -S bbswitch primus lib32-primus
 </pre>
 
-In order to use Bumblebee, it is necessary to add your regular user to the bumblebee group and also enable bumblebeed.service
+In order to use Bumblebee, it is necessary to add your regular user to the bumblebee group and also enable bumblebeed.service.
 
 <pre>
 gpasswd -a filipe bumblebee  
 systemctl enable bumblebeed.service 
+</pre>
+
+Test with 
+<pre>
+optirun glxgears -info
+optirun glxspheres64
+optirun glxspheres32
+optirun -b primus glxgears
+optirun -b primus glxspheres32
+optirun -b primus glxspheres64
+vblank_mode=0 primusrun glxgears
+vblank_mode=0 primusrun glxgears
 </pre>
 
 <sub><sup>
