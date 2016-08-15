@@ -246,9 +246,12 @@ In order to use Bumblebee, it is necessary to add your regular user to the bumbl
 <pre>
 gpasswd -a filipe bumblebee  
 systemctl enable bumblebeed.service 
+reboot
+systemctl status bumblebeed.service 
 </pre>
 
-Test with 
+After XOrg is installed, the Bumblebee instalation can be tested with:
+
 <pre>
 optirun glxgears -info
 optirun glxspheres64
@@ -257,14 +260,16 @@ optirun -b primus glxgears
 optirun -b primus glxspheres32
 optirun -b primus glxspheres64
 vblank_mode=0 primusrun glxgears
-vblank_mode=0 primusrun glxgears
+vblank_mode=0 primusrun glxspheres32
+vblank_mode=0 primusrun glxspheres64
 </pre>
 
 <sub><sup>
 References:  
-https://wiki.archlinux.org/index.php/Bumblebee#Installing_Bumblebee_with_Intel.2FNVIDIA  
-https://wiki.archlinux.org/index.php/Bumblebee#Start_Bumblebee
-https://wiki.archlinux.org/index.php/Hybrid_graphics#ATI_Dynamic_Switchable_Graphics
+https://wiki.archlinux.org/index.php/Bumblebee
+https://wiki.archlinux.org/index.php/NVIDIA
+https://wiki.archlinux.org/index.php/Intel_graphics
+https://wiki.archlinux.org/index.php/NVIDIA_Optimus
 </sup></sub>
 
 ##### Input drivers
