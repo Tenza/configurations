@@ -265,6 +265,8 @@ vblank_mode=0 primusrun glxspheres32
 vblank_mode=0 primusrun glxspheres64
 </pre>
 
+> The notebook has a Intel Core i7 3612QM, with Intel HD Graphics 4000 so Vulkan is not supported.
+
 <sub><sup>
 References:  
 https://wiki.archlinux.org/index.php/Bumblebee  
@@ -279,21 +281,22 @@ The `libinput` driver can now replace `xf86-input-*` drivers. The `xf86-input-li
 
 <pre>
 pacman -S xf86-input-libinput
+reboot
 libinput-list-devices
 </pre>
 
 ##### XOrg
 
-Now we need to install XOrg, a display server for the X Window System. We will also install `xorg-xinit` that will provide  xinit and startx. For more configurations see `~/.xinitrc` file is a shell script read by xinit and by its front-end startx. The xinit program starts the X Window System server and works as first client program on systems that are not using a display manager. 
+Xorg is a display server for the X Window System. In order to start X, `xorg-xinit` will also be instaled. The `~/.xinitrc` file is a shell script read by `xini`t and by its front-end `startx`. It is mainly used to execute desktop environments, window managers and other programs when starting the X server.
 
 <pre>
-pacman -S xorg-server xorg-server-utils xorg-xinit mesa
+pacman -S xorg-server xorg-server-utils xorg-xinit
 </pre>
 
 <sub><sup>
 References:  
-https://wiki.archlinux.org/index.php/xorg#Installation  
-https://wiki.archlinux.org/index.php/Xinitrc
+https://wiki.archlinux.org/index.php/xorg  
+https://wiki.archlinux.org/index.php/Xinit
 </sup></sub>
 
 ##### Test default enviroment
