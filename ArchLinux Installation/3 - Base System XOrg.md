@@ -181,7 +181,7 @@ By default, PulseAudio is configured to automatically detect all sound cards and
 
 <sub><sup>
 References:  
-https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture#High_quality_resampling  
+https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture  
 https://wiki.archlinux.org/index.php/PulseAudio#Back-end_configuration
 </sup></sub>
 
@@ -212,7 +212,7 @@ pacman -S mesa mesa-libgl lib32-mesa-libgl xf86-video-ati
 
 <sub><sup>
 References: 
-https://wiki.archlinux.org/index.php/ATI#Installation
+https://wiki.archlinux.org/index.php/ATI#Installation  
 https://wiki.archlinux.org/index.php/Xorg#Driver_installation
 </sup></sub>
 
@@ -239,6 +239,7 @@ pacman -S mesa mesa-libgl lib32-mesa-libgl xf86-video-intel
 pacman -S nvidia nvidia-libgl 
 pacman -S bumblebee lib32-virtualgl lib32-nvidia-utils 
 pacman -S bbswitch primus lib32-primus
+pacman -S mesa-demos
 </pre>
 
 In order to use Bumblebee, it is necessary to add your regular user to the bumblebee group and also enable bumblebeed.service.
@@ -250,7 +251,7 @@ reboot
 systemctl status bumblebeed.service 
 </pre>
 
-After XOrg is installed, the Bumblebee instalation can be tested with:
+After XOrg is installed, the Bumblebee instalation can be tested.
 
 <pre>
 optirun glxgears -info
@@ -266,22 +267,19 @@ vblank_mode=0 primusrun glxspheres64
 
 <sub><sup>
 References:  
-https://wiki.archlinux.org/index.php/Bumblebee
-https://wiki.archlinux.org/index.php/NVIDIA
-https://wiki.archlinux.org/index.php/Intel_graphics
-https://wiki.archlinux.org/index.php/NVIDIA_Optimus
+https://wiki.archlinux.org/index.php/Bumblebee  
+https://wiki.archlinux.org/index.php/NVIDIA  
+https://wiki.archlinux.org/index.php/Intel_graphics  
+https://wiki.archlinux.org/index.php/NVIDIA_Optimus  
 </sup></sub>
 
 ##### Input drivers
 
-Desktop and Notebook:
-<pre>
-pacman -S xf86-input-mouse xf86-input-keyboard
-</pre>
+The `libinput` driver can now replace `xf86-input-*` drivers. The `xf86-input-libinput` package, is a thin wrapper around `libinput` that allows it to be used for input devices in X. The default configuration file is installed in `/usr/share/X11/xorg.conf.d/60-libinput.conf` and no extra configuration is necessary for it to autodetect keyboards, touchpads, trackpointers and supported touchscreens. Install the package, and then call `libinput-list-devices`, it will output the devices on the system and their respective features supported by `libinput`. 
 
-Notebook:
 <pre>
-pacman -S xf86-input-synaptics 
+pacman -S xf86-input-libinput
+libinput-list-devices
 </pre>
 
 ##### XOrg
