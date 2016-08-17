@@ -232,15 +232,19 @@ This subject is complex, but basically there are two softwares that attempt to d
 9. There is also [nvidia-xrun](https://aur.archlinux.org/packages/nvidia-xrun/) that tries to ditch Bumblebee to gain a bit of performance.
 10. Read more [here](http://www.pcworld.com/article/2944964/how-to-use-nvidia-optimus-to-switch-active-gpus-and-save-power-on-linux-laptops.html), [here](http://www.thelinuxrain.com/articles/the-state-of-nvidia-optimus-on-linux), [here](http://www.webupd8.org/2012/11/primus-better-performance-and-less.html) and [here](https://support.steampowered.com/kb_article.php?ref=6316-GJKC-7437) 
 
-After consideration, I want the system to run with Bumblebee, bbswitch and Primus.
+After consideration, I want the system to run with Bumblebee, bbswitch and Primus. 
 
 <pre>
 pacman -S mesa mesa-libgl lib32-mesa-libgl xf86-video-intel 
-pacman -S nvidia nvidia-libgl 
+pacman -S nvidia 
 pacman -S bumblebee lib32-virtualgl lib32-nvidia-utils 
 pacman -S bbswitch primus lib32-primus
 pacman -S mesa-demos
 </pre>
+
+1. Dont install `nvidia-libgl` or `lib32-nvidia-libgl`, there are compatibility problems with bumblebee, instead use `mesa-libgl` and `lib32-mesa-libgl`. 
+2. Another interesting package to notice is `vulkan-intel`, unfortunatly my notebook has a Intel Core i7 3612QM, with Intel HD Graphics 4000 so Vulkan is not yet supported.
+3. XOrg-server will probably be installed, given the dependencies of the packages. If so, it will ask to choose a input driver, select the newer `libinput` driver. 
 
 In order to use Bumblebee, it is necessary to add your regular user to the bumblebee group and also enable bumblebeed.service.
 
@@ -251,7 +255,7 @@ reboot
 systemctl status bumblebeed.service 
 </pre>
 
-After XOrg is installed, the Bumblebee instalation can be tested.
+This instalation will only be properly tested once XOrg is installed and a screen initialized. The following commands can be used later to verify the Bumblebee and Primus instalation.
 
 <pre>
 optirun glxgears -info
@@ -265,8 +269,6 @@ vblank_mode=0 primusrun glxspheres32
 vblank_mode=0 primusrun glxspheres64
 </pre>
 
-> The notebook has a Intel Core i7 3612QM, with Intel HD Graphics 4000 so Vulkan is not supported.
-
 <sub><sup>
 References:  
 https://wiki.archlinux.org/index.php/Bumblebee  
@@ -277,7 +279,7 @@ https://wiki.archlinux.org/index.php/NVIDIA_Optimus
 
 ##### Input drivers
 
-The `libinput` driver can now replace `xf86-input-*` drivers. The `xf86-input-libinput` package, is a thin wrapper around `libinput` that allows it to be used for input devices in X. The default configuration file is installed in `/usr/share/X11/xorg.conf.d/60-libinput.conf` and no extra configuration is necessary for it to autodetect keyboards, touchpads, trackpointers and supported touchscreens. Install the package, and then call `libinput-list-devices`, it will output the devices on the system and their respective features supported by `libinput`. 
+The `libinput` a newer driver that can now replace `xf86-input-*` drivers. The `xf86-input-libinput` package, is a thin wrapper around `libinput` that allows it to be used for input devices in X. The default configuration file is installed in `/usr/share/X11/xorg.conf.d/60-libinput.conf` and no extra configuration is necessary for it to autodetect keyboards, touchpads, trackpointers and supported touchscreens. Install the package, and then call `libinput-list-devices`, it will output the devices on the system and their respective features supported by `libinput`. 
 
 <pre>
 pacman -S xf86-input-libinput
@@ -301,7 +303,7 @@ https://wiki.archlinux.org/index.php/Xinit
 
 ##### Test default enviroment
 
-Make sure XOrg is working before we install a desktop enviroment.
+Make sure X is working before the instalation of a desktop enviroment.
 
 <pre>
 pacman -S xorg-twm xorg-xclock xterm  
