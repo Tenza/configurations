@@ -289,21 +289,13 @@ libinput-list-devices
 
 ##### XOrg
 
-Xorg is a display server for the X Window System. In order to start X, `xorg-xinit` will also be instaled. The `~/.xinitrc` file is a shell script read by `xini`t and by its front-end `startx`. It is mainly used to execute desktop environments, window managers and other programs when starting the X server.
+Xorg is a display server for the X Window System. In order to start X, `xorg-xinit` will also be instaled. The `~/.xinitrc` file is a shell script read by `xinit` and by its front-end `startx`. It is mainly used to execute desktop environments, window managers and other programs when starting the X server.
 
 <pre>
 pacman -S xorg-server xorg-server-utils xorg-xinit
 </pre>
 
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/xorg  
-https://wiki.archlinux.org/index.php/Xinit
-</sup></sub>
-
-##### Test default enviroment
-
-Make sure X is working before the instalation of a desktop enviroment.
+To make sure X is working, the following packages should be installed and X initialized. Install the three packages, before initializing X, otherwise some errors will be displayed. Once X is started, and the windows manually closed, the console should print `X Server has terminated sucessfully (0)`.
 
 <pre>
 pacman -S xorg-twm xorg-xclock xterm  
@@ -311,91 +303,8 @@ startx
 </pre>
 
 <sub><sup>
-References:
-https://wiki.archlinux.org/index.php/Xorg#Manually
-</sup></sub>
-
-###### Install KDE5
-
-KDE4 has been removed from the repos and is no longer suported. KDE5 is now in a stable state so this is prefered.
-The past problems with the tray bar have been fixed and the applications are working as they should.
-
-If you have KDE4 is installed, and since KDE4 and KDE5 cannot run together we need to remove it.  
-Also, disable KDM from staring, KDE5 recommends SDDM instead and remove KDE4 specific packages
-
-<pre>
-pacman -Rnc kdebase-workspace 
-systemctl disable kdm
-sudo pacman -Rns oxygen-gtk2 oxygen-gtk3-git kde-gtk-config-kde4
-</pre>
-
-Install KDE5, system language, display manager SDDM and the oficial theme breeze:
-
-<pre>
-pacman -S plasma-meta kde-l10n-pt sddm sddm-kcm
-pacman -S breeze-kde4 gtk-theme-orion
-</pre>
-
-Activate SDDM and create the default config file:
-
-<pre>
-systemctl enable sddm
-sddm --example-config > /etc/sddm.conf
-</pre>
-
-Finally, apply the newer `breeze` theme to the display manager:
-
-<pre>
-sudo nano /etc/sddm.conf
-</pre>
-
-And change the theme section according to this:
-
-<pre>
-[Theme]
-Current=breeze
-CursorTheme=breeze_cursors
-FacesDir=/usr/share/sddm/faces
-ThemeDir=/usr/share/sddm/themes
-</pre>
-
-You can do it with GUI because we already installed the `sddm-kcm` package, but I recomend editing the file manually for the first use, I had some problems starting with the default theme in the past. After reboot, to use the GUI go to `Setting > Startup and Shutdown > Login Screen. (2nd tab)` and choose the `Breeze` theme.
-
-Since KDE5 uses a new tray system, we need to change QSystemTrayIcon to StatusNotifierItems the package that does this is `sni-qt` and we need to install libindicator packages as well.
-
-<pre>
-packer -S gtk-sharp-2 libdbusmenu-gtk2 libdbusmenu-gtk3 libindicator-gtk2 libindicator-gtk3
-packer -S libappindicator-gtk2
-packer -S libappindicator-gtk3
-packer -S sni-qt lib32-sni-qt
-pacman -S kde-gtk-config
-</pre>
-
-Even if you are upgrading, configurations will be lost so here are some of my settings:
-
-<pre>
-localectl set-keymap pt-latin9
-localectl set-x11-keymap pt 
-Add shortcut Windows+L
-Fix firefox and dolphin and terminal on bar
-Hide Unmounnted Drivers
-Change single to double click, in system settings
-Change User Avatar 
-Disable program preview 
-Disable default multimédia player (bar options)
-</pre>
-
-For the photon backend, use VLC because it has the best upstream support.  
-But multiple backends can be installed at once and prioritized at System Settings > Multimedia > Backend, so I install both.
-
-<pre>
-pacman -S phonon-qt5 phonon-qt5-gstreamer phonon-qt5-vlc
-</pre>
-
-<sub><sup>
 References:  
-https://wiki.archlinux.org/index.php/KDE
-https://wiki.archlinux.org/index.php/Plasma  
-https://wiki.archlinux.org/index.php/SDDM  
-http://www.linuxveda.com/2015/02/27/how-to-install-kdes-plasma-5-on-arch-linux/
+https://wiki.archlinux.org/index.php/xorg  
+https://wiki.archlinux.org/index.php/Xinit  
+https://wiki.archlinux.org/index.php/Xorg#Manually
 </sup></sub>
