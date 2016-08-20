@@ -351,8 +351,11 @@ Using `pacstrap` or `pacman -S grub` is the same thing. But the former will get 
 genfstab -L -p /mnt >> /mnt/etc/fstab
 </pre>
 
-The `-L` option indicates Labels. UUIDs can be used instead through the -U option.  
-The `-p` avoids printing pseudofs mounts.
+| Switch | Description | 
+| --- | --- | 
+| -L | Indicates genfstab to use Labels. |
+| -U | Indicates genfstab to use UUIDs. |
+| -p | Avoids printing pseudofs mounts. |
 
 <sub><sup>
 References:
