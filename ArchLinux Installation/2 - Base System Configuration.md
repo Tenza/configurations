@@ -146,6 +146,32 @@ References:
 https://wiki.archlinux.org/index.php/Beginners%27_guide#Configure_the_network
 </sup></sub>
 
+#### Pacman
+
+The default mirrorlist of pacman is sorted by the synchronization status and speed at the time the installation image was created. The quality of mirrors can vary over time so it is a good idea to have a package to deal with this. First install the `reflector` package, and than run `reflector` to rate the 25 most recently synchronized HTTPS servers, sort them by download rate, and overwrite the file `/etc/pacman.d/mirrorlist`.
+
+<pre>
+pacman -S reflector
+reflector --verbose -l 25 -p https --sort rate --save /etc/pacman.d/mirrorlist
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Mirrors  
+https://wiki.archlinux.org/index.php/Reflector
+</sup></sub>
+
+##### Activate [multilib] repository
+
+The multilib repository is an official repository which allows the user to run and build 32-bit applications on 64-bit installations of Arch Linux. A 64-bit installation of Arch Linux with multilib enabled follows a directory structure similar to Debian. The 32-bit compatible libraries are located under `/usr/lib32/`, and the native 64-bit libraries under `/usr/lib/`.
+
+To use the multilib repository, uncomment the `[multilib]` section in `/etc/pacman.conf`, be sure to uncomment both lines.
+
+<pre>
+nano /etc/pacman.conf  
+pacman -Syy
+</pre>
+
 ## Dualboot
 
 The package responsible for detecting other OS installations is `os-prober`, and it should be installed before any additional configurations.
