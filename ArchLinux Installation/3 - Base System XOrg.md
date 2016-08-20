@@ -26,6 +26,12 @@ useradd -m -G wheel -s /bin/bash filipe
 | -s | Defines the path and file name of the user's default login shell. After the boot process is complete, the default login shell is the one specified here. The bash shell is used in here, but others are available.  |
 | -g | Defines the user's initial group. If omitted, the behavior of `useradd` will depend on the `USERGROUPS_ENAB` variable contained in `/etc/login.defs`. The default behavior is to create a group with the same name as the username, and a GID equal to UID. Making each user have their own group is the preferred way to add users. If specified, the group name must already exist. For example `useradd -m -g users -G wheel -s /bin/bash filipe` makes the default group `users`. However, using a single default group is not recommended for multi-user systems. Because typically the method for facilitating shared write access for specific groups of users is setting user umask value to 002, which means that the default group will by default always have write access to any file created by the used. |
 
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Users_and_groups#User_management
+https://wiki.archlinux.org/index.php/general_recommendations#Users_and_groups
+</sup></sub>
+
 ##### (Optional) (Recommended) Change user details
 
 The local user information is stored as plain-text in `/etc/passwd` file. Each of its lines represents a user account, and has seven fields delimited by colons. The `GECOS` field is optional, and is used for informational purposes only. The `chfn` command is used to manage this finger information.
@@ -63,6 +69,11 @@ Alternatively, allow the `wheel` group to gain full root privileges. Keep in min
 %wheel ALL=(ALL) ALL
 </pre>
 
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/sudo
+</sup></sub>
+
 ##### (2) (Not Recommended) Su
 
 Sometimes can be advantageous for a system administrator to use the shell account of an ordinary user rather than its own. In particular, occasionally the most efficient way to solve a user's problem is to log into that user's account in order to reproduce or debug the problem.
@@ -78,6 +89,11 @@ Thus, it is advisable that administrative users, as well as any other users that
 su - root
 </pre>
 
+<sub><sup>
+References:
+https://wiki.archlinux.org/index.php/Su
+</sup></sub>
+
 #### Login on the new user account
 
 Once the new account has been properly created and configured, `logout` from the root account and check the new user/groups information with the `id` command to confirm that everything is as it should be. From this point forward all commands will be done using the new account, using `sudo`.
@@ -89,7 +105,7 @@ id
 
 #### Activate [multilib] repository
 
-The multilib repository is an official repository which allows the user to run and build 32-bit applications on 64-bit installations of Arch Linux. A 64-bit installation of Arch Linux with multilib enabled follows a directory structure similar to Debian. The 32-bit compatible libraries are located under `/usr/lib32/`, and the native 64-bit libraries under `/usr/lib/`. 
+The multilib repository is an official repository which allows the user to run and build 32-bit applications on 64-bit installations of Arch Linux. A 64-bit installation of Arch Linux with multilib enabled follows a directory structure similar to Debian. The 32-bit compatible libraries are located under `/usr/lib32/`, and the native 64-bit libraries under `/usr/lib/`.
 
 To use the multilib repository, uncomment the `[multilib]` section in `/etc/pacman.conf`, be sure to uncomment both lines.
 
@@ -128,10 +144,11 @@ rm -R temp
 | makepkg -s | Upon successful build, removes any dependencies installed by `makepkg` | 
 | makepkg -i | Install or upgrade the package after a successful build using pacman |
 
-> When I tried to install `cower` if failed in the verification of the package signature. In order to solve the problem I added the key from the developer of `cower` with `gpg --recv-keys --keyserver hkp://pgp.mit.edu 1EB2638FF56C0C53`.
+> When I tried to install `cower` it failed in the verification of the package signature. In order to solve the problem I added the key from the developer of `cower` with `gpg --recv-keys --keyserver hkp://pgp.mit.edu 1EB2638FF56C0C53`.
 
 <sub><sup>
-References:
+References:  
+https://wiki.archlinux.org/index.php/AUR_helpers  
 http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
 </sup></sub>
 
@@ -160,6 +177,13 @@ speaker-test -c 2
 | Switch | Description | 
 | --- | --- | 
 | -c X | Number of channels |
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/AUR_helpers  
+http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
+</sup></sub>
+https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture
 
 ##### PulseAudio
 
