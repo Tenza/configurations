@@ -9,7 +9,7 @@ The configurations set in here suppose that ArchLinux is properly installed on t
 #### Configure hostname
 
 Let's start by setting the hostname, this is the name that will show-up in the console, for example: `filipe@filipe-desktop`.
-The switch `set-hostname` actually sets the three hostnames that `hostnamectl` manages, [click here](https://www.freedesktop.org/software/systemd/man/hostnamectl.html) to view the details.
+The switch `set-hostname` actually sets the three hostnames that `hostnamectl` manages.
 
 <pre>
 hostnamectl set-hostname filipe-desktop
