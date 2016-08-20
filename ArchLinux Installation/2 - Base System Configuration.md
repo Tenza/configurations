@@ -15,6 +15,11 @@ The switch `set-hostname` actually sets the three hostnames that `hostnamectl` m
 hostnamectl set-hostname filipe-desktop
 </pre>
 
+<sub><sup>
+References: 
+https://www.freedesktop.org/software/systemd/man/hostnamectl.html
+</sup></sub>
+
 #### Configure locale
 
 To configure the locale, start by editing the file `locale.gen` and remove the comment from the lines with the desired country code. In my case, it's `pt_PT`, and there are 3 commented lines.
@@ -47,6 +52,11 @@ X11 Layout: pt
 
 > The `mandb` warning from the previous guide should be solved by now.
 
+<sub><sup>
+References: 
+https://www.freedesktop.org/software/systemd/man/localectl.html
+</sup></sub>
+
 #### Configure timezone 
 
 The timezone will be used to determine the localtime correctly.  
@@ -56,6 +66,11 @@ What `timedatectl set-timezone` actually does is create a `/etc/localtime` symli
 timedatectl list-timezones
 timedatectl set-timezone Europe/Lisbon
 </pre>
+
+<sub><sup>
+References: 
+https://www.freedesktop.org/software/systemd/man/timedatectl.html
+</sup></sub>
 
 #### (1) Configure hardware clock for UTC
 
@@ -198,7 +213,6 @@ grub-mkconfig -o /boot/grub/grub.cfg
 
 <pre>
 menuentry "System restart" {
-	echo "System rebooting..."
 	reboot
 }
 
@@ -208,7 +222,7 @@ menuentry "System shutdown" {
 }
 </pre>
 
-> The `halt` command might not work if Plug and Play (PnP) is enabled in the BIOS/UEFI settings, in that case the power button has to be pressed.
+> The `halt` command might not work if Plug and Play (PnP) is enabled in the BIOS/UEFI settings, in that case the power button has to be pressed. Also, even without PnP the shutdown might take a few seconds, that's why an `echo` message is displayed.
 
 #### (Optional) Change the displayed text in the GRUB menu. 
 
