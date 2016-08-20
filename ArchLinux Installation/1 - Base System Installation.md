@@ -311,6 +311,8 @@ wifi-menu
 
 This is the command that will download and install the ArchLinux operating system. Keep in mind that only the `base` package is needed have a working system, but the `base-devel` package was also added because it will enable us to build packages to add to the system.
 
+On the live system, all download mirrors are enabled, and sorted by their synchronization status and speed at the time the installation image was created. The higher a mirror is placed in the list, the more priority it is given when downloading a package. You may want to edit the file accordingly, and move the geographically closest mirrors to the top of the list, although other criteria should be taken into account. The pacstrap tool used in the next step also installs a copy of the file to the new system, so it is worth getting right.
+
 <pre>
 pacstrap -i /mnt base base-devel
 </pre>
@@ -320,6 +322,8 @@ pacstrap -i /mnt base base-devel
 | -i | Ensures prompting before package installation. With the base group, the first initramfs will be generated and installed to the new system's boot path; double-check output prompts ==> Image creation successful for it. |
 
 > If there is a warning regarding `mandb` not being able to set the locale, that is normal because the locale will only be set inside the system (using chroot). Once the desired locales are enabled and `locale-gen` generates the locales, it will be solved. [This is actually flagged as a bug that might be solved by now](https://bugs.archlinux.org/task/49426).
+
+> Since the image that I download is always the most up-to-date, I expect the mirrors to be in a good state, so I don't do any mirror optimization at this point.
 
 #### Install bootloader
 
