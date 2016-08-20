@@ -223,8 +223,8 @@ mkfs.ext4 -v -L ArchBoot -b 4096 -E stride=32,stripe-width=64,discard <b>/dev/md
 
 <sub><sup>
 References:  
-https://wiki.archlinux.org/index.php/disk_encryption#Comparison_table
-https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#Simple_partition_layout_with_LUKS
+https://wiki.archlinux.org/index.php/disk_encryption#Comparison_table  
+https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#Simple_partition_layout_with_LUKS  
 https://wiki.archlinux.org/index.php/Dm-crypt/Device_encryption#Encryption_options_for_LUKS_mode 
 </sup></sub>
 
@@ -544,11 +544,3 @@ Finally exit change-root, reboot and remove the USB drive. The system should now
 exit
 systemctl reboot
 </pre>
-
-<sub><sup>
-General References:  
-[Video - System Installation](https://www.youtube.com/watch?v=kQFzVG4wZEg)  
-[Video - From Post-Install to Xorg](https://www.youtube.com/watch?v=DAmXKDJ3D7M)  
-[Video - Using AUI](https://www.youtube.com/watch?v=TLh44czUea0) 
-[Install script AUI](https://github.com/helmuthdu/aui)
-</sup></sub>
