@@ -100,18 +100,8 @@ Once the new account has been properly created and configured, `logout` from the
 
 <pre>
 logout
+(login)
 id
-</pre>
-
-#### Activate [multilib] repository
-
-The multilib repository is an official repository which allows the user to run and build 32-bit applications on 64-bit installations of Arch Linux. A 64-bit installation of Arch Linux with multilib enabled follows a directory structure similar to Debian. The 32-bit compatible libraries are located under `/usr/lib32/`, and the native 64-bit libraries under `/usr/lib/`.
-
-To use the multilib repository, uncomment the `[multilib]` section in `/etc/pacman.conf`, be sure to uncomment both lines.
-
-<pre>
-nano /etc/pacman.conf  
-pacman -Syy
 </pre>
 
 #### AUR Helper
