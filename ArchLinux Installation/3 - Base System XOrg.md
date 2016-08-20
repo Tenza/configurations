@@ -27,8 +27,8 @@ useradd -m -G wheel -s /bin/bash filipe
 | -g | Defines the user's initial group. If omitted, the behavior of `useradd` will depend on the `USERGROUPS_ENAB` variable contained in `/etc/login.defs`. The default behavior is to create a group with the same name as the username, and a GID equal to UID. Making each user have their own group is the preferred way to add users. If specified, the group name must already exist. For example `useradd -m -g users -G wheel -s /bin/bash filipe` makes the default group `users`. However, using a single default group is not recommended for multi-user systems. Because typically the method for facilitating shared write access for specific groups of users is setting user umask value to 002, which means that the default group will by default always have write access to any file created by the used. |
 
 <sub><sup>
-References:
-https://wiki.archlinux.org/index.php/Users_and_groups#User_management
+References:  
+https://wiki.archlinux.org/index.php/Users_and_groups#User_management  
 https://wiki.archlinux.org/index.php/general_recommendations#Users_and_groups
 </sup></sub>
 
@@ -179,11 +179,9 @@ speaker-test -c 2
 | -c X | Number of channels |
 
 <sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/AUR_helpers  
-http://www.cyberciti.biz/faq/unpack-tgz-linux-command-line/
-</sup></sub>
+References: 
 https://wiki.archlinux.org/index.php/Advanced_Linux_Sound_Architecture
+</sup></sub>
 
 ##### PulseAudio
 
@@ -310,6 +308,11 @@ pacman -S xf86-input-libinput
 reboot
 libinput-list-devices
 </pre>
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/Libinput
+</sup></sub>
 
 ##### XOrg
 
