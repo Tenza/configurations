@@ -45,7 +45,7 @@ From a security perspective, it is arguably better to set up and use `sudo` inst
 
 ##### (1) (Recommended) Sudo
 
-To grant `sudo` access to the new user, the `sudo` configuration file `/etc/sudoers` has to be edited with the `visudo` command. The `visudo` command locks the sudoers file, saves edits to a temporary file, and checks that file's grammar before copying it to `/etc/sudoers`. Any error in this file can render the `sudo` command unusable, so always edit it with `visudo` to prevent errors. Also, the `visudo` opens by default with the `vi` editor, but it also honors use of the `VISUAL` and `EDITOR` enviroment variables. So in order to open `visudo` with `nano`, set the `EDITOR` before calling `visudo`.
+To grant `sudo` access to the new user, the `sudo` configuration file `/etc/sudoers` has to be edited with the `visudo` command. The `visudo` command locks the sudoers file, saves edits to a temporary file, and checks that file's grammar before copying it to `/etc/sudoers`. Any error in this file can render the `sudo` command unusable, so always edit it with `visudo` to prevent errors. Also, the `visudo` opens by default with the `vi` editor, but it also honors use of the `VISUAL` and `EDITOR` environment variables. So in order to open `visudo` with `nano`, set the `EDITOR` before calling `visudo`.
 
 <pre>
 EDITOR=nano visudo
@@ -211,20 +211,20 @@ pacman -S mesa mesa-libgl lib32-mesa-libgl xf86-video-ati
 </pre>
 
 <sub><sup>
-References: 
+References:  
 https://wiki.archlinux.org/index.php/ATI#Installation  
 https://wiki.archlinux.org/index.php/Xorg#Driver_installation
 </sup></sub>
 
 ##### Notebook
 
-The notebook has a hybrid system with two graphics cards, Intel and NVIDIA. The software that manages the GPU's is called NVIDIA Optimus, in Windows it works by dynamicaly switching between the GPU's, based on a whilelist provided by the driver of NVIDIA. In Linux, there is no actual official NVIDIA support for the Optimus technology, or at least not completely. 
+The notebook has a hybrid system with two graphics cards, Intel and NVIDIA. The software that manages the GPU's is called NVIDIA Optimus, in Windows it works by dynamically switching between the GPU's, based on a whitelist provided by the driver of NVIDIA. In Linux, there is no actual official NVIDIA support for the Optimus technology, or at least not completely. 
 
-This subject is complex, but basically there are two softwares that attempt to deal with the lack of official support, one is called [PRIME](https://wiki.archlinux.org/index.php/PRIME), the other one is called [Bumblebee](https://wiki.archlinux.org/index.php/Bumblebee). I will leave here a few bullet points to ilustrate the senario.
+This subject is complex, but basically there are two software’s that attempt to deal with the lack of official support, one is called [PRIME](https://wiki.archlinux.org/index.php/PRIME), the other one is called [Bumblebee](https://wiki.archlinux.org/index.php/Bumblebee). I will leave here a few bullet points to illustrate the scenario.
 
-1. PRIME requiers a `xrandr` command to switch GPU's and than a logout to efectively change the GPU.
-2. Bumblebee requiers a `optirun` or `primusrun` command to execute a specific aplication with the dedicated GPU.
-3. PRIME integrates better with open-source drivers, that have poor performance compared with the proprietary drivers.
+1. PRIME requires a `xrandr` command to switch GPU's and than a logout to effectively change the GPU.
+2. Bumblebee requires a `optirun` or `primusrun` command to execute a specific application with the dedicated GPU.
+3. PRIME integrates better with open-source drivers that have poor performance compared with the proprietary drivers.
 4. Bumblebee integrates better with proprietary drivers, but is reported to have poor performance compared with PRIME.
 5. Bumblebee can be integrated with [Primus](https://github.com/amonakov/primus) (not PRIME) for better performance.
 6. Bumblebee can be integrated with [bbswitch](https://wiki.archlinux.org/index.php/Bumblebee#Power_management) to have better power management.
@@ -243,7 +243,7 @@ pacman -S mesa-demos
 </pre>
 
 1. Dont install `nvidia-libgl` or `lib32-nvidia-libgl`, there are compatibility problems with bumblebee, instead use `mesa-libgl` and `lib32-mesa-libgl`. 
-2. Another interesting package to notice is `vulkan-intel`, unfortunatly my notebook has a Intel Core i7 3612QM, with Intel HD Graphics 4000 so Vulkan is not yet supported.
+2. Another interesting package to notice is `vulkan-intel`, unfortunately my notebook has a Intel Core i7 3612QM, with Intel HD Graphics 4000 so Vulkan is not yet supported.
 3. XOrg-server will probably be installed, given the dependencies of the packages. If so, it will ask to choose a input driver, select the newer `libinput` driver. 
 
 In order to use Bumblebee, it is necessary to add your regular user to the bumblebee group and also enable bumblebeed.service.
@@ -255,7 +255,7 @@ reboot
 systemctl status bumblebeed.service 
 </pre>
 
-This instalation will only be properly tested once XOrg is installed and a screen initialized. The following commands can be used later to verify the Bumblebee and Primus instalation.
+This installation will only be properly tested once XOrg is installed and a screen initialized. The following commands can be used later to verify the Bumblebee and Primus installation.
 
 <pre>
 optirun glxgears -info
@@ -295,7 +295,7 @@ Xorg is a display server for the X Window System. In order to start X, `xorg-xin
 pacman -S xorg-server xorg-server-utils xorg-xinit
 </pre>
 
-To make sure X is working, the following packages should be installed and X initialized. Install the three packages, before initializing X, otherwise some errors will be displayed. Once X is started, and the windows manually closed, the console should print `X Server has terminated sucessfully (0)`.
+To make sure X is working, the following packages should be installed and X initialized. Install the three packages, before initializing X, otherwise some errors will be displayed. Once X is started, and the windows manually closed, the console should print `X Server has terminated successfully (0)`.
 
 <pre>
 pacman -S xorg-twm xorg-xclock xterm  
