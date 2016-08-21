@@ -3,23 +3,29 @@
 ***DO NOT USE THESE NOTES BLINDLY.***  
 ***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
-This document does ***not*** contain instructions meant as a guide.  
+This document does not contain instructions meant as a guide.  
 The installations and configurations set in here do not follow any particular order.
 
 This file is simply my backlog of previous installations.
 
 #### KDE5 Desktop Environment
 
-Install `KDE5`, `pt` system language, `SDDM` display manager and the oficial `breeze` theme.  
-Enable the `SDDM.service` to start at boot.
+Install `KDE5`, system language and the `SDDM` display manager.
+Install the oficial `breeze` theme and packages to give a uniform look to `Qt` and `GTK` applications.
+Install the `VLC` Phonon multimedia API, it has the best upstream support compared with GStreamer. Also install `libx264` instead of `libx264-10bit` because there are some compatibility issues with 10bit encoders.
+Finnaly, enable the `SDDM.service` to start at boot.
+
+If the packages are not installed on a single call to pacman, some of the packages explicitly set in here will be prompted.
 
 <pre>
 pacman -S plasma-meta kde-l10n-pt sddm sddm-kcm
+pacman -S breeze breeze-kde4 breeze-gtk kde-gtk-config 
+pacman -S phonon-qt5 phonon-qt5-vlc libx264
 systemctl enable sddm.service
 </pre>
 
 To better integrate SDDM with Plasma, it is recommended to edit `/etc/sddm.conf` to use the `breeze` theme.  
-Edit this file manually before the first boot because I had difficulties starting KDE with the SDDM default theme.  
+Edit this file manually before the first boot, there are some difficulties starting KDE with the SDDM `maui` default theme.  
 This can be done using a graphical interface inside KDE, because the package `sddm-kcm` was already installed. This setting is in `Setting > Startup and Shutdown > Login Screen. (2nd tab)`.
 
 <pre>
@@ -32,25 +38,12 @@ sudo nano /etc/sddm.conf
   ThemeDir=/usr/share/sddm/themes
 </pre>
 
-Packages to give a uniform look to `Qt` and `GTK` applications.
-
-<pre>
-pacman -S breeze breeze-kde4 breeze-gtk kde-gtk-config 
-</pre>
-
-For the multimedia photon backend, use `VLC` because it has the best upstream support.  
-Multiple backends can be installed at once and prioritized at `System Settings > Multimedia > Backend`.
-
-<pre>
-pacman -S phonon-qt5 phonon-qt5-vlc
-pacman -S phonon-qt5 phonon-qt5-gstreamer
-</pre>
-
 <sub><sup>
 References:  
 https://wiki.archlinux.org/index.php/KDE  
 https://wiki.archlinux.org/index.php/desktop_environment  
 https://wiki.archlinux.org/index.php/window_manager
+http://forum.doom9.org/showthread.php?t=167654
 </sup></sub>
 
 #### Remove KDE4
@@ -59,17 +52,16 @@ KDE4 has been removed from the repos and is no longer suported. KDE5 is now in a
 The past problems with the tray bar have been fixed and the applications are working as they should.
 
 If you have KDE4 is installed, and since KDE4 and KDE5 cannot run together we need to remove it.  
-Also, disable KDM from staring, KDE5 recommends SDDM instead and remove KDE4 specific packages
+Start by unloading the graphic shell, disable KDM from staring and remove KDE4 specific packages.
 
 <pre>
-pacman -Rnc kdebase-workspace 
+systemctl isolate multi-user.target
 systemctl disable kdm
-sudo pacman -Rns oxygen-gtk2 oxygen-gtk3-git kde-gtk-config-kde4
+pacman -Rnc kdebase-workspace 
+pacman -Rns oxygen-gtk2 oxygen-gtk3-git kde-gtk-config-kde4
 </pre>
 
 #### KDE Tray system
-
-> Is this still needed?
 
 Since KDE5 uses a new tray system, we need to change `QSystemTrayIcon` to `StatusNotifierItems` the package that does this is `sni-qt` and we need to install `libindicator` packages as well.
 
@@ -163,22 +155,6 @@ To install Microsoft fonts we will use the Legacy packages, because the new pack
 <sub><sup>
 References:
 https://wiki.archlinux.org/index.php/MS_fonts
-</sup></sub>
-
-##### Optimize Mirrorlist
-
-> Get all up-to-date mirrors here: https://www.archlinux.org/mirrorlist/all/  
-Goto: `cd /etc/pacman.d`  
-Backup: `sudo mv mirrorlist mirrorlist.bak`  
-Create new mirror list and paste the mirrors from the link: `sudo nano mirrorlist.new`  
-Remove commented lines with: `sudo sed -i "s/#Server/Server/g" mirrorlist.new`  
-Rank all the mirrors: `sudo rankmirrors -v -n 0 mirrorlist.new`  
-Finnaly create and paste the result on the mirrorslist file and delete mirrorlist.new  
-
-<sub><sup>
-References:  
-http://www.garron.me/en/go2linux/how-to-find-the-fastest-archlinux-mirrors.html  
-http://bbs.archbang.org/viewtopic.php?id=3007
 </sup></sub>
 
 ##### KDE volume control
