@@ -154,7 +154,7 @@ The default mirrorlist of pacman is sorted by the synchronization status and spe
 
 <pre>
 pacman -S reflector
-reflector --verbose -l 25 -p https --sort rate --save /etc/pacman.d/mirrorlist
+reflector --verbose -l 50 -p https --sort rate --save /etc/pacman.d/mirrorlist
 </pre>
 
 <sub><sup>
