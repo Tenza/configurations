@@ -36,6 +36,8 @@ sudo nano /etc/sddm.conf
   ThemeDir=/usr/share/sddm/themes
 </pre>
 
+> If the `sddm --example-config` command refuses to run, try `su - root`.
+
 <sub><sup>
 References:  
 https://wiki.archlinux.org/index.php/KDE  
