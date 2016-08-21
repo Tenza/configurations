@@ -9,9 +9,9 @@ This file is simply my backlog of installations.
 #### KDE5 Desktop Environment
 
 Install `KDE5`, system language and the `SDDM` display manager.  
-Install the oficial `breeze` theme and packages to give a uniform look to `Qt` and `GTK` applications.  
-Install the `VLC` Phonon multimedia API, it has the best upstream support compared with GStreamer. Also install `libx264` instead of `libx264-10bit` because there are some compatibility issues with 10bit encoders.  
-Finnaly, enable the `SDDM.service` to start at boot.
+Install the official `breeze` theme and packages to give a uniform look to `Qt` and `GTK` applications.  
+Install the `VLC` Phonon multimedia API, it has the best upstream support compared with GStreamer, although both can be installed. Also install `libx264` instead of `libx264-10bit` because there are some compatibility issues with 10bit encoders.  
+Finally, enable the `SDDM.service` to start at boot.
 
 If the packages are not installed on a single call to pacman, some of the packages explicitly set in here will be prompted.
 
@@ -40,6 +40,6 @@ sudo nano /etc/sddm.conf
 References:  
 https://wiki.archlinux.org/index.php/KDE  
 https://wiki.archlinux.org/index.php/desktop_environment  
-https://wiki.archlinux.org/index.php/window_manager
+https://wiki.archlinux.org/index.php/window_manager  
 http://forum.doom9.org/showthread.php?t=167654
 </sup></sub>
