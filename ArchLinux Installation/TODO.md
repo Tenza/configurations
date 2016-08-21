@@ -1,4 +1,59 @@
-#### Install KDE5
+# Installations
+
+***DO NOT USE THESE NOTES BLINDLY.***  
+***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
+
+This document does ***not*** contain instructions meant as a guide.  
+The installations and configurations set in here do not follow any particular order.
+
+This file is simply my backlog of previous installations.
+
+#### KDE5 Desktop Environment
+
+Install `KDE5`, `pt` system language, `SDDM` display manager and the oficial `breeze` theme.  
+Enable the `SDDM.service` to start at boot.
+
+<pre>
+pacman -S plasma-meta kde-l10n-pt sddm sddm-kcm
+systemctl enable sddm.service
+</pre>
+
+To better integrate SDDM with Plasma, it is recommended to edit `/etc/sddm.conf` to use the `breeze` theme.  
+Edit this file manually before the first boot because I had difficulties starting KDE with the SDDM default theme.  
+This can be done using a graphical interface inside KDE, because the package `sddm-kcm` was already installed. This setting is in `Setting > Startup and Shutdown > Login Screen. (2nd tab)`.
+
+<pre>
+sddm --example-config > /etc/sddm.conf
+sudo nano /etc/sddm.conf
+  [Theme]
+  Current=breeze
+  CursorTheme=breeze_cursors
+  FacesDir=/usr/share/sddm/faces
+  ThemeDir=/usr/share/sddm/themes
+</pre>
+
+Packages to give a uniform look to `Qt` and `GTK` applications.
+
+<pre>
+pacman -S breeze breeze-kde4 breeze-gtk kde-gtk-config 
+</pre>
+
+For the multimedia photon backend, use `VLC` because it has the best upstream support.  
+Multiple backends can be installed at once and prioritized at `System Settings > Multimedia > Backend`.
+
+<pre>
+pacman -S phonon-qt5 phonon-qt5-vlc
+pacman -S phonon-qt5 phonon-qt5-gstreamer
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/KDE  
+https://wiki.archlinux.org/index.php/desktop_environment  
+https://wiki.archlinux.org/index.php/window_manager
+</sup></sub>
+
+#### Remove KDE4
 
 KDE4 has been removed from the repos and is no longer suported. KDE5 is now in a stable state so this is prefered.
 The past problems with the tray bar have been fixed and the applications are working as they should.
@@ -12,39 +67,11 @@ systemctl disable kdm
 sudo pacman -Rns oxygen-gtk2 oxygen-gtk3-git kde-gtk-config-kde4
 </pre>
 
-Install KDE5, system language, display manager SDDM and the oficial theme breeze:
+#### KDE Tray system
 
-<pre>
-pacman -S plasma-meta kde-l10n-pt sddm sddm-kcm
-pacman -S breeze-kde4 gtk-theme-orion
-</pre>
+> Is this still needed?
 
-Activate SDDM and create the default config file:
-
-<pre>
-systemctl enable sddm
-sddm --example-config > /etc/sddm.conf
-</pre>
-
-Finally, apply the newer `breeze` theme to the display manager:
-
-<pre>
-sudo nano /etc/sddm.conf
-</pre>
-
-And change the theme section according to this:
-
-<pre>
-[Theme]
-Current=breeze
-CursorTheme=breeze_cursors
-FacesDir=/usr/share/sddm/faces
-ThemeDir=/usr/share/sddm/themes
-</pre>
-
-You can do it with GUI because we already installed the `sddm-kcm` package, but I recomend editing the file manually for the first use, I had some problems starting with the default theme in the past. After reboot, to use the GUI go to `Setting > Startup and Shutdown > Login Screen. (2nd tab)` and choose the `Breeze` theme.
-
-Since KDE5 uses a new tray system, we need to change QSystemTrayIcon to StatusNotifierItems the package that does this is `sni-qt` and we need to install libindicator packages as well.
+Since KDE5 uses a new tray system, we need to change `QSystemTrayIcon` to `StatusNotifierItems` the package that does this is `sni-qt` and we need to install `libindicator` packages as well.
 
 <pre>
 packer -S gtk-sharp-2 libdbusmenu-gtk2 libdbusmenu-gtk3 libindicator-gtk2 libindicator-gtk3
@@ -52,27 +79,6 @@ packer -S libappindicator-gtk2
 packer -S libappindicator-gtk3
 packer -S sni-qt lib32-sni-qt
 pacman -S kde-gtk-config
-</pre>
-
-Even if you are upgrading, configurations will be lost so here are some of my settings:
-
-<pre>
-localectl set-keymap pt-latin9
-localectl set-x11-keymap pt 
-Add shortcut Windows+L
-Fix firefox and dolphin and terminal on bar
-Hide Unmounnted Drivers
-Change single to double click, in system settings
-Change User Avatar 
-Disable program preview 
-Disable default multimédia player (bar options)
-</pre>
-
-For the photon backend, use VLC because it has the best upstream support.  
-But multiple backends can be installed at once and prioritized at System Settings > Multimedia > Backend, so I install both.
-
-<pre>
-pacman -S phonon-qt5 phonon-qt5-gstreamer phonon-qt5-vlc
 </pre>
 
 <sub><sup>
