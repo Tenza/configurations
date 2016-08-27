@@ -26,6 +26,9 @@ To configure the locale, start by editing the file `locale.gen` and remove the c
 
 <pre>
 nano /etc/locale.gen
+	pt_PT.UTF-8 UTF-8
+	pt_PT ISO-8859-1
+	pt_PT@euro ISO-8859-15
 </pre>
 
 It is now possible to generate and set that locales, note that previously the command `loadkeys` was used to load the keyboard layout, but that configuration was lost when the live system exited. To make it persistent `localectl` has to be used.  
@@ -170,7 +173,10 @@ The multilib repository is an official repository which allows the user to run a
 To use the multilib repository, uncomment the `[multilib]` section in `/etc/pacman.conf`, be sure to uncomment both lines.
 
 <pre>
-nano /etc/pacman.conf  
+nano /etc/pacman.conf 
+	[multilib]
+	Include = /etc/pacman.d/mirrorlist
+	
 pacman -Syy
 </pre>
 
@@ -204,17 +210,16 @@ This has worked for me even on a dualboot with a RAID array over dm-crypt, but i
 <pre>
 blkid
 nano /etc/grub.d/40_custom
-grub-mkconfig -o /boot/grub/grub.cfg
-</pre>
 
-<pre>
-menuentry{
-	echo “Loading Windows 7”
-	insmod part_msdos
-	insmod ntfs
-	search --fs-uuid --no-floppy -set=root XXXXXXXXXXXXXX
-	chainloader +1
-}
+	menuentry{
+		echo “Loading Windows 7”
+		insmod part_msdos
+		insmod ntfs
+		search --fs-uuid --no-floppy -set=root XXXXXXXXXXXXXX
+		chainloader +1
+	}
+	
+grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
 #### Arch already installed
@@ -236,18 +241,17 @@ The following custom entries might be worth adding to the GRUB2 menu.
 
 <pre>
 nano /etc/grub.d/40_custom
+
+	menuentry "System restart" {
+		reboot
+	}
+	
+	menuentry "System shutdown" {
+		echo "System shutting down..."
+		halt
+	}
+
 grub-mkconfig -o /boot/grub/grub.cfg
-</pre>
-
-<pre>
-menuentry "System restart" {
-	reboot
-}
-
-menuentry "System shutdown" {
-	echo "System shutting down..."
-	halt
-}
 </pre>
 
 > The `halt` command might not work if Plug and Play (PnP) is enabled in the BIOS/UEFI settings, in that case the power button has to be pressed. Also, even without PnP the shutdown might take a few seconds, that's why an `echo` message is displayed.
