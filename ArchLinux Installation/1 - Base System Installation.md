@@ -431,10 +431,7 @@ Now enable the `mdadm_udev` hook upon boot, **in the correct order** in order to
 
 <pre>
 nano /etc/mkinitcpio.conf  
-</pre>
-
-<pre>
-HOOKS="... block <b>mdadm_udev</b> filesystems ..."
+  HOOKS="... block <b>mdadm_udev</b> filesystems ..."
 </pre>
 
 <sub><sup>
@@ -451,10 +448,7 @@ If encryption was setup, the hook needs to be loaded on boot. Add the `encrypt` 
 
 <pre>
 nano /etc/mkinitcpio.conf  
-</pre>
-
-<pre>
-HOOKS="... block mdadm_udev <b>encrypt</b> filesystems ..."
+  HOOKS="... block mdadm_udev <b>encrypt</b> filesystems ..."
 </pre>
 
 Other hooks might be necessary depending on the physical computer and encryption setups.  
@@ -484,10 +478,7 @@ In order to unlock the encrypted root partition at boot, the following kernel pa
 
 <pre>
 nano /etc/default/grub
-</pre>
-
-<pre>
-GRUB_CMDLINE_LINUX="cryptdevice=/dev/md125p6:ArchCrypt root=/dev/mapper/ArchCrypt"
+  GRUB_CMDLINE_LINUX="cryptdevice=/dev/md125p6:ArchCrypt root=/dev/mapper/ArchCrypt"
 </pre>
 
 The kernel parameters are added to `GRUB_CMDLINE_LINUX` are always effective, and the  `GRUB_CMDLINE_LINUX_DEFAULT` are effective ONLY during normal boot (NOT during recovery mode). Since these hooks are an integral part of the system setup, they need to be always executed.
