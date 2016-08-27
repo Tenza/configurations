@@ -153,7 +153,7 @@ https://wiki.archlinux.org/index.php/Beginners%27_guide#Configure_the_network
 
 ##### Update Mirrorlist
 
-The default mirrorlist of pacman is sorted by the synchronization status and speed at the time the installation image was created. The quality of mirrors can vary over time so it is a good idea to have a package to deal with this. The `reflector` package retrieves the latest mirrorlist from the [MirrorStatus](https://www.archlinux.org/mirrors/status/) page filters the most up-to-date mirrors and sorts them by speed. Install `reflector` and than run `reflector` command to rate the 25 most recently synchronized HTTPS servers, sort them by download rate, and overwrite the file `/etc/pacman.d/mirrorlist`.
+The default mirrorlist of pacman is sorted by the synchronization status and speed at the time the installation image was created. The quality of mirrors can vary over time so it is a good idea to have a package to deal with this. The `reflector` package retrieves the latest mirrorlist from the [MirrorStatus](https://www.archlinux.org/mirrors/status/) page filters the most up-to-date mirrors and sorts them by speed. Install `reflector` and than run `reflector` command to rate the 50 most recently synchronized HTTPS servers, sort them by download rate, and overwrite the file `/etc/pacman.d/mirrorlist`.
 
 <pre>
 pacman -S reflector
