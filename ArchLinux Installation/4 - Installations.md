@@ -64,7 +64,7 @@ pacman -S kconsole
 
 #### Activate already installed functionalities
 
-In the following section, some already installed functionalities will be activated.
+In the following section, some already installed functionalities will be activated.  
 Keep in mind that at the moment, the `plasma-meta` package comes with the following dependencies:
 
 <pre>
@@ -145,9 +145,14 @@ nano /etc/pam.d/sddm
   <b>session         optional        pam_kwallet5.so</b>
 </pre>
 
-#### KDE Applications
+#### File Manager
 
 <pre>
-pacman -S kconsole dolphin kate
+pacman -S dolphin
 </pre>
 
+#### Advanced text editor
+
+<pre>
+pacman -S kate
+</pre>
