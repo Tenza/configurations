@@ -188,7 +188,7 @@ The package responsible for detecting other OS installations is `os-prober`, and
 pacman -S os-prober
 </pre>
 
-> I had a problem where `os-prober` tried to mount my Linux extended partition when called by `grub-mkconfig`, it was probably because I'm in a mapped partition given that this is a RAID system. The detection of other OS worked, and the entry was added, but a error showed up when it tried to examine that particular partition. This problem disappeared when the KDE environment was installed and the `grub-mkconfig` was executed in a terminal.
+> I had a problem where `os-prober` tried to mount my Linux extended partition when called by `grub-mkconfig`, it was probably because the partition is mapped, given that this is a RAID system. The detection of other OS worked, and the entry was added, but a error showed up when it tried to examine that particular partition. This problem disappeared when the KDE environment was installed and the `grub-mkconfig` was executed in a terminal.
 
 <sub><sup>
 References:
