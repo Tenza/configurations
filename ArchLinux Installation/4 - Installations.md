@@ -156,3 +156,16 @@ pacman -S dolphin
 <pre>
 pacman -S kate
 </pre>
+
+#### Archiving Tool
+
+<pre>
+pacman -S ark p7zip zip unzip unrar
+</pre>
+
+#### Browser
+
+<pre>
+pacman -S firefox firefox-i18n-pt-pt
+</pre>
+
