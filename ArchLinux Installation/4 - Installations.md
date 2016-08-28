@@ -124,12 +124,13 @@ To use GnuPG encryption, a key-pair has to be created first. The `gnupg` package
 nano ~/.gnupg/gpg-agent.conf
   pinentry-program /usr/bin/pinentry-qt
   
+gpg-connect-agent reloadagent /bye
 gpg --full-gen-key
 </pre>
 
 ###### Blowfish with automatic unlock
 
-There isnt any additional configuration needed to create a wallet using Blowfish. The advantage that Blowfish has over `GnuPG` is the support it has from `kwallet-pam`, in order to allow automatic unlock at boot. 
+To use Blowfish encryption, simply select the option on the wallet creation window, there isnt any additional configuration needed. The advantage that Blowfish has over `GnuPG` is the support it has from `kwallet-pam`, in order to allow automatic unlock at boot. 
 
 KWallet will prompt for the password every first time a application that integrates with `kwallet` requires it. This can happen for example, at every startup, when the NetworkManager queries for the password of a wireless network. 
 
@@ -143,6 +144,21 @@ nano /etc/pam.d/sddm
   password        include         system-login
   session         include         system-login
   <b>session         optional        pam_kwallet5.so</b>
+</pre>
+
+##### Bluetooth
+
+The `bluez` package is responsible for managing the bluetooth connections, and it was already installed as a dependency to the KDE `bluedevil` front-end. Simply `status/start/enable` the service if needed.
+
+<pre>
+systemctl enable bluetooth.service
+</pre>
+
+If there is an error regarding the `sap-driver` when querying the status of the bluetooth service, know that this behaviour is expected, and can be solved by simply adding the `--noplugin=sap` to the service `ExecStart`.
+
+<pre>
+nano /usr/lib/systemd/system/bluetooth.service
+  ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap
 </pre>
 
 #### File Manager
