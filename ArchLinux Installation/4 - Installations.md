@@ -34,13 +34,13 @@ sudo nano /etc/sddm.conf
   ThemeDir=/usr/share/sddm/themes
 </pre>
 
+> If the `sddm --example-config` command refuses to run, try `su - root`.
+
 For reference, this can be done using a graphical interface inside KDE, because the package `sddm-kcm` was already installed. This setting is in `Setting > Startup and Shutdown > Login Screen. (2nd tab)`.
 
 <pre>
 reboot
 </pre>
-
-> If the `sddm --example-config` command refuses to run, try `su - root`.
 
 <sub><sup>
 References:  
@@ -98,7 +98,7 @@ user-manager
 The `NetworkManager` package is responsible for managing the network functionalities, and it was already installed as a dependency to the KDE `plasma-nm` front-end. Simply `status/start/enable` the service if needed. Also, if the `dhcpcd` or `netctl-auto` services were enabled, they need to be [stopped and disabled](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/2%20-%20Base%20System%20Configuration.md#optional-not-recommended-start-network-connections-at-boot) first to avoid conflicts.
 
 <pre>
-systemctl start NetworkManager.service
+systemctl enable NetworkManager.service
 </pre>
 
 NetworkManager by default stores passwords in clear text in the connection files at `/etc/NetworkManager/system-connections/`.
