@@ -37,7 +37,9 @@ sudo nano /etc/sddm.conf
 For reference, this can be done using a graphical interface inside KDE, because the package `sddm-kcm` was already installed. This setting is in `Setting > Startup and Shutdown > Login Screen. (2nd tab)`.
 
 <pre>
+reboot
 </pre>
+
 > If the `sddm --example-config` command refuses to run, try `su - root`.
 
 <sub><sup>
@@ -50,15 +52,11 @@ http://forum.doom9.org/showthread.php?t=167654
 
 #### Install Applications
 
-The `plasma-meta` package comes with the bare-bones of the KDE desktop environment. To install more applications without a terminal, simply switch the TTY by pressing `CTRL+ALT+F1-7`, KDE should be running on the `TTY1`.
+The `plasma-meta` package comes with the bare-bones of the KDE desktop environment. To install more applications without a terminal, simply switch the TTY by pressing `CTRL+ALT+F1-7`, KDE should be running on the `TTY1`.  
+To immediately avoid this, consider installing a terminal, for example, `kconsole`.
 
 <pre>
 CTRL+ALT+F2
-</pre>
-
-To emidiatly avoid this, consider installing a terminal, for example, `kconsole`.
-
-<pre>
 pacman -S kconsole
 </pre>
 
