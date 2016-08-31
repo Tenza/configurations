@@ -101,6 +101,8 @@ The `NetworkManager` package is responsible for managing the network functionali
 systemctl enable NetworkManager.service
 </pre>
 
+> Make sure that your WiFi/Bluetooth card is active (typically a keyboard shortcut on a laptop) in order to make the adapter visible to the kernel.
+
 NetworkManager by default stores passwords in clear text in the connection files at `/etc/NetworkManager/system-connections/`.
 It is preferable to save the passwords in encrypted form instead of clear text, this can be achieved by storing them in a keyring which NetworkManager then queries for the passwords. For KDE, the keyring daemon is KDE Wallet.
 
@@ -154,6 +156,8 @@ The `bluez` package is responsible for managing the bluetooth connections, and i
 systemctl enable bluetooth.service
 </pre>
 
+> Make sure that your WiFi/Bluetooth card is active (typically a keyboard shortcut on a laptop) in order to make the adapter visible to the kernel.
+
 If there is an error regarding the `sap-driver` when querying the status of the bluetooth service, know that this behaviour is expected, and can be solved by simply adding the `--noplugin=sap` to the service `ExecStart`.
 
 <pre>
@@ -184,4 +188,3 @@ pacman -S ark p7zip zip unzip unrar
 <pre>
 pacman -S firefox firefox-i18n-pt-pt
 </pre>
-
