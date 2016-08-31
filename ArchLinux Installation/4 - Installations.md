@@ -188,3 +188,34 @@ pacman -S ark p7zip zip unzip unrar
 <pre>
 pacman -S firefox firefox-i18n-pt-pt
 </pre>
+
+#### PulseAudio Audiophile
+
+By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
+
+<pre>
+nano /etc/pulse/daemon.conf
+  default-sample-format = s32le 
+  default-sample-rate = 96000 
+  resample-method = speex-float-5 
+</pre>
+
+For the most genuine resampling at the cost of high CPU usage (even on 2011 CPUs) set `resample-method`.
+
+<pre>
+nano /etc/pulse/daemon.conf
+  resample-method = src-sinc-best-quality 
+</pre>
+
+To change the channels set by pulseaudio (they might be wrong), set `default-sample-channels`.
+
+<pre>
+nano /etc/pulse/daemon.conf
+  default-sample-channels = 3
+  default-channel-map = front-left,front-right,lfe
+</pre>
+
+<sub><sup>
+References: 
+http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
+</sup></sub>
