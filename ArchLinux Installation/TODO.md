@@ -1,18 +1,3 @@
-#### Remove KDE4
-
-KDE4 has been removed from the repos and is no longer suported. KDE5 is now in a stable state so this is prefered.
-The past problems with the tray bar have been fixed and the applications are working as they should.
-
-If you have KDE4 is installed, and since KDE4 and KDE5 cannot run together we need to remove it.  
-Start by unloading the graphic shell, disable KDM from staring and remove KDE4 specific packages.
-
-<pre>
-systemctl isolate multi-user.target
-systemctl disable kdm
-pacman -Rnc kdebase-workspace 
-pacman -Rns oxygen-gtk2 oxygen-gtk3-git kde-gtk-config-kde4
-</pre>
-
 #### KDE Tray system
 
 Since KDE5 uses a new tray system, we need to change `QSystemTrayIcon` to `StatusNotifierItems` the package that does this is `sni-qt` and we need to install `libindicator` packages as well.
@@ -31,37 +16,6 @@ https://wiki.archlinux.org/index.php/KDE
 https://wiki.archlinux.org/index.php/Plasma  
 https://wiki.archlinux.org/index.php/SDDM  
 http://www.linuxveda.com/2015/02/27/how-to-install-kdes-plasma-5-on-arch-linux/
-</sup></sub>
-
-#### PulseAudio Audiophile
-
-By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
-
-<pre>
-nano /etc/pulse/daemon.conf
-add: default-sample-format = s32le 
-add: default-sample-rate = 96000 
-add: resample-method = speex-float-5 
-</pre>
-
-For the most geniune resampling at the cost of high CPU usage (even on 2011 CPUs) you can add: 
-
-<pre>
-nano /etc/pulse/daemon.conf
-resample-method = src-sinc-best-quality 
-</pre>
-
-If you are having problems with the channels set by pulseaudio, you can set them manually by adding:
-
-<pre>
-nano /etc/pulse/daemon.conf
-default-sample-channels = 3
-default-channel-map = front-left,front-right,lfe
-</pre>
-
-<sub><sup>
-References: 
-http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
 </sup></sub>
 
 ### Configure X11 system
@@ -107,77 +61,6 @@ To install Microsoft fonts we will use the Legacy packages, because the new pack
 <sub><sup>
 References:
 https://wiki.archlinux.org/index.php/MS_fonts
-</sup></sub>
-
-##### KDE volume control
-
-To have access to the tray applet:
-
-> sudo pacman -S kdemultimedia-kmix
-
-##### KDE network manager
-
-This will install the network tray applet, as well as its dependencies, that include the main package `networkmanager`.
-
-> sudo pacman -S kdeplasma-applets-plasma-nm
-
-If you enabled DHCP or netctl-auto on boot stop, disable them and start the new service:
-
-> sudo systemctl -t service  
-sudo systemctl stop dhcpcd@enp2s0.service   
-sudo systemctl stop netctl-auto@wlp3s0.service  
-sudo systemctl disable dhcpcd@enp2s0.service  
-sudo systemctl disable netctl-auto@wlp3s0.service  
-sudo systemctl enable NetworkManager.service  
-reboot
-
-Once we reboot and we use the networkmanager for a wireless connection, it will open KWallet in order to save the password. More below.
-
-<sub><sup>
-References:
-https://wiki.archlinux.org/index.php/NetworkManager#KDE
-</sup></sub>
-
-##### KDE KWallet
-
-If the KWallet is already open, simply use the default configuration, and create the default `kdewallet` wallet.  
-If not, install the following package and open in `System Configurations > Account Details > Wallet` or `ALT+F2` and type `kwalletmanager`. 
-
-> sudo pacman -S kdeutils-kwalletmanager  
-
-Now, if Kwallet is prompting you at each startup for the password, probably due to the saved wireless password, you can simply change its password to blank.
-
-<sub><sup>
-References:  
-http://mschlander.wordpress.com/2012/08/01/kwallet-is-annoying/   http://unix.stackexchange.com/questions/34186/automatically-opening-kwallet-while-logging-in-to-kde  
-</sup></sub>
-
-##### Bluetooth
-
-This will install the bluetooth tray applet, as well as its dependencies, that include the main package `bluez`.
-
-> sudo pacman -S bluedevil
-
-Activate the bluetooth card, but be aware that some Bluetooth adapters are bundled with a Wi-Fi card (e.g. Intel Centrino). These require that the Wi-Fi card is first enabled (typically a keyboard shortcut on a laptop) in order to make the Bluetooth adapter visible to the kernel.
-
-> systemctl start bluetooth  
-systemctl enable bluetooth
-
-There are some known problems when the bluetooth deamon starts, but fortunatly bluetooth still works.  
-To see the errors do:
-
-> systemctl status bluetooth
-
-> Sap driver initialization failed.  
-sap-server: Operation not permitted (1)  
-hci0 Load Connection Parameters failed: Unknown Command (0x01)
-
-https://bugs.archlinux.org/task/41247
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Bluetooth#BlueDevil  
-https://wiki.archlinux.org/index.php/Bluetooth#Installation  
 </sup></sub>
 
 ##### CD/DVD/Bluray Drive
