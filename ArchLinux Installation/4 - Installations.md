@@ -165,6 +165,12 @@ nano /usr/lib/systemd/system/bluetooth.service
   ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap
 </pre>
 
+#### Fonts
+
+<pre>
+pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-droid ttf-inconsolata
+</pre>
+
 #### File Manager
 
 <pre>
