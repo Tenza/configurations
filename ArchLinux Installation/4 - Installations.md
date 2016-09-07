@@ -195,6 +195,40 @@ pacman -S ark p7zip zip unzip unrar
 pacman -S firefox firefox-i18n-pt-pt
 </pre>
 
+#### File and folder compare
+
+<pre>
+pacman -S meld
+</pre>
+
+> Kompare no longer crashes, but is still not as good as meld.
+
+#### Steam
+
+<pre>
+pacman -S steam
+</pre>
+
+##### Steam runtime issues
+
+<pre>
+libGL error: unable to load driver: i965_dri.so
+libGL error: driver pointer missing
+libGL error: failed to load driver: i965
+libGL error: unable to load driver: i965_dri.so
+libGL error: driver pointer missing
+libGL error: failed to load driver: i965
+libGL error: unable to load driver: swrast_dri.so
+libGL error: failed to load driver: swrast
+</pre>
+
+<pre>
+Edit the shortcut with KDE
+  Exec=LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' /usr/bin/steam %U
+</pre>
+
+> KDE copies the file /usr/share/applications/steam.desktop to /home/filipe/.local/share/applications/steam.desktop with the modifications.
+
 #### PulseAudio Audiophile
 
 By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
