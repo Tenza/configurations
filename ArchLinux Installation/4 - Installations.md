@@ -203,6 +203,16 @@ pacman -S meld
 
 > Kompare no longer crashes, but is still not as good as meld.
 
+#### Skype
+
+Skype no longer need to be in complete lockdown mode, because there is a web version available. With this feature, a few frontend applications are now available. I'm using the oficial version, that is simply a wrapper of the Skype WebRTC for Linux.
+
+<pre>
+pacaur -S skypeforlinux-bin
+</pre>
+
+> There is no need for aditional configurations, because Skype is no longer running on a sandbox.
+
 #### Steam
 
 <pre>
