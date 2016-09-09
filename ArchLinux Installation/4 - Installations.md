@@ -243,7 +243,7 @@ Edit the shortcut with KDE
 
 Power Management consists of two main parts, configuration of the Linux kernel, which interacts with the hardware and configuration of userspace tools, which interact with the kernel and react to its events.  
 
-##### Power Management with Kernel Parameters
+###### Power Management with Kernel Parameters
 
 The `i915` kernel module of the Intel graphics, allows for configuration via kernel parameters. Some of the module options impact power saving. List all the options, and set the kernel parameters. This set of options should be generally safe to enable.
 
@@ -269,7 +269,7 @@ https://wiki.ubuntu.com/Kernel/PowerManagement/PowerSavingTweaks
 https://wiki.archlinux.org/index.php/intel_graphics#Module-based_Powersaving_Options  
 </sup></sub>
 
-##### Power Management with Userspace tools
+###### Power Management with Userspace tools
 
 There are multiple tools within userspace to enable aditional power management. Only run one of these tools to avoid possible conflicts as they all work more or less in a similar way. Laptop Mode Tools (LMT) is the utility that is going to be configured, it is considered by many to be the de-facto utility for power management.
 
