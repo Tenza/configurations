@@ -241,12 +241,11 @@ Edit the shortcut with KDE
 
 #### Power Management
 
-Power Management consists of two main parts.  
-Configuration of the Linux kernel, which interacts with the hardware. 
-Configuration of userspace tools, which interact with the kernel and react to its events.  
+Power Management consists of two main parts, configuration of the Linux kernel, which interacts with the hardware and configuration of userspace tools, which interact with the kernel and react to its events.  
 
-The `i915` kernel module allows for configuration via kernel parameters. Some of the module options impact power saving.
-List all the options along with short descriptions and default values, and set the kernel parameters.
+##### Power Management with Kernel Parameters
+
+The `i915` kernel module of the Intel graphics, allows for configuration via kernel parameters. Some of the module options impact power saving. List all the options, and set the kernel parameters. This set of options should be generally safe to enable.
 
 <pre>
 modinfo -p i915
@@ -255,6 +254,37 @@ nano /etc/default/grub
 
 grub-mkconfig -o /boot/grub/grub.cfg 
 </pre>
+
+| Switch | Description | 
+| --- | --- | 
+| i915.enable_rc6=1 | The Intel i915 RC6 feature allows the Graphics Processing Unit (GPU) to enter a lower power state during GPU idle. The i915 RC6 feature applies to Intel Sandybridge and later processors. | 
+| i915.enable_fbc=1 | Framebuffer compression reduces the memory bandwidth on screen refereshes and depending on the image in the framebuffer can reduce power consumption. This option is not enabled by default as on some hardware framebuffer compression causes artifacts when repainting when using compositer. Some users report this breaks when using Unity 3D.  | 
+| i915.semaphores=1 | Use semaphores for inter-ring sync. |
+| 915.lvds_downclock=1 | This kernel option will down-clock the LVDS refresh rate, and this in theory will save power. For systems that do not support LVDS down-clocking the screen can flicker. |
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Power_management  
+https://wiki.ubuntu.com/Kernel/PowerManagement/PowerSavingTweaks  
+https://wiki.archlinux.org/index.php/intel_graphics#Module-based_Powersaving_Options  
+</sup></sub>
+
+##### Power Management with Userspace tools
+
+There are multiple tools within userspace to enable aditional power management. Only run one of these tools to avoid possible conflicts as they all work more or less in a similar way. Laptop Mode Tools (LMT) is the utility that is going to be configured, it is considered by many to be the de-facto utility for power management.
+
+<pre>
+pacaur -S laptop-mode-tools-git acpid bluez-utils wireless_tools ethtool
+systemctl enable laptop-mode.service
+systemctl enable acpid.service
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Power_management  
+https://wiki.archlinux.org/index.php/Laptop_Mode_Tools  
+https://wiki.archlinux.org/index.php/acpid  
+</sup></sub>
 
 #### PulseAudio Audiophile
 
