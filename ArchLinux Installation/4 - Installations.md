@@ -239,6 +239,23 @@ Edit the shortcut with KDE
 
 > KDE copies the file /usr/share/applications/steam.desktop to /home/filipe/.local/share/applications/steam.desktop with the modifications.
 
+#### Power Management
+
+Power Management consists of two main parts.  
+Configuration of the Linux kernel, which interacts with the hardware. 
+Configuration of userspace tools, which interact with the kernel and react to its events.  
+
+The `i915` kernel module allows for configuration via kernel parameters. Some of the module options impact power saving.
+List all the options along with short descriptions and default values, and set the kernel parameters.
+
+<pre>
+modinfo -p i915
+nano /etc/default/grub
+  GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash i915.enable_rc6=1 i915.enable_fbc=1 i915.semaphores=1 915.lvds_downclock=1"
+
+grub-mkconfig -o /boot/grub/grub.cfg 
+</pre>
+
 #### PulseAudio Audiophile
 
 By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
