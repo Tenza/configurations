@@ -50,7 +50,7 @@ https://wiki.archlinux.org/index.php/window_manager
 http://forum.doom9.org/showthread.php?t=167654
 </sup></sub>
 
-#### Install Applications
+#### Install a terminal
 
 The `plasma-meta` package comes with the bare-bones of the KDE desktop environment. To install more applications without a terminal, simply switch the TTY by pressing `CTRL+ALT+F1-7`, KDE should be running on the `TTY1`.  
 To immediately avoid this, consider installing a terminal, for example, `kconsole`.
@@ -62,38 +62,7 @@ pacman -S kconsole
 
 > Note that the default TTY was changed in the migration of `systemd/logind` on October 2012 to [fix a problem](https://bugs.archlinux.org/task/32206). This is different from KDE4, that used to run on the TTY7.
 
-#### Activate already installed functionalities
-
-In the following section, some already installed functionalities will be activated.  
-Keep in mind that at the moment, the `plasma-meta` package comes with the following dependencies:
-
-<pre>
-bluedevil
-breeze-gtk
-drkonqi
-kde-gtk-config
-kdeplasma-addons
-kgamma5
-kinfocenter
-kscreen
-ksshaskpass
-ksysguard
-kwallet-pam
-kwayland-integration
-kwrited
-oxygen
-plasma-desktop
-plasma-mediacenter
-plasma-nm
-plasma-pa
-plasma-sdk
-plasma-workspace-wallpapers
-powerdevil
-sddm-kcm
-user-manager
-</pre>
-
-##### Network
+#### Activate Network
 
 The `NetworkManager` package is responsible for managing the network functionalities, and it was already installed as a dependency to the KDE `plasma-nm` front-end. Simply `status/start/enable` the service if needed. Also, if the `dhcpcd` or `netctl-auto` services were enabled, they need to be [stopped and disabled](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/2%20-%20Base%20System%20Configuration.md#optional-not-recommended-start-network-connections-at-boot) first to avoid conflicts.
 
@@ -103,10 +72,26 @@ systemctl enable NetworkManager.service
 
 > Make sure that your WiFi/Bluetooth card is active (typically a keyboard shortcut on a laptop) in order to make the adapter visible to the kernel.
 
-NetworkManager by default stores passwords in clear text in the connection files at `/etc/NetworkManager/system-connections/`.
-It is preferable to save the passwords in encrypted form instead of clear text, this can be achieved by storing them in a keyring which NetworkManager then queries for the passwords. For KDE, the keyring daemon is KDE Wallet.
+NetworkManager by default stores passwords in clear text in the connection files at `/etc/NetworkManager/system-connections/`. It is preferable to save the passwords in encrypted form instead of clear text, this can be achieved by storing them in a keyring which NetworkManager then queries for the passwords. For KDE, the keyring daemon is [KDE Wallet](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/4%20-%20Installations.md#kwallet).
 
-##### KWallet
+#### Activate Bluetooth
+
+The `bluez` package is responsible for managing the bluetooth connections, and it was already installed as a dependency to the KDE `bluedevil` front-end. Simply `status/start/enable` the service if needed.
+
+<pre>
+systemctl enable bluetooth.service
+</pre>
+
+> Make sure that your WiFi/Bluetooth card is active (typically a keyboard shortcut on a laptop) in order to make the adapter visible to the kernel.
+
+If there is an error regarding the `sap-driver` when querying the status of the bluetooth service, know that this behaviour is expected, and can be solved by simply adding the `--noplugin=sap` to the service `ExecStart`.
+
+<pre>
+nano /usr/lib/systemd/system/bluetooth.service
+  ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap
+</pre>
+
+#### KWallet
 
 The `kwallet` and `kwallet-pam` packages should already be installed as a dependency to the `kio` and `plasma-meta` packages. Once the network connects, or any other service requires the keyring deamon, a configuration window should pop-up, and a wallet should be created. 
 
@@ -148,22 +133,7 @@ nano /etc/pam.d/sddm
   <b>session         optional        pam_kwallet5.so</b>
 </pre>
 
-##### Bluetooth
-
-The `bluez` package is responsible for managing the bluetooth connections, and it was already installed as a dependency to the KDE `bluedevil` front-end. Simply `status/start/enable` the service if needed.
-
-<pre>
-systemctl enable bluetooth.service
-</pre>
-
-> Make sure that your WiFi/Bluetooth card is active (typically a keyboard shortcut on a laptop) in order to make the adapter visible to the kernel.
-
-If there is an error regarding the `sap-driver` when querying the status of the bluetooth service, know that this behaviour is expected, and can be solved by simply adding the `--noplugin=sap` to the service `ExecStart`.
-
-<pre>
-nano /usr/lib/systemd/system/bluetooth.service
-  ExecStart=/usr/lib/bluetooth/bluetoothd --noplugin=sap
-</pre>
+#### Gnome-keyring
 
 #### Fonts
 
@@ -205,13 +175,13 @@ pacman -S meld
 
 #### Skype
 
-Skype no longer need to be in complete lockdown mode, because there is a web version available. With this feature, a few frontend applications are now available. I'm using the oficial version, that is simply a wrapper of the Skype WebRTC for Linux.
+Skype no longer needs to be in complete lockdown mode, because there is a web version available. With this feature, a few front-end applications are now available. I'm using the oficial version, that is simply a wrapper of the Skype WebRTC for Linux.
 
 <pre>
 pacaur -S skypeforlinux-bin
 </pre>
 
-> There is no need for aditional configurations, because Skype is no longer running on a sandbox.
+> Skype uses the gnome-keyring to store the credentials. Make sure it is properly configured.
 
 #### Steam
 
