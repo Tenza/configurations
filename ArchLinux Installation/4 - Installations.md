@@ -210,6 +210,19 @@ pacman -S ark p7zip zip unzip unrar
 pacman -S firefox firefox-i18n-pt-pt
 </pre>
 
+#### Qt
+
+<pre>
+pacman -S qt5-base qt5-doc qt5-tools qt5-examples qtcreator
+pacman -S cmake gdb valgrind
+</pre>
+
+#### IRC
+
+<pre>
+pacman -S irssi
+</pre>
+
 #### File and folder compare
 
 <pre>
