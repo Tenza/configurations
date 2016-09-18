@@ -385,7 +385,15 @@ paraur -S photoqt
 
 > I prefer photoqt over gwenview due to its simplicity.
 
-### Aditional configurations
+### Aditional configurations and problems
+
+#### Libreoffice does not autocorrect
+
+Check if the checkbox has you a blue tick or a little `A` next to the language, if it does, the language pack is installed, simply select it to start showing in the language bar bellow. If it doesn't, install the appropriate `hunspell` language pack.
+
+<pre>
+Tools -> Options -> Language Settings -> Languages -> Default language for document
+</pre>
 
 #### PulseAudio Audiophile
 
