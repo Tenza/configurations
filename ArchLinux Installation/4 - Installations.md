@@ -223,6 +223,14 @@ pacman -S cmake gdb valgrind
 pacman -S irssi
 </pre>
 
+#### XMPP & IRC
+
+<pre>
+pacman -S pidgin pidgin-otr
+</pre>
+
+> When adding a XMPP account the "Resource" field is optional, is used to define your instance if you have several locations you chat from, for example "Home" or "Work".
+
 #### File and folder compare
 
 <pre>
