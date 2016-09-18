@@ -6,6 +6,8 @@
 This file is simply my backlog of installations.  
 This document does not contain instructions meant as a guide.
 
+### Essencial Installations
+
 #### KDE5 Desktop Environment
 
 Install `KDE5`, system language and the `SDDM` display manager that better integrates with KDE5.  
@@ -22,7 +24,7 @@ systemctl enable sddm.service
 </pre>
 
 To better integrate SDDM with Plasma, it is recommended to edit `/etc/sddm.conf` to use the `breeze` theme.  
-Edit this file manually before the first boot, there are some difficulties starting KDE with the SDDM `maui` default theme.  
+Edit this file manually before the first boot, there are some difficulties starting KDE with the SDDM `maui` default theme.
 
 <pre>
 sddm --example-config > /etc/sddm.conf
@@ -62,7 +64,7 @@ pacman -S kconsole
 
 > Note that the default TTY was changed in the migration of `systemd/logind` on October 2012 to [fix a problem](https://bugs.archlinux.org/task/32206). This is different from KDE4, that used to run on the TTY7.
 
-#### Activate Network
+#### Activate NetworkManager
 
 The `NetworkManager` package is responsible for managing the network functionalities, and it was already installed as a dependency to the KDE `plasma-nm` front-end. Simply `status/start/enable` the service if needed. Also, if the `dhcpcd` or `netctl-auto` services were enabled, they need to be [stopped and disabled](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/2%20-%20Base%20System%20Configuration.md#optional-not-recommended-start-network-connections-at-boot) first to avoid conflicts.
 
@@ -182,9 +184,129 @@ nano /etc/fstab
 
 #### Fonts
 
+The following set of fonts are UTF8 fonts, they are universal and should be generally usefull for the average user.
+
 <pre>
 pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-droid ttf-inconsolata
 </pre>
+
+> I use the `ttf-inconsolata` as my terminal font, this font is also very good for programming purposes.
+
+#### Power Management
+
+Power Management consists of two main parts, configuration of the Linux kernel, which interacts with the hardware and configuration of userspace tools, which interact with the kernel and react to its events.  
+
+###### Power Management with Kernel Parameters
+
+The `i915` kernel module of the Intel graphics, allows for configuration via kernel parameters. Some of the module options impact power saving. List all the options, and set the kernel parameters. This set of options should be generally safe to enable.
+
+<pre>
+modinfo -p i915
+nano /etc/default/grub
+  GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash i915.enable_rc6=1 i915.enable_fbc=1 i915.semaphores=1 915.lvds_downclock=1"
+
+grub-mkconfig -o /boot/grub/grub.cfg 
+</pre>
+
+| Switch | Description | 
+| --- | --- | 
+| i915.enable_rc6=1 | The Intel i915 RC6 feature allows the Graphics Processing Unit (GPU) to enter a lower power state during GPU idle. The i915 RC6 feature applies to Intel Sandybridge and later processors. | 
+| i915.enable_fbc=1 | Framebuffer compression reduces the memory bandwidth on screen refereshes and depending on the image in the framebuffer can reduce power consumption. This option is not enabled by default as on some hardware framebuffer compression causes artifacts when repainting when using compositer. Some users report this breaks when using Unity 3D.  | 
+| i915.semaphores=1 | Use semaphores for inter-ring sync. |
+| 915.lvds_downclock=1 | This kernel option will down-clock the LVDS refresh rate, and this in theory will save power. For systems that do not support LVDS down-clocking the screen can flicker. |
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Power_management  
+https://wiki.ubuntu.com/Kernel/PowerManagement/PowerSavingTweaks  
+https://wiki.archlinux.org/index.php/intel_graphics#Module-based_Powersaving_Options  
+</sup></sub>
+
+###### Power Management with Userspace tools
+
+There are multiple tools within userspace to enable aditional power management. Only run one of these tools to avoid possible conflicts as they all work more or less in a similar way. Laptop Mode Tools (LMT) is the utility that is going to be configured, it is considered by many to be the de-facto utility for power management.
+
+<pre>
+pacaur -S laptop-mode-tools-git acpid bluez-utils wireless_tools ethtool
+systemctl enable laptop-mode.service
+systemctl enable acpid.service
+</pre>
+
+<sub><sup>
+References:  
+https://wiki.archlinux.org/index.php/Power_management  
+https://wiki.archlinux.org/index.php/Laptop_Mode_Tools  
+https://wiki.archlinux.org/index.php/acpid  
+</sup></sub>
+
+### Installations with configurations
+
+#### Skype
+
+Skype no longer needs to be in complete lockdown mode, because there is a web version available. With this feature, a few front-end applications are now available. I'm using the oficial version, that is simply a wrapper of the Skype WebRTC for Linux.
+
+<pre>
+pacaur -S skypeforlinux-bin
+</pre>
+
+> Skype uses the gnome-keyring to store the credentials. Make sure it is properly configured.
+
+###### Skype startup in tray
+
+Skype is able to `Close to tray`, but it always starts with the main window visible. Closing to tray at startup is not yet available, and command line parameters like `--silent` are also not available. To force this behavior, I created a simple script using `xdotool` to close the main window of skype at startup.
+
+<pre>
+pacman -S xdotool
+nano /home/filipe/Scripts/Skype
+  #!/bin/bash
+  
+  /usr/bin/skypeforlinux
+  
+  sleep 1
+  
+  # Close window
+  if [[ -n `pidof skypeforlinux` ]];then
+      WID=`xdotool search --name "Skype for Linux Alpha"`
+      xdotool windowactivate --sync $WID
+      xdotool key --clearmodifiers ALT+F4
+  fi
+
+chmod 755 /home/filipe/Scripts/Skype
+(Add the script to startup (symlink) with KDE)
+</pre>
+
+<sub><sup>
+References:  
+http://unix.stackexchange.com/questions/85205/is-there-a-way-to-simulate-a-close-event-on-various-windows-using-the-terminal  http://how-to.wikia.com/wiki/How_to_gracefully_kill_(close)_programs_and_processes_via_command_line
+</sup></sub>
+
+#### Steam
+
+<pre>
+pacman -S steam
+</pre>
+
+##### Steam runtime issues
+
+<pre>
+libGL error: unable to load driver: i965_dri.so
+libGL error: driver pointer missing
+libGL error: failed to load driver: i965
+libGL error: unable to load driver: i965_dri.so
+libGL error: driver pointer missing
+libGL error: failed to load driver: i965
+libGL error: unable to load driver: swrast_dri.so
+libGL error: failed to load driver: swrast
+</pre>
+
+<pre>
+Edit the shortcut with KDE
+  Exec=LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' /usr/bin/steam %U
+</pre>
+
+> KDE copies the file /usr/share/applications/steam.desktop to /home/filipe/.local/share/applications/steam.desktop with the modifications.
+
+### Simple Installations
 
 #### File Manager
 
@@ -239,6 +361,12 @@ pacman -S meld
 
 > Kompare no longer crashes, but is still not as good as meld.
 
+#### Torrent
+
+<pre>
+pacman -S qbittorrent
+</pre>
+
 #### Office
 
 <pre>
@@ -257,112 +385,7 @@ paraur -S photoqt
 
 > I prefer photoqt over gwenview due to its simplicity.
 
-#### Skype
-
-Skype no longer needs to be in complete lockdown mode, because there is a web version available. With this feature, a few front-end applications are now available. I'm using the oficial version, that is simply a wrapper of the Skype WebRTC for Linux.
-
-<pre>
-pacaur -S skypeforlinux-bin
-</pre>
-
-> Skype uses the gnome-keyring to store the credentials. Make sure it is properly configured.
-
-###### Skype startup in tray
-
-Skype is able to `Close to tray`, but it always starts with the main window visible. Closing to tray at startup is not yet available, and command line parameters like `--silent` are also not available. To force this behavior, I created a simple script using `xdotool` to close the main window of skype at startup.
-
-<pre>
-pacman -S xdotool
-nano /home/filipe/Scripts/Skype
-  #!/bin/bash
-  
-  /usr/bin/skypeforlinux
-  
-  sleep 1
-  
-  # Close window
-  if [[ -n `pidof skypeforlinux` ]];then
-      WID=`xdotool search --name "Skype for Linux Alpha"`
-      xdotool windowactivate --sync $WID
-      xdotool key --clearmodifiers ALT+F4
-  fi
-
-chmod 755 /home/filipe/Scripts/Skype
-(Add the script to startup (symlink) with KDE)
-</pre>
-
-#### Steam
-
-<pre>
-pacman -S steam
-</pre>
-
-##### Steam runtime issues
-
-<pre>
-libGL error: unable to load driver: i965_dri.so
-libGL error: driver pointer missing
-libGL error: failed to load driver: i965
-libGL error: unable to load driver: i965_dri.so
-libGL error: driver pointer missing
-libGL error: failed to load driver: i965
-libGL error: unable to load driver: swrast_dri.so
-libGL error: failed to load driver: swrast
-</pre>
-
-<pre>
-Edit the shortcut with KDE
-  Exec=LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' /usr/bin/steam %U
-</pre>
-
-> KDE copies the file /usr/share/applications/steam.desktop to /home/filipe/.local/share/applications/steam.desktop with the modifications.
-
-#### Power Management
-
-Power Management consists of two main parts, configuration of the Linux kernel, which interacts with the hardware and configuration of userspace tools, which interact with the kernel and react to its events.  
-
-###### Power Management with Kernel Parameters
-
-The `i915` kernel module of the Intel graphics, allows for configuration via kernel parameters. Some of the module options impact power saving. List all the options, and set the kernel parameters. This set of options should be generally safe to enable.
-
-<pre>
-modinfo -p i915
-nano /etc/default/grub
-  GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash i915.enable_rc6=1 i915.enable_fbc=1 i915.semaphores=1 915.lvds_downclock=1"
-
-grub-mkconfig -o /boot/grub/grub.cfg 
-</pre>
-
-| Switch | Description | 
-| --- | --- | 
-| i915.enable_rc6=1 | The Intel i915 RC6 feature allows the Graphics Processing Unit (GPU) to enter a lower power state during GPU idle. The i915 RC6 feature applies to Intel Sandybridge and later processors. | 
-| i915.enable_fbc=1 | Framebuffer compression reduces the memory bandwidth on screen refereshes and depending on the image in the framebuffer can reduce power consumption. This option is not enabled by default as on some hardware framebuffer compression causes artifacts when repainting when using compositer. Some users report this breaks when using Unity 3D.  | 
-| i915.semaphores=1 | Use semaphores for inter-ring sync. |
-| 915.lvds_downclock=1 | This kernel option will down-clock the LVDS refresh rate, and this in theory will save power. For systems that do not support LVDS down-clocking the screen can flicker. |
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Power_management  
-https://wiki.ubuntu.com/Kernel/PowerManagement/PowerSavingTweaks  
-https://wiki.archlinux.org/index.php/intel_graphics#Module-based_Powersaving_Options  
-</sup></sub>
-
-###### Power Management with Userspace tools
-
-There are multiple tools within userspace to enable aditional power management. Only run one of these tools to avoid possible conflicts as they all work more or less in a similar way. Laptop Mode Tools (LMT) is the utility that is going to be configured, it is considered by many to be the de-facto utility for power management.
-
-<pre>
-pacaur -S laptop-mode-tools-git acpid bluez-utils wireless_tools ethtool
-systemctl enable laptop-mode.service
-systemctl enable acpid.service
-</pre>
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Power_management  
-https://wiki.archlinux.org/index.php/Laptop_Mode_Tools  
-https://wiki.archlinux.org/index.php/acpid  
-</sup></sub>
+### Aditional configurations
 
 #### PulseAudio Audiophile
 
