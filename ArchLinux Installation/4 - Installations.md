@@ -228,6 +228,14 @@ paraur -S hunspell-pt_pt
 
 > I prefer Libreoffice over Calligra due to the compatiblity and similarity to MS office.
 
+#### Imageviewer
+
+<pre>
+paraur -S photoqt
+</pre>
+
+> I prefer photoqt over gwenview due to its simplicity.
+
 #### Skype
 
 Skype no longer needs to be in complete lockdown mode, because there is a web version available. With this feature, a few front-end applications are now available. I'm using the oficial version, that is simply a wrapper of the Skype WebRTC for Linux.
