@@ -1,12 +1,12 @@
 # Installations
 
 ***DO NOT USE THESE NOTES BLINDLY.***  
-***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
+***SOME CONFIGURATIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
 This file is simply my backlog of installations.  
 This document does not contain instructions meant as a guide.
 
-### Essencial Installations
+### Essential Installations
 
 #### KDE5 Desktop Environment
 
@@ -95,7 +95,7 @@ nano /usr/lib/systemd/system/bluetooth.service
 
 #### KWallet
 
-The `kwallet` and `kwallet-pam` packages should already be installed as a dependency to the `kio` and `plasma-meta` packages. Once the network connects, or any other service requires the keyring deamon, a configuration window should pop-up, and a wallet should be created. 
+The `kwallet` and `kwallet-pam` packages should already be installed as a dependency to the `kio` and `plasma-meta` packages. Once the network connects, or any other service requires the keyring daemon, a configuration window should pop-up, and a wallet should be created. 
 
 There are two encryption methods available in KWallet, the standard Blowfish and GnuPG a free implementation of the OpenPGP standard as defined by RFC4880 (also known as PGP). The GnuPG is clearly superior, even more so, when it is taken into consideration that the Blowfish implementation in KWallet [is absoluty terrible](http://security.stackexchange.com/questions/43988/security-of-the-kwallet-password-encrypting-application). The downside of using GnuPG is that `kwallet-pam` is not compatible with it, so it is not yet possible to automatically unlock the wallet at boot.
 
@@ -107,7 +107,7 @@ pacman -S kwalletmanager
 
 ###### GnuPG
 
-To use GnuPG encryption, a key-pair has to be created first. The `gnupg` package was already installed as a dependency of `archboot` and it will enable the creation of the keys. Also make sure the `pinentry` package is installed because it will be used to create the dialogs which GnuPG uses for passphrase entry. First, the program that will be used to prompt the passphrase has to be defined, than `gnupg` can be called **with the logged user** to generate the keys.
+To use GnuPG encryption, a key-pair has to be created first. The `gnupg` package was already installed as a dependency of `archboot` and it will enable the creation of the keys. Also make sure the `pinentry` package is installed because it will be used to create the dialog which GnuPG uses for passphrase entry. First, the program that will be used to prompt the passphrase has to be defined, than `gnupg` can be called **with the logged user** to generate the keys.
 
 <pre>
 nano ~/.gnupg/gpg-agent.conf
@@ -119,7 +119,7 @@ gpg --full-gen-key
 
 ###### Blowfish with automatic unlock
 
-To use Blowfish encryption, simply select the option on the wallet creation window, there isnt any additional configuration needed. The advantage that Blowfish has over `GnuPG` is the support it has from `kwallet-pam`, in order to allow automatic unlock at boot. 
+To use Blowfish encryption, simply select the option on the wallet creation window, there isn't any additional configuration needed. The advantage that Blowfish has over `GnuPG` is the support it has from `kwallet-pam`, in order to allow automatic unlock at boot. 
 
 KWallet will prompt for the password every first time a application that integrates with `kwallet` requires it. This can happen for example, at every startup, when the NetworkManager queries for the password of a wireless network. 
 
@@ -163,7 +163,7 @@ By default a new wallet is created when the gnome-keyring is automatically unloc
 
 #### Fstab
 
-To mount addtional partitions or disks at boot use the `fstab` file. Start by listing the device blocks with the filesystems flag, in order to get the UUID of the partition to be mounted. Than install the needed packages to give support to the partition filesystem type. Lastly make the dir for that mount-point, and set the entry in the `fstab` file with the information gathered previously.
+To mount additional partitions or disks at boot use the `fstab` file. Start by listing the device blocks with the filesystems flag, in order to get the UUID of the partition to be mounted. Than install the needed packages to give support to the partition filesystem type. Lastly make the dir for that mount-point, and set the entry in the `fstab` file with the information gathered previously.
 
 <pre>
 lsblk -f
@@ -184,7 +184,7 @@ nano /etc/fstab
 
 #### Fonts
 
-The following set of fonts are UTF8 fonts, they are universal and should be generally usefull for the average user.
+The following set of fonts are UTF8 fonts, they are universal and should be generally useful for the average user.
 
 <pre>
 pacman -S ttf-dejavu ttf-freefont ttf-liberation ttf-droid ttf-inconsolata
@@ -211,7 +211,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 | Switch | Description | 
 | --- | --- | 
 | i915.enable_rc6=1 | The Intel i915 RC6 feature allows the Graphics Processing Unit (GPU) to enter a lower power state during GPU idle. The i915 RC6 feature applies to Intel Sandybridge and later processors. | 
-| i915.enable_fbc=1 | Framebuffer compression reduces the memory bandwidth on screen refereshes and depending on the image in the framebuffer can reduce power consumption. This option is not enabled by default as on some hardware framebuffer compression causes artifacts when repainting when using compositer. Some users report this breaks when using Unity 3D.  | 
+| i915.enable_fbc=1 | Framebuffer compression reduces the memory bandwidth on screen refreshes and depending on the image in the framebuffer can reduce power consumption. This option is not enabled by default as on some hardware framebuffer compression causes artifacts when repainting when using composites. Some users report this breaks when using Unity 3D.  | 
 | i915.semaphores=1 | Use semaphores for inter-ring sync. |
 | 915.lvds_downclock=1 | This kernel option will down-clock the LVDS refresh rate, and this in theory will save power. For systems that do not support LVDS down-clocking the screen can flicker. |
 
@@ -224,7 +224,7 @@ https://wiki.archlinux.org/index.php/intel_graphics#Module-based_Powersaving_Opt
 
 ###### Power Management with Userspace tools
 
-There are multiple tools within userspace to enable aditional power management. Only run one of these tools to avoid possible conflicts as they all work more or less in a similar way. Laptop Mode Tools (LMT) is the utility that is going to be configured, it is considered by many to be the de-facto utility for power management.
+There are multiple tools within userspace to enable additional power management. Only run one of these tools to avoid possible conflicts as they all work more or less in a similar way. Laptop Mode Tools (LMT) is the utility that is going to be configured, it is considered by many to be the de-facto utility for power management.
 
 <pre>
 pacaur -S laptop-mode-tools-git acpid bluez-utils wireless_tools ethtool
@@ -243,7 +243,7 @@ https://wiki.archlinux.org/index.php/acpid
 
 #### Skype
 
-Skype no longer needs to be in complete lockdown mode, because there is a web version available. With this feature, a few front-end applications are now available. I'm using the oficial version, that is simply a wrapper of the Skype WebRTC for Linux.
+Skype no longer needs to be in complete lockdown mode, because there is a web version available. With this feature, a few front-end applications are now available. I'm using the official version, that is simply a wrapper of the Skype WebRTC for Linux.
 
 <pre>
 pacaur -S skypeforlinux-bin
@@ -375,7 +375,7 @@ pacman -S hunspell-en
 paraur -S hunspell-pt_pt
 </pre>
 
-> I prefer Libreoffice over Calligra due to the compatiblity and similarity to MS office.
+> I prefer Libreoffice over Calligra due to the compatibility and similarity to MS office.
 
 #### Imageviewer
 
