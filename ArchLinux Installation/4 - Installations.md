@@ -246,6 +246,30 @@ pacaur -S skypeforlinux-bin
 
 > Skype uses the gnome-keyring to store the credentials. Make sure it is properly configured.
 
+###### Skype startup in tray
+
+Skype is able to `Close to tray`, but it always starts with the main window visible. Closing to tray at startup is not yet available, and command line parameters like `--silent` are also not available. To force this behavior, I created a simple script using `xdotool` to close the main window of skype at startup.
+
+<pre>
+pacman -S xdotool
+nano /home/filipe/Scripts/Skype
+  #!/bin/bash
+  
+  /usr/bin/skypeforlinux
+  
+  sleep 1
+  
+  # Close window
+  if [[ -n `pidof skypeforlinux` ]];then
+      WID=`xdotool search --name "Skype for Linux Alpha"`
+      xdotool windowactivate --sync $WID
+      xdotool key --clearmodifiers ALT+F4
+  fi
+
+chmod 755 /home/filipe/Scripts/Skype
+(Add the script to startup (symlink) with KDE)
+</pre>
+
 #### Steam
 
 <pre>
