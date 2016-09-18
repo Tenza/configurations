@@ -218,6 +218,16 @@ pacman -S meld
 
 > Kompare no longer crashes, but is still not as good as meld.
 
+#### Office
+
+<pre>
+pacman -S libreoffice-fresh libreoffice-fresh-pt
+pacman -S hunspell-en 
+paraur -S hunspell-pt_pt
+</pre>
+
+> I prefer Libreoffice over Calligra due to the compatiblity and similarity to MS office.
+
 #### Skype
 
 Skype no longer needs to be in complete lockdown mode, because there is a web version available. With this feature, a few front-end applications are now available. I'm using the oficial version, that is simply a wrapper of the Skype WebRTC for Linux.
