@@ -1,7 +1,7 @@
 # Base System Installation
 
 ***DO NOT USE THESE NOTES BLINDLY.***  
-***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
+***SOME CONFIGURATIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
 These notes were created for my desktop and notebook (Asus UX51VZ) installations.  
 The desktop uses a **single SSD** and the notebook uses **two SSD's on RAID 0 with dm-crypt+LUKS** configuration.  
@@ -261,7 +261,7 @@ mount -t ext4 /dev/md125p5 /mnt/boot
 
 #### SWAP
 
-A SWAP is used for moving data in memory to disk and to enable the hibernate functionality. In this case, I will be using a swap file instead of a partition because it is easer to resize and having a dedicated partition for this does not seem useful. Note that the file should have at least the same size of the physical RAM, although for me, I do not plan on hibernate with my RAM full, so I will give less space.
+A SWAP is used for moving data in memory to disk and to enable the hibernate functionality. In this case, I will be using a swap file instead of a partition because it is easier to resize and having a dedicated partition for this does not seem useful. Note that the file should have at least the same size of the physical RAM, although for me, I do not plan on hibernate with my RAM full, so I will give less space.
 
 <sub><sup>
 References:
@@ -490,7 +490,7 @@ https://wiki.archlinux.org/index.php/Dm-crypt/System_configuration#Boot_loader
 
 #### Configure GRUB2
 
-Even if no kernel parameters were added to `/etc/default/grub` the grub configuration file still needs to be generated. This command will essencially build the file `/boot/grub/grub.cfg` that contains the menu used by the bootloader.
+Even if no kernel parameters were added to `/etc/default/grub` the grub configuration file still needs to be generated. This command will essentially build the file `/boot/grub/grub.cfg` that contains the menu used by the bootloader.
 
 <pre>
 grub-mkconfig -o /boot/grub/grub.cfg
