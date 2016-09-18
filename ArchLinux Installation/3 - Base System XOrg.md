@@ -1,7 +1,7 @@
 # Base System XOrg
 
 ***DO NOT USE THESE NOTES BLINDLY.***  
-***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
+***SOME CONFIGURATIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
 This is a follow-up of the [Base System Configuration](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/2%20-%20Base%20System%20Configuration.md) guide.  
 The configurations and installations set in here suppose that ArchLinux is properly installed and configured on the system.
@@ -306,7 +306,7 @@ https://wiki.archlinux.org/index.php/Libinput
 
 ##### XOrg
 
-Xorg is a display server for the X Window System. In order to start X, `xorg-xinit` will also be instaled. The `~/.xinitrc` file is a shell script read by `xinit` and by its front-end `startx`. It is mainly used to execute desktop environments, window managers and other programs when starting the X server.
+Xorg is a display server for the X Window System. In order to start X, `xorg-xinit` will also be installed. The `~/.xinitrc` file is a shell script read by `xinit` and by its front-end `startx`. It is mainly used to execute desktop environments, window managers and other programs when starting the X server.
 
 <pre>
 pacman -S xorg-server xorg-server-utils xorg-xinit
