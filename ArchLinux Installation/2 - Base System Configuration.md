@@ -1,7 +1,7 @@
 # Base System Configuration
 
 ***DO NOT USE THESE NOTES BLINDLY.***  
-***SOME CONFIGURANTIONS ARE PERSONAL AND PROBABLY OUTDATED.***
+***SOME CONFIGURATIONS ARE PERSONAL AND PROBABLY OUTDATED.***
 
 This is a follow-up of the [Base System Installation](https://github.com/Tenza/configurations/blob/master/ArchLinux%20Installation/1%20-%20Base%20System%20Installation.md) guide.  
 The configurations set in here suppose that ArchLinux is properly installed on the system.
