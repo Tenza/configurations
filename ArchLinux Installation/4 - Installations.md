@@ -121,7 +121,7 @@ To use Blowfish encryption, simply select the option on the wallet creation wind
 
 KWallet will prompt for the password every first time a application that integrates with `kwallet` requires it. This can happen for example, at every startup, when the NetworkManager queries for the password of a wireless network. 
 
-To prevent this behaviour, your wallet has to be called `kdewallet` and the password chosen has to be either black or the same as your username. If the password is the same of the username, an additional configuration of SDDM is needed.
+To prevent this behaviour, the wallet has to be called `kdewallet` and the password chosen has to be the same as your username. Additionally set the PAM configuration of SDDM.
 
 <pre>
 nano /etc/pam.d/sddm
@@ -130,10 +130,55 @@ nano /etc/pam.d/sddm
   account         include         system-login
   password        include         system-login
   session         include         system-login
-  <b>session         optional        pam_kwallet5.so</b>
+  <b>session         optional        pam_kwallet5.so  auto_start</b>
 </pre>
 
 #### Gnome-keyring
+
+Some applications use the gnome-keyring to store credentials instead of KWallet. Install the `gnome-keyring` as well as `seahorse` in order to manage the credentials. 
+
+<pre>
+pacman -S gnome-keyring seahorse
+</pre>
+
+###### Automatic unlock
+
+Like Kwallet, there are a few conditions to automatically unlock the wallet using PAM. The password must be be the same as your username, and additionally set the PAM configuration of SDDM.
+
+<pre>
+nano /etc/pam.d/sddm
+  auth            include         system-login
+  auth            optional        pam_kwallet5.so
+  <b>auth            optional        pam_gnome_keyring.so</b>
+  account         include         system-login
+  password        include         system-login
+  session         include         system-login
+  session         optional        pam_kwallet5.so         auto_start
+  <b>session         optional        pam_gnome_keyring.so    auto_start</b>
+</pre>
+
+By default a new wallet is created when the gnome-keyring is automatically unlocked. In order to save the credentials to this wallet, it must be set as the default wallet, use seahorse to do this.
+
+#### Fstab
+
+To mount addtional partitions or disks at boot use the `fstab` file. Start by listing the device blocks with the filesystems flag, in order to get the UUID of the partition to be mounted. Than install the needed packages to give support to the partition filesystem type. Lastly make the dir for that mount-point, and set the entry in the `fstab` file with the information gathered previously.
+
+<pre>
+lsblk -f
+pacman -S ntfs-3g
+mkdir /Dados
+nano /etc/fstab
+  # /dev/md125p4 LABEL=Dados
+  UUID=466C899D6C8987FF            /dados          ntfs-3g         defaults,permissions,nofail       0 0
+</pre>
+
+| Switch | Description | 
+| --- | --- | 
+| permissions | Sets the permissions, to the same permissions set on the files and dirs. This will enable the user to set permissions of the files and dirs using for example `chown` or `chmod`. | 
+| uid=1000,dmask=027,fmask=137 | These parameters can be used to explicitly set the permissions of all files and dirs. This will block the user from changing the permissions of the files and dirs. |
+| nofail | Even if this mount fails at boot, it will not stop the computer from booting. | 
+
+> Setting `ntfs` or `ntfs-3g` is basically the same. Check with `ls /sbin/mount.ntfs* -l`
 
 #### Fonts
 
