@@ -341,6 +341,15 @@ Edit the shortcut with KDE
   LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U <b>-silent</b>
 </pre>
 
+##### Tray icon
+
+Steam default tray icon cannot be seen very well with a white taskbar, to replace it with the default icon use the following commands. First backup the current mono icon, and then copy the default icon with the same name.
+
+<pre>
+sudo mv /usr/share/pixmaps/steam_tray_mono.png  /usr/share/pixmaps/steam_tray_mono.png.bak 
+sudo cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
+</pre>
+
 ### Simple Installations
 
 #### File Manager
