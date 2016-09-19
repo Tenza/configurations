@@ -383,13 +383,15 @@ pacman -S qt5-base qt5-doc qt5-tools qt5-examples qtcreator
 pacman -S cmake gdb valgrind
 </pre>
 
-#### XMPP & IRC
+#### Chat client
 
 <pre>
 pacman -S pidgin pidgin-otr
 </pre>
 
 > When adding a XMPP account the "Resource" field is optional, is used to define your instance if you have several locations you chat from, for example "Home" or "Work".
+
+> Pidgin restores it's state at boot, no need to add to the startup menu.
 
 #### File and folder compare
 
@@ -404,6 +406,8 @@ pacman -S meld
 <pre>
 pacman -S qbittorrent
 </pre>
+
+> QBittorrent restores it's state at boot, no need to add to the startup menu.
 
 #### Office
 
@@ -463,3 +467,25 @@ nano /etc/pulse/daemon.conf
 References: 
 http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
 </sup></sub>
+
+### Look & feel
+
+Just some personal configurations of look and feel.
+
+<pre>
+Configurate tray > Configure visibility.
+Configurate taskbar > No groups, manually ordered.
+Configurate system configurations > Classic tree, remove detailed tips, expand first level.
+Configurate startmenu > Change the icon to <a href="http://gabriela2400.deviantart.com/art/Arch-Linux-Start-Icons-175557586">one of these</a>.
+Dolphin > Adjust window properties:  Show in details, show hidden files. Apply to all folders.
+Dolphin > Additional Information > Name, Size, Date, Type, Location, permissions, owner.
+Dolphin > Change default start up, show location bar, show filter.
+Dolphin > Right click on a drive > Icon size > Large.
+Dolphin > Right click on top menu > Icon size > Large.
+Dolphin > Icon size 32px (drag lower bar)
+System configurations > Doble-click to open.
+System configurations > Add account image.
+System configurations > Screen borders > Lower right, Show Screen.
+System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+L.
+VLC > Enable multiple instances.
+</pre>
