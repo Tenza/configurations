@@ -1,57 +1,3 @@
-#### KDE Tray system
-
-Since KDE5 uses a new tray system, we need to change `QSystemTrayIcon` to `StatusNotifierItems` the package that does this is `sni-qt` and we need to install `libindicator` packages as well.
-
-<pre>
-packer -S gtk-sharp-2 libdbusmenu-gtk2 libdbusmenu-gtk3 libindicator-gtk2 libindicator-gtk3
-packer -S libappindicator-gtk2
-packer -S libappindicator-gtk3
-packer -S sni-qt lib32-sni-qt
-pacman -S kde-gtk-config
-</pre>
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/KDE
-https://wiki.archlinux.org/index.php/Plasma  
-https://wiki.archlinux.org/index.php/SDDM  
-http://www.linuxveda.com/2015/02/27/how-to-install-kdes-plasma-5-on-arch-linux/
-</sup></sub>
-
-### Configure X11 system
-
-##### Fonts
-
-For fonts I like to use the infinality bundle, they improve text rendering and have a package of hand picked fonts.  
-First, we need to add their repository and key.
-Also, if the terminal within KDE is messed up, press `Ctrl+Alt+F1` to `F6` to change to a virtual console provided by getty. In order to get back to the X session, press `Ctrl+Alt+F7`.
-
-> nano /etc/pacman.conf  
-
-> [infinality-bundle]  
-Server = http://bohoomil.com/repo/$arch  
-[infinality-bundle-multilib]  
-Server = http://bohoomil.com/repo/multilib/$arch  
-[infinality-bundle-fonts]  
-Server = http://bohoomil.com/repo/fonts
-
-Then we add the key and install everything:
-
-> pacman-key -r 962DDE58  
-pacman-key --lsign-key 962DDE58  
-pacman -Syyu  
-pacman -S infinality-bundle infinality-bundle-multilib ibfonts-meta-base
-
-<sub><sup>
-References:  
-http://bohoomil.com/  
-https://wiki.archlinux.org/index.php/Infinality-bundle%2Bfonts#Installation  
-https://wiki.archlinux.org/index.php/Unofficial_user_repositories#infinality-bundle  
-https://wiki.archlinux.org/index.php/Unofficial_user_repositories#infinality-bundle-multilib  
-https://wiki.archlinux.org/index.php/Unofficial_user_repositories#infinality-bundle-fonts  
-https://bbs.archlinux.org/viewtopic.php?id=162098
-</sup></sub>
-
 ##### MS Fonts
 
 To install Microsoft fonts we will use the Legacy packages, because the new packages require us to have a mounted Windows partition or access to a setup or installation media, and I dont really want to waste time with this BS.
@@ -72,53 +18,8 @@ To burn and rip CD's and DVD's I like the K3b that is part of the KDE suite.
 
 > sudo pacman -S k3b
 
-##### Uniform Look
 
-To make GTK based applications look like Qt based, I prefer `oxygen-gtk` instead of `qtcurve`.
-
-> sudo pacman -S oxygen-gtk2 kde-gtk-config-kde4  
-> packer -S oxygen-gtk3-git
-
-Go to, and change to `oxygen-gtk`:  
-System Settings > Application Appearance > GTK
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Uniform_Look_for_Qt_and_GTK_Applications  
-http://askubuntu.com/questions/50928/qtcurve-vs-oxygen-gtk-theme
-</sup></sub>
-
-##### Mount on boot
-
-> sudo pacman -S ntfs-3g  
-sudo nano /etc/fstab
-
-*With dmask and fmask flags.*
-
-Desktop:
-
-Besides mounting on boot, we will set access permissions to only the created user.  
-I do this because I have some untrusted programs running on locked accounts, i.e Skype.  
-But this apporach has a big downside, we will not be able to change permissions on the fly.
-
-> /dev/sdb1 /media/Dados1 ntfs defaults,uid=1000,dmask=027,fmask=137 0 0  
-/dev/sdc1 /media/Dados2 ntfs defaults,uid=1000,dmask=027,fmask=137 0 0  
-/dev/sdd /media/Dados3 ntfs defaults,uid=1000,dmask=027,fmask=137 0 0  
-
-Notebook:
-
-> /dev/mp125p3 /media/Dados ntfs defaults,noatime,discard,uid=1000,dmask=027,fmask=137 0 0
-
-*With permission flag.*
-
-To be able to change permissions, use the following flag.  
-ntfs and ntfs-3g are the same, check with: `ls /sbin/mount.ntfs* -l`
-
-> /dev/sdb1               /media/Dados1   ntfs-3g         defaults,permissions     0 0  
-/dev/sdc1               /media/Dados2   ntfs-3g         defaults,permissions     0 0  
-/dev/sdd                /media/Dados3   ntfs-3g         defaults,permissions     0 0  
-
-Then, set the files permissions and ownership with:
+##### Change files permissions and ownership with
 
 > sudo chown -R filipe:users /media/Dados3/  
 find /media/Dados3/ -type d -exec chmod 750 {} \;  
@@ -127,17 +28,6 @@ Adjust commands to all other storage drives.
 
 After we reset these permissions, we might have problems on the Windows side.  
 If we get "Access Denied" to the disk, just change the permissions of the "Everyone" user.
-
-<sub><sup>
-References:  
-http://en.wikipedia.org/wiki/Fmask#Example  
-https://wiki.archlinux.org/index.php/NTFS-3G  
-http://www.omaroid.com/fstab-permission-masks-explained/  
-http://askubuntu.com/questions/429848/dmask-and-fmask-mount-options  
-http://askubuntu.com/questions/113733/how-do-i-correctly-mount-a-ntfs-partition-in-etc-fstab  
-http://serverfault.com/questions/304354/fstab-filesystem-type-for-ntfs-ntfs-or-ntfs-3g  
-http://man7.org/linux/man-pages/man8/mount.8.html#FILESYSTEM-INDEPENDENT_MOUNT%20OPTIONS  
-</sup></sub>
 
 ##### Change Kernel I/O scheduler
 
@@ -224,44 +114,6 @@ Procedure for GPARTED:
 To boot with GParted Live the easiest way is to use `tuxboot`, this tool also recommended by GParted, it downloads and burns GParted live on a USB drive.
 
 > sudo packer -S tuxboot
-
-##### Improve battery life
-
-To improve overall battery life of my notebook I use the package laptop-mode-tools and activate multiple kernel modules, check the references for the description of each activated module.
-
-Laptop tools:
-> sudo pacman -S acpid wireless_tools ethtool bluez-utils  
-sudo packer -S laptop-mode-tools  
-sudo systemctl enable laptop-mode  
-
-For more optimizations install the `powertop` tool by intel.
-> sudo pacman -S powertop  
-sudo powertop --html=powerreport.html
-
-Now check your $home for the `powerreport.html` file, open it and review the `Tuning` tab.  
-It includes the commands necessary for more battery optimizations.
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Laptop_Mode_Tools  
-https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
-https://wiki.archlinux.org/index.php/powertop  
-http://lumbercoder.com/2014/03/02/improve-battery-life-arch-linux.html
-</sup></sub>
-
-Kernel Modules:
-> sudo nano /etc/default/grub  
-GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash elevator=noop i915.i915_enable_rc6=1 i915.i915_enable_fbc=1 i915.lvds_downclock=1 pcie_aspm=force drm.vblankoffdelay=1 i915.semaphores=1"  
-sudo grub-mkconfig -o /boot/grub/grub.cfg  
-
-<sub><sup>
-References:  
-https://wiki.ubuntu.com/Kernel/PowerManagement/PowerSavingTweaks  
-https://wiki.debian.org/InstallingDebianOn/Asus/UX31a  
-https://wiki.archlinux.org/index.php/ASUS_Zenbook_UX51Vz#Powersave_management  
-https://wiki.archlinux.org/index.php/ASUS_Zenbook_Prime_UX31A#Kernel_Parameters  
-https://01.org/linuxgraphics/downloads/2012/intel-2011q4-graphics-stack-release  
-</sup></sub>
 
 ##### UVC Webcams
 
@@ -529,33 +381,8 @@ Configurations:
 > Kate > Configurations > Activate console plugin.   
 Kate > Configurations > Appearence > Borders > Activate all 
 
-##### KDE Sudo:
-> packer -S kdesudo
-
 ##### Calculator
 > packer -S extcalc
-
-##### Libreoffice:
-
-I prefer `Libreoffice` over `calligra` due to compatiblity and similarity to MS office.
-
-> sudo pacman -S libreoffice-fresh libreoffice-fresh-pt  
-sudo pacman -S hunspell-en  
-sudo packer -S hunspell-pt_pt  
-sudo packer -S libreoffice-extension-languagetool  
-
-##### 7Zip:
-> sudo pacman -S p7zip zip unzip unrar kdeutils-ark
-
-##### Imageviewer:
-
-I prefer `photoqt` over `gwenview` due to its simplicity.
-
-> sudo packer -S photoqt
-
-##### QtCreator
-
-> sudo pacman -S gdb valgrind qt5-doc qtcreator
 
 ##### Visual Studio
 
@@ -975,84 +802,6 @@ http://askubuntu.com/questions/68327/why-does-truecrypt-ask-for-administrator-pa
 http://askubuntu.com/questions/88523/creating-a-mount-point-if-it-does-not-exist  
 </sup></sub>
 
-##### XMPP
-
-> sudo pacman -S pidgin pidgin-otr
-
-Configurations:  
-> Activate the following plugins:  
-Voice and video configuration  
-Offline messages emulation  
-History  
-Off the record messaging  
-
-Tested:  
-> pidgin-extprefs - Useless  
-purple-plugin-pack - Useless  
-pidgin-encryption - OTR is better for IM  
-
-Note:  
-KDE will restore pidgin state on boot.
-
-##### Skype
-
-> sudo pacman -S skype  
-sudo packer -S skype-secure
-
-If the sound is not working try:
-> As the main user, copy /etc/pulse/default.pa to ~/.pulse/default.pa and add:  
-load-module module-native-protocol-tcp auth-ip-acl=127.0.0.1  
-As the skype user, create ~/.pulse/client.conf and add:  
-default-server = 127.0.0.1   
-reboot  
-
-Distorted sound:
-> If you get distorted sound in skype, try adding PULSE_LATENCY_MSEC=60 to your env before starting skype.    
-Something like 'export PULSE_LATENCY_MSEC=60' in .bashrc, for example.  
-
-Skype stops video playback with notifications:  
-> nano /etc/pulse/default.pa  
-Comment the following line:  
-load-module module-cork-music-on-phone  
-
-Test skype access:
-> su -  
-nano /etc/passwd  
-replace /sbin/nologin with /bin/bash  
-passwd _skype  
-su _skype  
-Do whatever access tests needed, for example:  
-ls /main_user_folder  
-ls /internal_discs (deny access already set on the mount masks in fstab)  
-Lock the _skype account again:  
-su -  
-passwd -d _skype  
-nano /etc/passwd  
-replace /bin/bash with /sbin/nologin  
-Check groups with: groups _skype (should be video, audio, _skype)  
-
-Configurations:  
-> Add skype to startup in KDE  
-Options > General > Start minimized  
-Options > General > Style GTK+  
-Options > Message > Animated Icons  
-Options > Video > Disable webcam auto-brightness  
-
-Links and downloads:  
-There are ways to make the links open on the same browser, but I will not enable this.  
-Same goes for the downloads, they will be transfered to the _skype account folder, I will move them manually.
-
-Other types of protection:  
-Using `apparmor` and `tomoyo` requires kernel recompilation.  
-Using `docker` and `sandfox` seem outdated or lack instructions.  
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/skype#Use_Skype_with_special_user  
-http://lightrush.ndoytchev.com/random-1/debiansqueezefixespreventskypefrompausingaudiovideoplayback  
-https://forums.gentoo.org/viewtopic-t-997098.html?sid=531888f644a8f99aac8d4bc0260ddf83  
-</sup></sub>
-
 ##### TOR
 
 We can use TOR with an existing browser (not recommended) simply by installing and running:
@@ -1064,40 +813,6 @@ Then we open the browser and set the SOCKS proxy to `localhost` with port `9050`
 For ease we can install a plugin to toggle proxys.
 
 A better alternative is to use to TOR Browser. I did not have any luck in installing `tor-browser-en`, it keept falling on verifying the keys even after I added them to the keyring (other users complain of the same problem on the AUR). An alternative to this, is to simply download the bundle directly from https://www.torproject.org/download/ extract and double click the provided shortcut on the folder to run the browser.
-
-##### Steam
-
-> sudo pacman -S steam
-
-Close to tray:
-> sudo nano /etc/environment
-Add:
-STEAM_RUNTIME=1
-STEAM_FRAME_FORCE_CLOSE=1
-Alternatively, start steam with:
-STEAM_FRAME_FORCE_CLOSE=1 steam
-
-The first line tells steam to use its libraries instead of the system. They might be more outdated, but we guarantee that there will be no problems. The second line enables close to tray.
-
-Start silently:
-> Enable the startup at boot on the steam client and then add the `-silent` to entry using KDE.
-
-OpenGL problem:
-> rm /home/filipe/.local/share/Steam/ubuntu12_32/steam-runtime/i386/lib/i386-linux-gnu/libgcc_s.so.1
-rm /home/filipe/.local/share/Steam/ubuntu12_32/steam-runtime/i386/usr/lib/i386-linux-gnu/libstdc++.so.6
-Alternatively, start steam with:
-DRI_PRIME=1 LD_PRELOAD="/usr/lib/libstdc++.so.6 /usr/lib32/libstdc++.so.6 /usr/lib/libgcc_s.so.1 /usr/lib32/libgcc_s.so.1" ~/.local/share/Steam/ubuntu12_32/steam-runtime/run.sh steam
-
-Instalation notes:  
-When installing steam will give the following advices:
-
-If you are having problems with the steam license, remove .steam and .local/share/Steam  
-If you are running x86_64, you need the lib32 opt depends for your driver.  
-
-> lib32-mesa-dri: for open source driver users  
-lib32-catalyst-utils: for AMD Catalyst users  
-lib32-nvidia-utils: for NVIDIA proprietary blob users  
-lib32-alsa-plugins: for pulseaudio on some games  
 
 ##### Lutris
 
@@ -1160,17 +875,6 @@ https://wiki.archlinux.org/index.php/VirtualBox
 https://forums.virtualbox.org/viewtopic.php?t=15868
 </sup></sub>
 
-##### Lancelot
-
-> sudo pacman -S kdeplasma-addons-applets-lancelot  
-Activate by adding the new icon from the elements.  
-
-<sub><sup>
-References:  
-http://www.archlinuxuser.com/2014/04/change-default-kde-start-menu-with.html  
-https://www.kubuntuforums.net/showthread.php?59851-KDE-Application-Launchers  
-</sup></sub>
-
 ##### Themes
 
 Caledonia: https://aur.archlinux.org/packages/caledonia-bundle/  
@@ -1192,12 +896,6 @@ References:
 https://wiki.archlinux.org/index.php/List_of_applications/Multimedia#Graphical_3
 </sup></sub>
 
-##### File Compare
-
-> sudo pacman -S meld
-
-I tested `Kompare` but it does not work as well.
-
 ##### Subtitle Editor
 
 > sudo pacman -S gaupol
@@ -1205,12 +903,6 @@ I tested `Kompare` but it does not work as well.
 ##### SSH/FTP/VNC/NX Client
 
 > sudo pacman -S remmina libvncserver
-
-##### Torrent Client
-
-> sudo packer -S qbittorrent popcorntime-bin
-
-KDE will restore qtorrent state on boot.  
 
 ##### Caffeine 
 
@@ -1289,26 +981,6 @@ Query the network traffic:
 
 Viewing live network traffic usage: 
 > vnstat -l
-
-### KDE Look & feel
-
-Move "Tool Box" on the desktop to the right top corner.  
-Configurate tray > Always show > All except the two notification icons.  
-Configurate taskbar > No groups, manually ordered.  
-Configurate system configurations > Classic tree, remove detailed tips, expand first level.  
-Configurate desktop > Disposition: Folder.  
-Configurate startmenu > change the icon to [one of these](http://gabriela2400.deviantart.com/art/Arch-Linux-Start-Icons-175557586)  
-Dolphin > Adjust window properties:  Show in details, order by name, show folders first, show preview, show hidden files. Additional Information: Name, Size, Date, Type, Location, permissions, owner. Apply to all folders, use by default.  
-Dolphin > Configure Dolphin: Change default start up, show location bar, show filter, doble-click to open, delete files from garbage after 7 days show space available information.   
-Dolphin > Right click on a drive > Icon size > Large.  
-Dolphin > Right click on top menu > Icon size > Large.  
-Dolphin > Icon size 32px (drag lower bar)  
-System configurations > Add account image.  
-System configurations > Screen borders > Lower right, Show Screen  
-System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+L  
-System configurations > Display and Screen > Protector > 5 min to init, 300 sec to ask pass, select screensaver  
-VLC > Enable multiple instances
-VLC > Make the player bar full with on full-screen
 
 ### System cleanup
 
