@@ -282,11 +282,17 @@ http://unix.stackexchange.com/questions/85205/is-there-a-way-to-simulate-a-close
 
 #### Steam
 
+Steam is not officially suported in ArchLinux, as such some fixes are needed to get things functioning properly.
+
 <pre>
 pacman -S steam
 </pre>
 
-##### Steam runtime issues
+> On 64bit systems, make sure multilib is enabled, and the 32bit variants of the graphics and sound drivers are installed.
+
+##### Steam Runtime
+
+One of the most common errors is due to broken/missing libraries, and steam may fail to start. Steam installs its own older versions of some libraries collectively called the "Steam Runtime". These will often conflict with the libraries included in Arch Linux.
 
 <pre>
 libGL error: unable to load driver: i965_dri.so
@@ -299,12 +305,41 @@ libGL error: unable to load driver: swrast_dri.so
 libGL error: failed to load driver: swrast
 </pre>
 
+There are two ways to fix this, forcing Steam to load the up-to-date system libraries with a dynamic linker, or to force Steam to use only the system libraries. I will use the dynamic linker method for compatibility reasons.
+
+To use the dynamic linker, the variable `LD_PRELOAD` has to be set before calling steam. Setting `LD_PRELOAD` to the path of a shared object, ensures that the passed files will be loaded before any other library, including the C runtime. 
+
 <pre>
 Edit the shortcut with KDE
-  Exec=LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' /usr/bin/steam %U
+  <b>LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so'</b> /usr/bin/steam %U
 </pre>
 
-> KDE copies the file /usr/share/applications/steam.desktop to /home/filipe/.local/share/applications/steam.desktop with the modifications.
+To use the native runtime, simply set the variable `STEAM_RUNTIME=0`, keep in mind that this method possibly requires the instalation of aditional 32bit libraries, if you are missing any libraries from the Steam runtime.
+
+<pre>
+Edit the shortcut with KDE
+  <b>STEAM_RUNTIME=0</b> /usr/bin/steam %U
+</pre>
+
+> KDE copies the file /usr/share/applications/steam.desktop to /home/filipe/.local/share/applications/steam.desktop with the modifications, if editing manually use the latter.
+
+##### Close to tray
+
+By default steam closes when the main window is closed. To enable the "close to tray" behavior, the variable `STEAM_FRAME_FORCE_CLOSE` has to be set.
+
+<pre>
+Edit the shortcut with KDE
+  LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' <b>STEAM_FRAME_FORCE_CLOSE=1</b> /usr/bin/steam %U
+</pre>
+
+##### Start silently
+
+By default steam opens the main window when it starts. This can be inconvinient if steam is set to start at boot. To disable this behavior, and hide the main window the `-silent` parameters has to be passed.
+
+<pre>
+Edit the shortcut with KDE
+  LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U <b>-silent</b>
+</pre>
 
 ### Simple Installations
 
