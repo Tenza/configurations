@@ -282,7 +282,7 @@ http://unix.stackexchange.com/questions/85205/is-there-a-way-to-simulate-a-close
 
 #### Steam
 
-Steam is not officially suported in ArchLinux, as such some fixes are needed to get things functioning properly.
+Steam is not officially supported in ArchLinux, as such some fixes are needed to get things functioning properly.
 
 <pre>
 pacman -S steam
@@ -314,7 +314,7 @@ Edit the shortcut with KDE
   <b>LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so'</b> /usr/bin/steam %U
 </pre>
 
-To use the native runtime, simply set the variable `STEAM_RUNTIME=0`, keep in mind that this method possibly requires the instalation of aditional 32bit libraries, if you are missing any libraries from the Steam runtime.
+To use the native runtime, simply set the variable `STEAM_RUNTIME=0`, keep in mind that this method possibly requires the installation of additional 32bit libraries, if you are missing any libraries from the Steam runtime.
 
 <pre>
 Edit the shortcut with KDE
@@ -334,7 +334,7 @@ Edit the shortcut with KDE
 
 ##### Start silently
 
-By default steam opens the main window when it starts. This can be inconvinient if steam is set to start at boot. To disable this behavior, and hide the main window the `-silent` parameters has to be passed.
+By default steam opens the main window when it starts. This can be inconvenient if steam is set to start at boot. To disable this behavior, and hide the main window the `-silent` parameters has to be passed.
 
 <pre>
 Edit the shortcut with KDE
