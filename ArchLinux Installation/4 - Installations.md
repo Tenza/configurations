@@ -339,12 +339,6 @@ pacman -S qt5-base qt5-doc qt5-tools qt5-examples qtcreator
 pacman -S cmake gdb valgrind
 </pre>
 
-#### IRC
-
-<pre>
-pacman -S irssi
-</pre>
-
 #### XMPP & IRC
 
 <pre>
