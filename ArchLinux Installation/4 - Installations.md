@@ -468,6 +468,22 @@ References:
 http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
 </sup></sub>
 
+#### Missing firmware modules
+
+When initramfs is being rebuild after a kernel update, some kernel warnings may appear.
+
+<pre>
+==> WARNING: Possibly missing firmware for module: wd719x
+==> WARNING: Possibly missing firmware for module: aic94xx
+</pre>
+
+Simply install the following modules to fix the warnings.
+
+<pre>
+pacaur -S wd719x-firmware
+pacaur -S aic94xx-firmware
+</pre>
+
 ### Look & feel
 
 Just some personal configurations of look and feel.
