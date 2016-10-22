@@ -260,6 +260,8 @@ pacman -S xdotool
 nano /home/filipe/Scripts/Skype
   #!/bin/bash
   
+  sleep 5
+  
   /usr/bin/skypeforlinux
   
   sleep 1
@@ -310,26 +312,21 @@ There are two ways to fix this, forcing Steam to load the up-to-date system libr
 To use the dynamic linker, the variable `LD_PRELOAD` has to be set before calling steam. Setting `LD_PRELOAD` to the path of a shared object, ensures that the passed files will be loaded before any other library, including the C runtime. 
 
 <pre>
-Edit the shortcut with KDE
-  <b>LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so'</b> /usr/bin/steam %U
+<b>LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so'</b> /usr/bin/steam %U
 </pre>
 
 To use the native runtime, simply set the variable `STEAM_RUNTIME=0`, keep in mind that this method possibly requires the installation of additional 32bit libraries, if you are missing any libraries from the Steam runtime.
 
 <pre>
-Edit the shortcut with KDE
-  <b>STEAM_RUNTIME=0</b> /usr/bin/steam %U
+<b>STEAM_RUNTIME=0</b> /usr/bin/steam %U
 </pre>
-
-> KDE copies the file /usr/share/applications/steam.desktop to /home/filipe/.local/share/applications/steam.desktop with the modifications, if editing manually use the latter.
 
 ##### Close to tray
 
 By default steam closes when the main window is closed. To enable the "close to tray" behavior, the variable `STEAM_FRAME_FORCE_CLOSE` has to be set.
 
 <pre>
-Edit the shortcut with KDE
-  LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' <b>STEAM_FRAME_FORCE_CLOSE=1</b> /usr/bin/steam %U
+LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' <b>STEAM_FRAME_FORCE_CLOSE=1</b> /usr/bin/steam %U
 </pre>
 
 ##### Start silently
@@ -337,8 +334,7 @@ Edit the shortcut with KDE
 By default steam opens the main window when it starts. This can be inconvenient if steam is set to start at boot. To disable this behavior, and hide the main window the `-silent` parameters has to be passed.
 
 <pre>
-Edit the shortcut with KDE
-  LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U <b>-silent</b>
+LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U <b>-silent</b>
 </pre>
 
 ##### Tray icon
@@ -348,6 +344,27 @@ Steam default tray icon cannot be seen very well with a white taskbar, to replac
 <pre>
 sudo mv /usr/share/pixmaps/steam_tray_mono.png  /usr/share/pixmaps/steam_tray_mono.png.bak 
 sudo cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
+</pre>
+
+> These change might be lost once steam updates itself.
+
+##### All togetherTray icon
+
+For me the easyest way to have this all toguether is to create a simple script. You can also simply use KDE to edit the `.desktop` file of steam, and that will work just fine, but it will probably not survive updates.
+
+Keep in mind that KDE copies the file `/usr/share/applications/steam.desktop` to your home dir `/home/filipe/.local/share/applications/steam.desktop` with the modifications when editing manually.
+
+<pre>
+nano /home/filipe/Scripts/Steam
+  #!/bin/bash
+
+  sleep 5
+
+  cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
+  LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U -silent
+  
+chmod 755 /home/filipe/Scripts/Skype
+(Add the script to startup (symlink) with KDE)
 </pre>
 
 ### Simple Installations
