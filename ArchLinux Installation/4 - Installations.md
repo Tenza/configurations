@@ -348,7 +348,7 @@ sudo cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
 
 > These change might be lost once steam updates itself.
 
-##### All togetherTray icon
+##### All together
 
 For me the easyest way to have this all toguether is to create a simple script. You can also simply use KDE to edit the `.desktop` file of steam, and that will work just fine, but it will probably not survive updates.
 
