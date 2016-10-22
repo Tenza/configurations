@@ -437,6 +437,16 @@ Check if the checkbox has you a blue tick or a little `A` next to the language, 
 Tools -> Options -> Language Settings -> Languages -> Default language for document
 </pre>
 
+#### Add an image to SDDM
+
+Simply copy the .png file to the home folder with the name `.face.icon`
+
+<pre>
+cp /your/image.png ~/.face.icon
+</pre>
+
+> I tried to copy the file to the SDDM folder (/usr/share/sddm/faces/) but it didn't work.
+
 #### PulseAudio Audiophile
 
 By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
