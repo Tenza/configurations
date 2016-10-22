@@ -436,23 +436,24 @@ paraur -S hunspell-pt_pt
 
 > I prefer Libreoffice over Calligra due to the compatibility and similarity to MS office.
 
-#### Imageviewer
+#### Image Editor
+
+<pre>
+paraur -S gimp
+</pre>
+
+> WARNING: GIMP will probably override your Image Viewer by default.
+
+#### Image Viewer
 
 <pre>
 paraur -S photoqt
 </pre>
 
+> PhotoQt will probably be overriden by GIMP if installed first, so consider installing GIMP first.
 > I prefer photoqt over gwenview due to its simplicity.
 
-### Aditional configurations and problems
-
-#### Libreoffice does not autocorrect
-
-Check if the checkbox has you a blue tick or a little `A` next to the language, if it does, the language pack is installed, simply select it to start showing in the language bar bellow. If it doesn't, install the appropriate `hunspell` language pack.
-
-<pre>
-Tools -> Options -> Language Settings -> Languages -> Default language for document
-</pre>
+### Aditional configurations
 
 #### Add an image to SDDM
 
@@ -463,6 +464,25 @@ cp /your/image.png ~/.face.icon
 </pre>
 
 > I tried to copy the file to the SDDM folder (/usr/share/sddm/faces/) but it didn't work.
+
+#### Bootloader GRUB2 Theme
+
+My theme of choice when it comes to GRUB is [this one](https://github.com/Generator/Grub2-themes).
+
+<pre>
+git clone git://github.com/Generator/Grub2-themes.git
+cp -r Grub2-themes/{Archlinux,Archxion} /boot/grub/themes/
+
+#GRUB_THEME="/path/to/gfxtheme"
+  GRUB_THEME="/boot/grub/themes/Archxion/theme.txt" 
+  or 
+  GRUB_THEME="/boot/grub/themes/Archlinux/theme.txt"
+  
+GRUB_GFXMODE=auto 
+  GRUB_GFXMODE=1024x768
+  
+grub-mkconfig -o /boot/grub/grub.cfg
+</pre>
 
 #### PulseAudio Audiophile
 
@@ -495,6 +515,8 @@ References:
 http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
 </sup></sub>
 
+### Problem Solving
+
 #### Missing firmware modules
 
 When initramfs is being rebuild after a kernel update, some kernel warnings may appear.
@@ -509,6 +531,14 @@ Simply install the following modules to fix the warnings.
 <pre>
 pacaur -S wd719x-firmware
 pacaur -S aic94xx-firmware
+</pre>
+
+#### Libreoffice does not autocorrect
+
+Check if the checkbox has you a blue tick or a little `A` next to the language, if it does, the language pack is installed, simply select it to start showing in the language bar bellow. If it doesn't, install the appropriate `hunspell` language pack.
+
+<pre>
+Tools -> Options -> Language Settings -> Languages -> Default language for document
 </pre>
 
 ### Look & feel
