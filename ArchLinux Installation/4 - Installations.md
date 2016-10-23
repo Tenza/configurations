@@ -350,7 +350,7 @@ sudo cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
 
 ##### All together
 
-For me the easyest way to have this all toguether is to create a simple script. You can also simply use KDE to edit the `.desktop` file of steam, and that will work just fine, but it will probably not survive updates.
+For me the easiest way to have this all toguether is to create a simple script. You can also simply use KDE to edit the `.desktop` file of steam, and that will work just fine, but it will probably not survive updates.
 
 Keep in mind that KDE copies the file `/usr/share/applications/steam.desktop` to your home dir `/home/filipe/.local/share/applications/steam.desktop` with the modifications when editing manually.
 
@@ -534,7 +534,7 @@ System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+
 VLC > Enable multiple instances.
 </pre>
 
-#### SDDM Breeze Userimage
+#### SDDM Breeze UserImage
 
 Set a user account image using KDE, this will enable the Breeze SDDM theme to display it.
 This should create a `.face` file in the home dir as well as a symbolic link named `.face.icon`.
