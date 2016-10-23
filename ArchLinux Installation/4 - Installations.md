@@ -253,19 +253,28 @@ pacaur -S skypeforlinux-bin
 
 ###### Skype startup in tray
 
-Skype is able to `Close to tray`, but it always starts with the main window visible. Closing to tray at startup is not yet available, and command line parameters like `--silent` are also not available. To force this behavior, I created a simple script using `xdotool` to close the main window of skype at startup.
+Skype is able to `Close to tray`, but it always starts with the main window visible. Closing to tray at startup is not yet available, and command line parameters like `--silent` are also not available. To force this behavior, I created a simple script using `xdotool` to close the main window of skype at startup. The script also checks for the network status before opening, because sometimes skype displays that it wasn't able to connect, (and it will not reconnect) if the network connection isn't already established when it opens.
 
 <pre>
 pacman -S xdotool
 nano /home/filipe/Scripts/Skype
   #!/bin/bash
-  
-  sleep 5
-  
+
+  while true
+  do
+      if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
+          echo "Online"
+          break
+      else
+          echo "Offline"
+          sleep 10
+      fi
+  done
+
   /usr/bin/skypeforlinux
-  
+
   sleep 1
-  
+
   # Close window
   if [[ -n `pidof skypeforlinux` ]];then
       WID=`xdotool search --name "Skype for Linux Alpha"`
