@@ -455,35 +455,6 @@ paraur -S photoqt
 
 ### Aditional configurations
 
-#### Add an image to SDDM
-
-Simply copy the .png file to the home folder with the name `.face.icon`
-
-<pre>
-cp /your/image.png ~/.face.icon
-</pre>
-
-> I tried to copy the file to the SDDM folder (/usr/share/sddm/faces/) but it didn't work.
-
-#### Bootloader GRUB2 Theme
-
-My theme of choice when it comes to GRUB is [this one](https://github.com/Generator/Grub2-themes).
-
-<pre>
-git clone git://github.com/Generator/Grub2-themes.git
-cp -r Grub2-themes/{Archlinux,Archxion} /boot/grub/themes/
-
-#GRUB_THEME="/path/to/gfxtheme"
-  GRUB_THEME="/boot/grub/themes/Archxion/theme.txt" 
-  or 
-  GRUB_THEME="/boot/grub/themes/Archlinux/theme.txt"
-  
-GRUB_GFXMODE=auto 
-  GRUB_GFXMODE=1024x768
-  
-grub-mkconfig -o /boot/grub/grub.cfg
-</pre>
-
 #### PulseAudio Audiophile
 
 By default, PulseAudio (PA) uses very conservative settings. This will work fine for most audio media as you will most likely have 44,100Hz sample rate files. However, if you have higher sample rate recordings it is recommended that you increase the sample rate that PA uses.
@@ -561,4 +532,63 @@ System configurations > Add account image.
 System configurations > Screen borders > Lower right, Show Screen.
 System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+L.
 VLC > Enable multiple instances.
+</pre>
+
+#### SDDM Breeze Userimage
+
+Set a user account image using KDE, this will enable the Breeze SDDM theme to display it.
+This should create a `.face` file in the home dir as well as a symbolic link named `.face.icon`.
+
+<pre>
+Configurate system > Account Details > User Manager
+</pre>
+
+SDDM might not be able to read this image at startup, so the image has to also be copied to `/usr/share/sddm/faces/` with the name of the user account, for example `filipe.face.icon`.
+
+<pre>
+cp /my/user/avatar.png /usr/share/sddm/faces/filipe.face.icon
+chmod 644 /usr/share/sddm/faces/filipe.face.icon
+</pre>
+
+#### SDDM Breeze Background
+
+Personally I like to have the same background for Startup and LockScreen (and wallpaper).
+To change the LockScreen background use KDE System settings.
+
+<pre>
+Configurate system > Desktop > Lock screen > Background
+</pre>
+
+To change the Startup background should also be possible to use KDE.
+But if for some reason it fails to do so, it is possible to do it manually.
+
+<pre>
+cp /my/user/background.png /usr/share/sddm/themes/breeze/background.png
+chmod 644 /usr/share/sddm/themes/breeze/background.png
+nano /usr/share/sddm/themes/breeze/theme.conf
+  [General]
+  background=background.jpg
+</pre>
+
+#### Bootloader GRUB2 Theme
+
+My theme of choice when it comes to GRUB is [this one](https://github.com/Generator/Grub2-themes).
+Start by downloading and copy the files to the GRUB2 location.
+<pre>
+git clone git://github.com/Generator/Grub2-themes.git
+cp -r Grub2-themes/{Archlinux,Archxion} /boot/grub/themes/
+</pre>
+
+Edit the grub configuration file, and rebuild the GRUB menu.
+
+<pre>
+nano /etc/default/grub
+  #GRUB_THEME="/path/to/gfxtheme"
+    GRUB_THEME="/boot/grub/themes/Archxion/theme.txt" 
+    GRUB_THEME="/boot/grub/themes/Archlinux/theme.txt"
+  
+  GRUB_GFXMODE=auto 
+    GRUB_GFXMODE=1024x768
+  
+grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
