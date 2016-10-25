@@ -495,6 +495,20 @@ References:
 http://www.freedesktop.org/wiki/Software/PulseAudio/Documentation/User/Audiophile/
 </sup></sub>
 
+#### Change default DNS
+
+The DNS can be set in the `/etc/resolv.conf` file, and this can hold up to three `nameserver` entries. Before setting the DNS, the NetworkManager has to be stopped and configured to not overwrite this file, otherwise the changes will be lost.
+
+<pre>
+systemctl stop NetworkManager.service
+nano /etc/NetworkManager/NetworkManager.conf
+  dns=none
+sudo nano /etc/resolv.conf
+  nameserver dns.ip.address
+  nameserver dns.ip.address
+systemctl start NetworkManager.service 
+</pre>
+
 ### Problem Solving
 
 #### Missing firmware modules
