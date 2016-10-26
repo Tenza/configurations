@@ -282,7 +282,7 @@ nano /home/filipe/Scripts/Skype
       xdotool key --clearmodifiers ALT+F4
   fi
 
-chmod 755 /home/filipe/Scripts/Skype
+chmod 711 /home/filipe/Scripts/Skype
 (Add the script to startup (symlink) with KDE)
 </pre>
 
@@ -372,7 +372,7 @@ nano /home/filipe/Scripts/Steam
   cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
   LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U -silent
   
-chmod 755 /home/filipe/Scripts/Skype
+chmod 711 /home/filipe/Scripts/Skype
 (Add the script to startup (symlink) with KDE)
 </pre>
 
