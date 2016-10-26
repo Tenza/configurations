@@ -376,6 +376,55 @@ chmod 711 /home/filipe/Scripts/Skype
 (Add the script to startup (symlink) with KDE)
 </pre>
 
+#### Cryfs with automount and unmount.
+
+Cryfs is a cryptographic filesystem for the cloud, and at the moment is under heavy development. This is a much better alternative than using TrueCrypt containers (that I was previously using), to securely save data on cloud services. Since this is still under development some errors are expected and the data should have a backup.
+
+<pre>
+pacaur -S cryfs
+</pre>
+
+##### Auto Mount
+
+Install the `expect` command, is tool is commonly used for automating interactive applications.
+
+<pre>
+pacman -S expect
+</pre>
+
+Replace the Cryfs password and apropriate directories, create and set the mount script.  
+Note that this is a `#!/usr/bin/expect` script, and it is a common practice to add the `ext` extention.
+
+<pre>
+nano /home/filipe/Scripts/CryfsMount.ext
+  #!/usr/bin/expect
+
+  set pass "your.cryfs.password"
+
+  spawn cryfs /dados/Dropbox/Privado/Trabalho/ /trabalho/
+
+  expect "Password:"
+  send "$pass\r"
+
+  interact
+chmod 711 /home/filipe/Scripts/CryfsMount.ext
+(Add the script to startup (symlink) with KDE)
+</pre>
+
+##### Auto Unmount
+
+Create and set the unmount script.
+
+<pre>
+nano /home/filipe/Scripts/CryfsUnmount
+  #!/bin/bash
+
+  fusermount -u /trabalho/
+  
+chmod 711 /home/filipe/Scripts/CryfsUnmount
+(Add the script to shutdown (symlink) with KDE)
+</pre>
+
 ### Simple Installations
 
 #### File Manager
