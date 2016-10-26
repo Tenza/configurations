@@ -376,7 +376,7 @@ chmod 711 /home/filipe/Scripts/Skype
 (Add the script to startup (symlink) with KDE)
 </pre>
 
-#### Cryfs with automount and unmount.
+#### Cryfs with auto mount and unmount.
 
 Cryfs is a cryptographic filesystem for the cloud, and at the moment is under heavy development. This is a much better alternative than using TrueCrypt containers (that I was previously using), to securely save data on cloud services. Since this is still under development some errors are expected and the data should have a backup.
 
@@ -386,7 +386,7 @@ pacaur -S cryfs
 
 ##### Auto Mount
 
-Install the `expect` command, is tool is commonly used for automating interactive applications.
+Install the `expect` command, this tool is commonly used for automating interactive applications.
 
 <pre>
 pacman -S expect
