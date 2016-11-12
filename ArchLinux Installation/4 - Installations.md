@@ -511,7 +511,7 @@ paraur -S photoqt
 > PhotoQt will probably be overriden by GIMP if installed first, so consider installing GIMP first.
 > I prefer photoqt over gwenview due to its simplicity.
 
-#### Audio Playert
+#### Audio Player
 
 <pre>
 pacman -S clementine gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav
