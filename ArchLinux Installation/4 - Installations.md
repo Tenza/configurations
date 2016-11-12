@@ -528,6 +528,8 @@ pacman -S clementine gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugi
 
 > Make sure that the gstreamer plugins are installed and updated, otherwise the error "Your GStreamer installation is missing a plug-in" will be displayed.
 
+> Clementine restores it's state at boot, no need to add to the startup menu.
+
 ### Additional configurations
 
 #### PulseAudio Audiophile
