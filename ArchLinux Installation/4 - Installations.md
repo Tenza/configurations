@@ -359,7 +359,7 @@ sudo cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
 
 ##### All together
 
-For me the easiest way to have this all toguether is to create a simple script. You can also simply use KDE to edit the `.desktop` file of steam, and that will work just fine, but it will probably not survive updates.
+For me the easiest way to have this all together is to create a simple script. It is possible to simply edit the `.desktop` file of steam, but it will probably not survive updates. Additionally, this script will only start steam when the network is active.
 
 Keep in mind that KDE copies the file `/usr/share/applications/steam.desktop` to your home dir `/home/filipe/.local/share/applications/steam.desktop` with the modifications when editing manually.
 
@@ -367,12 +367,21 @@ Keep in mind that KDE copies the file `/usr/share/applications/steam.desktop` to
 nano /home/filipe/Scripts/Steam
   #!/bin/bash
 
-  sleep 5
+  while true
+  do
+      if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
+          echo "Online"
+          break
+      else
+          echo "Offline"
+          sleep 10
+      fi
+  done
 
   cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
   LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U -silent
   
-chmod 711 /home/filipe/Scripts/Skype
+chmod 711 /home/filipe/Scripts/Steam
 (Add the script to startup (symlink) with KDE)
 </pre>
 
