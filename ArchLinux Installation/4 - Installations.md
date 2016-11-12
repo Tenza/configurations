@@ -86,7 +86,7 @@ systemctl enable bluetooth.service
 
 > Make sure that your WiFi/Bluetooth card is active (typically a keyboard shortcut on a laptop) in order to make the adapter visible to the kernel.
 
-If there is an error regarding the `sap-driver` when querying the status of the bluetooth service, know that this behaviour is expected, and can be solved by simply adding the `--noplugin=sap` to the service `ExecStart`.
+If there is an error regarding the `sap-driver` when querying the status of the bluetooth service, know that this behavior is expected, and can be solved by simply adding the `--noplugin=sap` to the service `ExecStart`.
 
 <pre>
 nano /usr/lib/systemd/system/bluetooth.service
@@ -401,8 +401,8 @@ Install the `expect` command, this tool is commonly used for automating interact
 pacman -S expect
 </pre>
 
-Replace the Cryfs password and apropriate directories, create and set the mount script.  
-Note that this is a `#!/usr/bin/expect` script, and it is a common practice to add the `ext` extention.
+Replace the Cryfs password and appropriate directories, create and set the mount script.  
+Note that this is a `#!/usr/bin/expect` script, and it is a common practice to add the `ext` extension.
 
 <pre>
 nano /home/filipe/Scripts/CryfsMount.ext
@@ -517,7 +517,7 @@ paraur -S gimp
 paraur -S photoqt
 </pre>
 
-> PhotoQt will probably be overriden by GIMP if installed first, so consider installing GIMP first.
+> PhotoQt will probably be overridden by GIMP if installed first, so consider installing GIMP first.
 > I prefer photoqt over gwenview due to its simplicity.
 
 #### Audio Player
@@ -528,7 +528,7 @@ pacman -S clementine gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugi
 
 > Make sure that the gstreamer plugins are installed and updated, otherwise the error "Your GStreamer installation is missing a plug-in" will be displayed.
 
-### Aditional configurations
+### Additional configurations
 
 #### PulseAudio Audiophile
 
