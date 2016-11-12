@@ -511,6 +511,14 @@ paraur -S photoqt
 > PhotoQt will probably be overriden by GIMP if installed first, so consider installing GIMP first.
 > I prefer photoqt over gwenview due to its simplicity.
 
+#### Audio Playert
+
+<pre>
+pacman -S clementine gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav
+</pre>
+
+> Make sure that the gstreamer plugins are installed and updated, otherwise the error "Your GStreamer installation is missing a plug-in" will be displayed.
+
 ### Aditional configurations
 
 #### PulseAudio Audiophile
