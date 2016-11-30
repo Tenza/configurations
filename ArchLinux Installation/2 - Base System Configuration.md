@@ -199,26 +199,9 @@ https://wiki.archlinux.org/index.php/GRUB#Dual-booting
 
 If Arch was installed while Windows was already on the machine, and assuming the GRUB2 bootloader was properly installed to the MBR, the only thing left to do, is refresh the GRUB2 configuration file.
 
-<pre>
-grub-mkconfig -o /boot/grub/grub.cfg
-</pre>
-
 The `os-prober` will be automatically called by `grub-mkconfig` and it will add an entry to Windows on the bootloader menu.
 
-This has worked for me even on a dualboot with a RAID array over dm-crypt, but if for some reason `os-prober` fails to detect other OS, it is possible to manually add a custom entry in `40_custom` file. Start by getting the uuid of the disk, and replace the `XXXXXXXXXXXXXX` on the menuentry, lastly refresh the GRUB2 configuration file.
-
 <pre>
-blkid
-nano /etc/grub.d/40_custom
-
-	menuentry{
-		echo “Loading Windows 7”
-		insmod part_msdos
-		insmod ntfs
-		search --fs-uuid --no-floppy -set=root XXXXXXXXXXXXXX
-		chainloader +1
-	}
-	
 grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
