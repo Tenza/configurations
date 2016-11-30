@@ -38,7 +38,7 @@ If in doubt, use the list functions available within `localectl`.
 
 <pre>
 locale-gen  
-localectl set-locale LANG="pt_PT-UTF-8"
+localectl set-locale LANG="pt_PT.UTF-8"
 localectl set-keymap pt-latin9
 localectl set-x11-keymap pt
 localectl status 
