@@ -19,7 +19,7 @@ If the packages are not installed on a **single call** to pacman, packages expli
 <pre>
 pacman -S plasma-meta kde-l10n-pt sddm sddm-kcm
 pacman -S breeze breeze-kde4 breeze-gtk kde-gtk-config 
-pacman -S phonon-qt5 phonon-qt5-vlc libx264
+pacman -S phonon-qt5 phonon-qt5-vlc phonon-qt4-vlc libx264
 systemctl enable sddm.service
 </pre>
 
