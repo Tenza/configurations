@@ -595,7 +595,7 @@ pacaur -S wd719x-firmware
 pacaur -S aic94xx-firmware
 </pre>
 
-#### GRUB Message
+#### Bootloader GRUB2 Locale Error Message
 
 If GRUB flashes a message for a split second at boot, it is possible that the message is like the following:
 <pre>
