@@ -168,7 +168,7 @@ To mount additional partitions or disks at boot use the `fstab` file. Start by l
 <pre>
 lsblk -f
 pacman -S ntfs-3g
-mkdir /Dados
+mkdir /dados
 nano /etc/fstab
   # /dev/md125p4 LABEL=Dados
   UUID=466C899D6C8987FF            /dados          ntfs-3g         defaults,permissions,nofail       0 0
@@ -595,6 +595,19 @@ pacaur -S wd719x-firmware
 pacaur -S aic94xx-firmware
 </pre>
 
+#### GRUB Message
+
+If GRUB flashes a message for a split second at boot, it is possible that the message is like the following:
+<pre>
+Welcome to Grub!
+error: file '/boot/grub/locale/pt.mo' not found
+</pre>
+
+This can happen because the configured locale does not exist. To fix this, simply copy one of the existing configs to the missing one, and the locale file will now be read without problems.
+<pre>
+sudo cp /boot/grub/locale/pt_BR.mo /boot/grub/locale/pt.mo
+</pre>
+
 #### Libreoffice does not autocorrect
 
 Check if the checkbox has you a blue tick or a little `A` next to the language, if it does, the language pack is installed, simply select it to start showing in the language bar bellow. If it doesn't, install the appropriate `hunspell` language pack.
@@ -623,6 +636,16 @@ System configurations > Add account image.
 System configurations > Screen borders > Lower right, Show Screen.
 System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+L.
 VLC > Enable multiple instances.
+</pre>
+
+#### Pacman
+
+Allow pacman to use colors, and to show a list of the packages instead of the traditional inline method. Remove the comments under de section `# Misc options`.
+
+<pre>
+nano /etc/pacman.conf 
+	Color
+  VerbosePkgLists
 </pre>
 
 #### SDDM Breeze UserImage
@@ -659,6 +682,17 @@ chmod 644 /usr/share/sddm/themes/breeze/background.png
 nano /usr/share/sddm/themes/breeze/theme.conf
   [General]
   background=background.jpg
+</pre>
+
+#### Bootloader GRUB2 Messages
+
+To display the output of the startup and shutdown boot process, the following flags have to be set in GRUB2. Additionaly, do not forget to remove the default `quiet` flag.
+
+<pre>
+nano /etc/default/grub
+  GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash"
+
+grub-mkconfig -o /boot/grub/grub.cfg 
 </pre>
 
 #### Bootloader GRUB2 Theme
