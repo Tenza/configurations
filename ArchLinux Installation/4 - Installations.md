@@ -644,7 +644,7 @@ Allow pacman to use colors, and to show a list of the packages instead of the tr
 
 <pre>
 nano /etc/pacman.conf 
-	Color
+  Color
   VerbosePkgLists
 </pre>
 
