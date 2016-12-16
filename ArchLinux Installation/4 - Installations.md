@@ -677,8 +677,8 @@ To change the Startup background should also be possible to use KDE.
 But if for some reason it fails to do so, it is possible to do it manually.
 
 <pre>
-cp /my/user/background.png /usr/share/sddm/themes/breeze/background.png
-chmod 644 /usr/share/sddm/themes/breeze/background.png
+cp /my/user/background.jpg /usr/share/sddm/themes/breeze/background.jpg
+chmod 644 /usr/share/sddm/themes/breeze/background.jpg
 nano /usr/share/sddm/themes/breeze/theme.conf
   [General]
   background=background.jpg
