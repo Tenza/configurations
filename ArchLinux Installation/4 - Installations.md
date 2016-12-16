@@ -636,6 +636,7 @@ System configurations > Add account image.
 System configurations > Screen borders > Lower right, Show Screen.
 System configurations > Gobal hotkeys > KDE Sessions > Lock Screeb with Windows+L.
 VLC > Enable multiple instances.
+GIMP > Single window mode.
 </pre>
 
 #### Pacman
