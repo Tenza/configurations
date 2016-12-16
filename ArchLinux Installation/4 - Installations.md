@@ -571,10 +571,37 @@ The DNS can be set in the `/etc/resolv.conf` file, and this can hold up to three
 systemctl stop NetworkManager.service
 nano /etc/NetworkManager/NetworkManager.conf
   dns=none
+</pre>
+
+##### Without DNSCrypt
+
+To simply set DNS resolvers, without any authentication of the DNS traffic between user and DNS resolver.
+
+<pre>
 sudo nano /etc/resolv.conf
   nameserver dns.ip.address
   nameserver dns.ip.address
+  
 systemctl start NetworkManager.service 
+</pre>
+
+##### With DNSCrypt
+
+DNSCrypt encrypts and authenticates DNS traffic between user and DNS resolver. It prevents local spoofing of DNS queries, ensuring DNS responses are sent by the server of choice.
+
+Select one of the resolvers provided by the [upstream](https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv) and replace the 'resolver name' with the selected name.
+
+<pre>
+pacman -S dnscrypt-proxy
+
+sudo nano /etc/resolv.conf
+  nameserver 127.0.0.1
+  
+sudo nano /usr/lib/systemd/system/dnscrypt-proxy.service 
+  ExecStart=/usr/bin/dnscrypt-proxy --resolver-name='resolver name'
+  
+sudo systemctl enable dnscrypt-proxy.service
+reboot
 </pre>
 
 ### Problem Solving
