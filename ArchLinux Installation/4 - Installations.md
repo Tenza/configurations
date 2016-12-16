@@ -203,7 +203,7 @@ The `i915` kernel module of the Intel graphics, allows for configuration via ker
 <pre>
 modinfo -p i915
 nano /etc/default/grub
-  GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash i915.enable_rc6=1 i915.enable_fbc=1 i915.semaphores=1 915.lvds_downclock=1"
+  GRUB_CMDLINE_LINUX_DEFAULT="i915.enable_rc6=1 i915.enable_fbc=1 i915.semaphores=1 915.lvds_downclock=1"
 
 grub-mkconfig -o /boot/grub/grub.cfg 
 </pre>
