@@ -498,7 +498,7 @@ pacman -S qbittorrent
 <pre>
 pacman -S libreoffice-fresh libreoffice-fresh-pt
 pacman -S hunspell-en 
-paraur -S hunspell-pt_pt
+pacaur -S hunspell-pt_pt
 </pre>
 
 > I prefer Libreoffice over Calligra due to the compatibility and similarity to MS office.
@@ -506,7 +506,7 @@ paraur -S hunspell-pt_pt
 #### Image Editor
 
 <pre>
-paraur -S gimp
+pacaur -S gimp
 </pre>
 
 > WARNING: GIMP will probably override your Image Viewer by default.
@@ -514,7 +514,7 @@ paraur -S gimp
 #### Image Viewer
 
 <pre>
-paraur -S photoqt
+pacaur -S photoqt
 </pre>
 
 > PhotoQt will probably be overridden by GIMP if installed first, so consider installing GIMP first.
