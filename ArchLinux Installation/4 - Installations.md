@@ -28,7 +28,7 @@ Edit this file manually before the first boot, there are some difficulties start
 
 <pre>
 sddm --example-config > /etc/sddm.conf
-sudo nano /etc/sddm.conf
+nano /etc/sddm.conf
   [Theme]
   Current=breeze
   CursorTheme=breeze_cursors
@@ -239,6 +239,71 @@ https://wiki.archlinux.org/index.php/Laptop_Mode_Tools
 https://wiki.archlinux.org/index.php/acpid  
 </sup></sub>
 
+#### Hibernate
+
+To activate the hibernate functionality, some kernel parameters have to be added, as well as the `resume` hook to initramfs. The parameters values differ depending on the configuration used. For example if using a partition/file and with/without encryption.
+
+Start by adding the `resume` hook to the initramfs.
+This hook needs to be after `udev` because the swap is referred to with a udev device node.
+
+<pre>
+nano /etc/mkinitcpio.conf  
+  HOOKS="base udev `resume` autodetect modconf block mdadm_udev filesystems keyboard fsck"
+</pre>
+
+##### Using a Swapfile
+
+When using a swap file instead of a partition, it has to first be determined where the file starts on disk.
+
+<pre>
+filefrag -v /swapfile
+
+Filesystem type is: ef53
+File size of /swapfile is 6442450944 (1572864 blocks of 4096 bytes)
+ ext:     logical_offset:        physical_offset: length:   expected: flags:
+   0:        0..       0:      34816..     34816:      1:            
+   1:        1..   30719:      34817..     65535:  30719:             unwritten
+   2:    30720..   61439:      65536..     96255:  30720:             unwritten
+   3:    61440..   63487:      96256..     98303:   2048:             unwritten
+   ...
+</pre>
+
+The needed value, in this case, is `34816`. It will be used by the `resume_offset` kernel parameter.  
+
+###### Without Encryption
+
+The `resume` kernel parameter is the `partition` where the swapfile is located, not the swapfile itself.
+
+<pre>
+nano /etc/default/grub  
+  GRUB_CMDLINE_LINUX_DEFAULT="resume=/dev/md125p3 resume_offset=34816"
+</pre>
+
+###### With Encryption
+
+The `resume` kernel parameter is the `device mapper` where the swapfile is located, not the swapfile itself.
+
+<pre>
+nano /etc/default/grub  
+  GRUB_CMDLINE_LINUX_DEFAULT="resume=/dev/mapper/ArchCrypt resume_offset=34816"
+</pre>
+
+##### Apply Changes
+
+Apply the changes by rebuilding the initramfs with the mkinitcpio script, and regenerate the grub.cfg file
+
+<pre>
+mkinitcpio -p linux  
+grub-mkconfig -o /boot/grub/grub.cfg
+</pre>
+
+<sub><sup>
+References: 
+https://wiki.archlinux.org/index.php/Power_management/Suspend_and_hibernate#Hibernation  
+https://wiki.archlinux.org/index.php/Mkinitcpio#Image_creation_and_activation  
+https://wiki.archlinux.org/index.php/Kernel_parameters#GRUB  
+</sup></sub>
+
 ### Installations with configurations
 
 #### Skype
@@ -351,8 +416,8 @@ LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so
 Steam default tray icon cannot be seen very well with a white taskbar, to replace it with the default icon use the following commands. First backup the current mono icon, and then copy the default icon with the same name.
 
 <pre>
-sudo mv /usr/share/pixmaps/steam_tray_mono.png  /usr/share/pixmaps/steam_tray_mono.png.bak 
-sudo cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
+mv /usr/share/pixmaps/steam_tray_mono.png  /usr/share/pixmaps/steam_tray_mono.png.bak 
+cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
 </pre>
 
 > These change might be lost once steam updates itself.
@@ -578,7 +643,7 @@ nano /etc/NetworkManager/NetworkManager.conf
 To simply set DNS resolvers, without any authentication of the DNS traffic between user and DNS resolver.
 
 <pre>
-sudo nano /etc/resolv.conf
+nano /etc/resolv.conf
   nameserver dns.ip.address
   nameserver dns.ip.address
   
@@ -594,13 +659,13 @@ Select one of the resolvers provided by the [upstream](https://github.com/jedisc
 <pre>
 pacman -S dnscrypt-proxy
 
-sudo nano /etc/resolv.conf
+nano /etc/resolv.conf
   nameserver 127.0.0.1
   
-sudo nano /usr/lib/systemd/system/dnscrypt-proxy.service 
+nano /usr/lib/systemd/system/dnscrypt-proxy.service 
   ExecStart=/usr/bin/dnscrypt-proxy --resolver-name='resolver name'
   
-sudo systemctl enable dnscrypt-proxy.service
+systemctl enable dnscrypt-proxy.service
 reboot
 </pre>
 
@@ -632,7 +697,7 @@ error: file '/boot/grub/locale/pt.mo' not found
 
 This can happen because the configured locale does not exist. To fix this, simply copy one of the existing configs to the missing one, and the locale file will now be read without problems.
 <pre>
-sudo cp /boot/grub/locale/pt_BR.mo /boot/grub/locale/pt.mo
+cp /boot/grub/locale/pt_BR.mo /boot/grub/locale/pt.mo
 </pre>
 
 #### Libreoffice does not autocorrect
