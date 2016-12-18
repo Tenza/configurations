@@ -676,13 +676,21 @@ pacman -S qt5-base qt5-doc qt5-tools qt5-examples qtcreator
 pacman -S cmake gdb valgrind
 </pre>
 
-#### ClamAV
+#### ClamAV Antivirus
 
 <pre>
 pacman -S clamav
 freshclam
 systemctl enable freshclamd.service
 systemctl enable clamd.service
+</pre>
+
+#### UFW Firewall
+
+<pre>
+pacman -S ufw
+ufw enable
+systemctl enable ufw.service
 </pre>
 
 ### Additional configurations
