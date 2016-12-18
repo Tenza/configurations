@@ -324,9 +324,10 @@ Skype is able to `Close to tray`, but it always starts with the main window visi
 
 <pre>
 pacman -S xdotool
-nano /home/filipe/Scripts/Skype
+  nano /home/filipe/Scripts/Skype
   #!/bin/bash
 
+  #Check connectivity
   while true
   do
       if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
@@ -338,8 +339,8 @@ nano /home/filipe/Scripts/Skype
       fi
   done
 
+  #Start Skype and sleep 1 second so xdotool can take effect
   /usr/bin/skypeforlinux
-
   sleep 1
 
   # Close window
@@ -440,6 +441,7 @@ Keep in mind that KDE copies the file `/usr/share/applications/steam.desktop` to
 nano /home/filipe/Scripts/Steam
   #!/bin/bash
 
+  #Check connectivity
   while true
   do
     if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
@@ -451,7 +453,7 @@ nano /home/filipe/Scripts/Steam
     fi
   done
 
-  #Replace the file to survive steam updates
+  #Replace icon file to survive steam updates
   cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
 
   #Use Steam runtime
