@@ -370,7 +370,7 @@ pacman -S steam
 
 ##### Steam Runtime
 
-One of the most common errors is due to broken/missing libraries, and steam may fail to start. Steam installs its own older versions of some libraries collectively called the "Steam Runtime". These will often conflict with the libraries included in Arch Linux.
+One of the most common errors is due to broken/missing libraries, and Steam may fail to start. Steam installs its own older versions of some libraries collectively called the "Steam Runtime". These can conflict with the libraries included in Arch Linux.
 
 <pre>
 libGL error: unable to load driver: i965_dri.so
@@ -383,18 +383,24 @@ libGL error: unable to load driver: swrast_dri.so
 libGL error: failed to load driver: swrast
 </pre>
 
-There are two ways to fix this, forcing Steam to load the up-to-date system libraries with a dynamic linker, or to force Steam to use only the system libraries. I will use the dynamic linker method for compatibility reasons.
+There a few ways to fix this, forcing Steam to load the up-to-date system libraries with a dynamic linker, or to force Steam to use only the system libraries, or to simply use the steam-runtime.
 
-To use the dynamic linker, the variable `LD_PRELOAD` has to be set before calling steam. Setting `LD_PRELOAD` to the path of a shared object, ensures that the passed files will be loaded before any other library, including the C runtime. 
+To use the dynamic linker, the variable `LD_PRELOAD` has to be set before calling Steam. Setting `LD_PRELOAD` to the path of a shared object, ensures that the passed files will be loaded before any other library, including the C runtime. 
 
 <pre>
 <b>LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so'</b> /usr/bin/steam %U
 </pre>
 
-To use the native runtime, simply set the variable `STEAM_RUNTIME=0`, keep in mind that this method possibly requires the installation of additional 32bit libraries, if you are missing any libraries from the Steam runtime.
+To run natively, simply set the variable `STEAM_RUNTIME=0`, keep in mind that this method possibly requires the installation of additional 32bit libraries, if you are missing any libraries from the Steam runtime.
 
 <pre>
 <b>STEAM_RUNTIME=0</b> /usr/bin/steam %U
+</pre>
+
+Run steam on it's own runtime, with older, but accurate libriaries. 
+
+<pre>
+<b>/usr/bin/steam-runtime %U</b> 
 </pre>
 
 ##### Close to tray
@@ -402,7 +408,7 @@ To use the native runtime, simply set the variable `STEAM_RUNTIME=0`, keep in mi
 By default steam closes when the main window is closed. To enable the "close to tray" behavior, the variable `STEAM_FRAME_FORCE_CLOSE` has to be set.
 
 <pre>
-LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' <b>STEAM_FRAME_FORCE_CLOSE=1</b> /usr/bin/steam %U
+<b>STEAM_FRAME_FORCE_CLOSE=1</b> /usr/bin/steam-runtime %U
 </pre>
 
 ##### Start silently
@@ -410,7 +416,7 @@ LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so
 By default steam opens the main window when it starts. This can be inconvenient if steam is set to start at boot. To disable this behavior, and hide the main window the `-silent` parameters has to be passed.
 
 <pre>
-LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U <b>-silent</b>
+STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam-runtime %U <b>-silent</b>
 </pre>
 
 ##### Tray icon
@@ -418,7 +424,7 @@ LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so
 Steam default tray icon cannot be seen very well with a white taskbar, to replace it with the default icon use the following commands. First backup the current mono icon, and then copy the default icon with the same name.
 
 <pre>
-mv /usr/share/pixmaps/steam_tray_mono.png  /usr/share/pixmaps/steam_tray_mono.png.bak 
+mv /usr/share/pixmaps/steam_tray_mono.png  /usr/share/pixmaps/steam_tray_mono_bak.png 
 cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
 </pre>
 
@@ -436,17 +442,23 @@ nano /home/filipe/Scripts/Steam
 
   while true
   do
-      if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
-          echo "Online"
-          break
-      else
-          echo "Offline"
-          sleep 10
-      fi
+    if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
+      echo "Online"
+      break
+    else
+      echo "Offline"
+      sleep 10
+    fi
   done
 
+  #Replace the file to survive steam updates
   cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
-  LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U -silent
+
+  #Use Steam runtime
+  STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam-runtime %U -silent
+
+  #Use Steam Native with Dynamic Linker
+  #LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U -silent
   
 chmod 711 /home/filipe/Scripts/Steam
 (Add the script to startup (symlink) with KDE)
