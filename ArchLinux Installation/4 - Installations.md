@@ -539,13 +539,6 @@ pacman -S ark p7zip zip unzip unrar
 pacman -S firefox firefox-i18n-pt-pt
 </pre>
 
-#### Qt
-
-<pre>
-pacman -S qt5-base qt5-doc qt5-tools qt5-examples qtcreator
-pacman -S cmake gdb valgrind
-</pre>
-
 #### Chat client
 
 <pre>
@@ -555,14 +548,6 @@ pacman -S pidgin pidgin-otr
 > When adding a XMPP account the "Resource" field is optional, is used to define your instance if you have several locations you chat from, for example "Home" or "Work".
 
 > Pidgin restores it's state at boot, no need to add to the startup menu.
-
-#### File and folder compare
-
-<pre>
-pacman -S meld
-</pre>
-
-> Kompare no longer crashes, but is still not as good as meld.
 
 #### Torrent
 
@@ -581,6 +566,14 @@ pacaur -S hunspell-pt_pt
 </pre>
 
 > I prefer Libreoffice over Calligra due to the compatibility and similarity to MS office.
+
+#### File and folder compare
+
+<pre>
+pacman -S meld
+</pre>
+
+> Kompare no longer crashes, but is still not as good as meld.
 
 #### Image Editor
 
@@ -608,6 +601,13 @@ pacman -S clementine gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugi
 > Make sure that the gstreamer plugins are installed and updated, otherwise the error "Your GStreamer installation is missing a plug-in" will be displayed.
 
 > Clementine restores it's state at boot, no need to add to the startup menu.
+
+#### Qt
+
+<pre>
+pacman -S qt5-base qt5-doc qt5-tools qt5-examples qtcreator
+pacman -S cmake gdb valgrind
+</pre>
 
 ### Additional configurations
 
