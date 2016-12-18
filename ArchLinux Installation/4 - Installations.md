@@ -308,6 +308,27 @@ https://wiki.archlinux.org/index.php/Kernel_parameters#GRUB
 
 ### Installations with configurations
 
+#### ClamAV
+
+Install the antivirus ClamAV.
+
+<pre>
+pacman -S clamav
+</pre>
+
+Before starting the ClamAV, run `freshclam` to update the virus definitions, to avoid running into troubles/errors which will prevent ClamAV to start correctly.
+
+<pre>
+freshclam
+</pre>
+
+Simply enable the deamons.
+
+<pre>
+systemctl enable freshclamd.service
+systemctl enable clamd.service
+</pre>
+
 #### Skype
 
 Skype no longer needs to be in complete lockdown mode, because there is a web version available. With this feature, a few front-end applications are now available. I'm using the official version, that is simply a wrapper of the Skype WebRTC for Linux.
