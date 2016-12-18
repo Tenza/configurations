@@ -273,6 +273,7 @@ The needed value, in this case, is `34816`. It will be used by the `resume_offse
 ###### Without Encryption
 
 The `resume` kernel parameter is the `partition` where the swapfile is located, not the swapfile itself.
+The `resume_offset` kernel parameter can be omitted if using a swap partition.
 
 <pre>
 nano /etc/default/grub  
@@ -282,6 +283,7 @@ nano /etc/default/grub
 ###### With Encryption
 
 The `resume` kernel parameter is the `device mapper` where the swapfile is located, not the swapfile itself.
+The `resume_offset` kernel parameter can be omitted if using a swap partition.
 
 <pre>
 nano /etc/default/grub  
