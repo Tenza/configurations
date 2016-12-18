@@ -471,7 +471,7 @@ chmod 711 /home/filipe/Scripts/Steam
 Dropbox is a file sharing system with a GNU/Linux client.  
 Cryfs is a cryptographic filesystem for the cloud, and at the moment is under heavy development. This is a much better alternative than using TrueCrypt containers (that I was previously using), to securely save data on cloud services. Since this is still under development some errors are expected and the data should have a backup.
 
-I've made a script to mount and unmount as well as automatically backup all data. This script require the `expect` comman, a tool that is commonly used for automating interactive applications, and the `rsync` application to backup the changed data.
+I've made a script to mount and unmount as well as automatically backup all data. This script requires the `expect` command, a tool that is commonly used for automating interactive applications, and the `rsync` application to backup the changed data.
 
 <pre>
 pacaur -S cryfs
@@ -485,7 +485,7 @@ pacman -S rsync
 The script automates the mount and backup processes, as well as to solve a problem I had with CryFS.
 The problem was that CryFS is extremely slow under certain filesystems, like NTFS. It's too slow to be able to browse the directory structure normally with dolphin, because dolphin also reads the files metadata to enable functionalities like file-preview.
 
-With this in mind, I decided that I would work only in my RAW (or backup) folder, and would use the script to mount and synchronize any changes made only at boot. My CryFS mount folder is a hidden folder, and the RSync command uses the `--delete` flag to make sure I dont work under the mount folder, because any changes in there will be lost.
+With this in mind, I decided that I would work only in my RAW (or backup) folder, and would use the script to mount and synchronize any changes made only at boot. My CryFS mount folder is a hidden folder, and the RSync command uses the `--delete` flag to make sure I don't work under the mount folder, because any changes in there will be lost.
 
 Replace the CryFS password and appropriate directories, create and set the mount script.
 
