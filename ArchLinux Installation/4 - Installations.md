@@ -662,7 +662,7 @@ pacaur -S photoqt
 #### Audio Player
 
 <pre>
-pacman -S clementine gst-plugins-base gst-plugins-good gst-plugins-bad gst-plugins-ugly gst-libav
+pacman -S clementine gst-plugins-base gst-plugins-good gst-libav
 </pre>
 
 > Make sure that the gstreamer plugins are installed and updated, otherwise the error "Your GStreamer installation is missing a plug-in" will be displayed.
