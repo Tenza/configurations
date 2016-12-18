@@ -466,52 +466,117 @@ chmod 711 /home/filipe/Scripts/Steam
 (Add the script to startup (symlink) with KDE)
 </pre>
 
-#### Cryfs with auto mount and unmount.
+#### Dropbox with CryFS
 
+Dropbox is a file sharing system with a GNU/Linux client.  
 Cryfs is a cryptographic filesystem for the cloud, and at the moment is under heavy development. This is a much better alternative than using TrueCrypt containers (that I was previously using), to securely save data on cloud services. Since this is still under development some errors are expected and the data should have a backup.
+
+I've made a script to mount and unmount as well as automatically backup all data. This script require the `expect` comman, a tool that is commonly used for automating interactive applications, and the `rsync` application to backup the changed data.
 
 <pre>
 pacaur -S cryfs
+pacaur -S dropbox
+pacman -S expect
+pacman -S rsync
 </pre>
 
 ##### Auto Mount
 
-Install the `expect` command, this tool is commonly used for automating interactive applications.
+The script automates the mount and backup processes, as well as to solve a problem I had with CryFS.
+The problem was that CryFS is extremely slow under certain filesystems, like NTFS. It's too slow to be able to browse the directory structure normally with dolphin, because dolphin also reads the files metadata to enable functionalities like file-preview.
+
+With this in mind, I decided that I would work only in my RAW (or backup) folder, and would use the script to mount and synchronize any changes made only at boot. My CryFS mount folder is a hidden folder, and the RSync command uses the `--delete` flag to make sure I dont work under the mount folder, because any changes in there will be lost.
+
+Replace the CryFS password and appropriate directories, create and set the mount script.
 
 <pre>
-pacman -S expect
-</pre>
+nano /home/filipe/Scripts/CryFS
+  #!/bin/bash
 
-Replace the Cryfs password and appropriate directories, create and set the mount script.  
-Note that this is a `#!/usr/bin/expect` script, and it is a common practice to add the `ext` extension.
+  dir_cloud="/dados/Dropbox/Privado/Trabalho/"
+  dir_cryfs="/dados/Trabalho/.CryFS/"
+  dir_raw="/dados/Trabalho/Trabalho/"
 
-<pre>
-nano /home/filipe/Scripts/CryfsMount.ext
-  #!/usr/bin/expect
+  log_rsync="/dados/Trabalho/RSync.log"
 
-  set pass "your.cryfs.password"
+  password="YOUR_CRYFS_PASSWORD"
 
-  spawn cryfs /dados/Dropbox/Privado/Trabalho/ /trabalho/
+  #Check connectivity
+  while true
+  do
+      if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
+          echo "Online"
+          break
+      else
+          echo "Offline"
+          sleep 10
+      fi
+  done
 
-  expect "Password:"
-  send "$pass\r"
+  #Check if CryFS is already mounted
+  if ! mount | grep cryfs > /dev/null; then
 
-  interact
-chmod 711 /home/filipe/Scripts/CryfsMount.ext
+      printf "Mounting CryFS\n\n"
+
+  #Expect commands enclosed within the CRYFS block, don't indent.
+  /usr/bin/expect <<- CRYFS
+      spawn cryfs $dir_cloud $dir_cryfs
+
+      expect "*?assword:*"
+      send -- "$password\r"
+
+      interact
+      expect EOF
+  CRYFS
+
+    #Check if was mounted with success, and start RSync Synchronization with logs and delete flag.
+      if mount | grep cryfs > /dev/null; then
+          printf "\nCryFS Mounted\n"
+          printf "\nStarting RSync Synchronization\n"
+
+          rsync -avh --delete --log-file=$log_rsync $dir_raw* $dir_cryfs
+
+          printf "\nRSync Complete\n"
+      else
+          printf "\nCryFS NOT Mounted\n"
+      fi
+
+  else
+
+      printf "CryFS Already Mounted\n\n"
+
+  fi
+  
+chmod 711 /home/filipe/Scripts/CryFS
 (Add the script to startup (symlink) with KDE)
 </pre>
 
+> Note that a script that uses expect, normally uses `#!/usr/bin/expect`, and has the `ext` extension. But in this case, bash commands are also needed, so the expect commands are inside a block within the bash script.
+
 ##### Auto Unmount
 
-Create and set the unmount script.
+Replace the appropriate directories, create and set the unmount script.
 
 <pre>
-nano /home/filipe/Scripts/CryfsUnmount
+nano /home/filipe/Scripts/CryFSUnmount
   #!/bin/bash
 
-  fusermount -u /trabalho/
+  dir_cryfs="/dados/Trabalho/.CryFS/"
+
+  #Check if CryFS is already mounted
+  if mount | grep cryfs > /dev/null; then
+
+      printf "Unmounting CryFS\n\n"
+      fusermount -u $dir_cryfs
+      printf "CryFS Unmounted\n\n"
+
+  else
+
+      printf "CryFS NOT Mounted\n\n"
+
+  fi
   
-chmod 711 /home/filipe/Scripts/CryfsUnmount
+chmod 711 /home/filipe/Scripts/CryFSUnmount
 (Add the script to shutdown (symlink) with KDE)
 </pre>
 
