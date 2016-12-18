@@ -292,7 +292,7 @@ nano /etc/default/grub
 
 ##### Apply Changes
 
-Apply the changes by rebuilding the initramfs with the mkinitcpio script, and regenerate the grub.cfg file
+Apply the changes by rebuilding the initramfs with the mkinitcpio script, and regenerate the grub.cfg file.
 
 <pre>
 mkinitcpio -p linux  
@@ -300,7 +300,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 </pre>
 
 <sub><sup>
-References: 
+References:  
 https://wiki.archlinux.org/index.php/Power_management/Suspend_and_hibernate#Hibernation  
 https://wiki.archlinux.org/index.php/Mkinitcpio#Image_creation_and_activation  
 https://wiki.archlinux.org/index.php/Kernel_parameters#GRUB  
