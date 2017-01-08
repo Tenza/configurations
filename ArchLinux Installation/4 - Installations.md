@@ -683,6 +683,13 @@ paraur -S teamviewer
 systemctl start teamviewerd.service
 </pre>
 
+#### Calculators
+
+<pre>
+pacman -S kcalc
+pacaur -S extcalc
+</pre>
+
 #### ClamAV Antivirus
 
 <pre>
