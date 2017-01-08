@@ -676,6 +676,13 @@ pacman -S qt5-base qt5-doc qt5-tools qt5-examples qtcreator
 pacman -S cmake gdb valgrind
 </pre>
 
+#### Teamviewer
+
+<pre>
+paraur -S teamviewer
+systemctl start teamviewerd.service
+</pre>
+
 #### ClamAV Antivirus
 
 <pre>
