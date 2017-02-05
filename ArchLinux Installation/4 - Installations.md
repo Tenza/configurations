@@ -707,6 +707,13 @@ ufw enable
 systemctl enable ufw.service
 </pre>
 
+#### KDE Installs
+
+<pre>
+pacman -S okular
+pacman -S spectacle
+</pre>
+
 ### Additional configurations
 
 #### PulseAudio Audiophile
