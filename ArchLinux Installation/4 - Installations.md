@@ -893,6 +893,7 @@ cp /my/user/background.jpg /usr/share/sddm/themes/breeze/background.jpg
 chmod 644 /usr/share/sddm/themes/breeze/background.jpg
 nano /usr/share/sddm/themes/breeze/theme.conf
   [General]
+  type=image
   background=background.jpg
 </pre>
 
