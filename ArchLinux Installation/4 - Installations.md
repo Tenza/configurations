@@ -773,7 +773,7 @@ systemctl start NetworkManager.service
 
 DNSCrypt encrypts and authenticates DNS traffic between user and DNS resolver. It prevents local spoofing of DNS queries, ensuring DNS responses are sent by the server of choice.
 
-Select one of the resolvers provided by the [upstream](https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv) and replace the 'resolver name' with the selected name.
+Select one of the resolvers provided by the [upstream](https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv) and add it to the variable 'ResolverName' on the `dnscrypt-proxy.conf` file.
 
 <pre>
 pacman -S dnscrypt-proxy
@@ -781,8 +781,8 @@ pacman -S dnscrypt-proxy
 nano /etc/resolv.conf
   nameserver 127.0.0.1
   
-nano /usr/lib/systemd/system/dnscrypt-proxy.service 
-  ExecStart=/usr/bin/dnscrypt-proxy --resolver-name='resolver name'
+nano /etc/dnscrypt-proxy.conf
+  ResolverName dnscrypt.eu-nl
   
 systemctl enable dnscrypt-proxy.service
 reboot
