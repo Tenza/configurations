@@ -68,7 +68,7 @@ It will now be necessary to add a `cloud-config.yaml` file to the machine. This 
 curl -O https://raw.githubusercontent.com/Tenza/configurations/master/CoreOS%20DevOps/cloud-config.yaml
 </pre>
 
-(Optional) The MD5 password in the file was generated with the `openssl passwd -1` command. An SSH Key could also be used, to do so, generate a new pair with `ssh-keygen`. Then build your `cloud-config.yaml` with the public key, like below, then upload the file somewhere, and finally download it inside the VM.
+**(Optional)** The MD5 password in the file was generated with the `openssl passwd -1` command. An SSH Key could also be used, to do so, generate a new pair with `ssh-keygen`. Then build your `cloud-config.yaml` with the public key, like below, [validate the file](https://coreos.com/validate/), upload the file to somewhere, and finally download it inside the VM.
 
 <pre>
 #cloud-config
