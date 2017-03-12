@@ -1,0 +1,9 @@
+#cloud-config
+
+users:
+- name: "core"
+  passwd: "$1$ij29dtxu$4a7IzzuszJrzAtCv9hm1P0"
+  groups:
+    - sudo
+    - docker
+hostname: coreos-01
