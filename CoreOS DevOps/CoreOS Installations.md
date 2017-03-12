@@ -65,7 +65,7 @@ This installation approach can be reproduced under Windows or Linux. The downsid
 It will now be necessary to add a `cloud-config.yaml` file to the machine. This can be either manually typed out or downloaded. The following command will download a minimal `cloud-config.yaml` from github, with the user `core` and password `core`, simply to be able to logon the machine after the instalation. 
 
 <pre>
-curl -O link_to_git_page
+curl -O https://raw.githubusercontent.com/Tenza/configurations/master/CoreOS%20DevOps/cloud-config.yaml
 </pre>
 
 (Optional) The MD5 password in the file was generated with the `openssl passwd -1` command. An SSH Key could also be used, to do so, generate a new pair with `ssh-keygen`. Then build your `cloud-config.yaml` with the public key, like below, then upload the file somewhere, and finally download it inside the VM.
@@ -78,10 +78,10 @@ ssh_authorized_keys:
 
 #### Install CoreOS
 
-Before executing the install command, make sure the drive is actually in `/dev/sda` by executing the `fdisk -l`.
+Before executing the install command, make sure the drive is actually in `/dev/sda` by executing the `fdisk -l`. The `-C` flag specifies the channel (it actually uses stable by default) and the `-c` flag with the path of the config file. 
 
 <pre>
-coreos-install -d /dev/sda -C stable -c ~/cloud-config.yaml
+coreos-install -d /dev/sda -C stable -c /home/core/cloud-config.yaml
 </pre>
 
 ### CoreOS Production Cloud Installation 
