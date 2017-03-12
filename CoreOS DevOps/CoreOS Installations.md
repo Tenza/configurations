@@ -2,7 +2,7 @@
 
 CoreOS is a distribution that targets container enviroments. Unlike other distributions, it is not really expected any interaction with CoreOS itself, other than managing containers. CoreOS comes with minimal packages pre-installed, and a package manager is not available by default. 
 
-After installing CoreOS, all commands will be run through SSH, even locally on the VirtualBox installation. This way it will be possible to simply copy-paste commands, with any terminal, and have the host keyboard layout working as intended. 
+After installing CoreOS, all commands will be run through SSH, even locally on the VirtualBox installation. This way it will be possible to simply copy-paste commands, with any SSH client, and have the host keyboard layout working as intended. 
 
 ### CoreOS Development VirtualBox Installation under Linux
 
@@ -82,6 +82,32 @@ Before executing the install command, make sure the drive is actually in `/dev/s
 
 <pre>
 coreos-install -d /dev/sda -C stable -c /home/core/cloud-config.yaml
+</pre>
+
+Once the following message is displayed, the machine should be powered off, and the ISO unmounted.
+
+<pre>
+<b>Success! CoreOS stable $version is installed on /dev/sda.</b>
+poweroff
+
+Go to the VM settings.
+	Storage tab.
+	Remove the optical drive with the ISO image.
+</pre>
+
+#### SSH Into that Box
+
+Power on the VM, and login with the username `core` and password `core` to enable to SSH deamon.  
+
+<pre>
+systemctl start/status/enable sshd
+ifconfig
+</pre>
+
+The SSH server should be up and running.
+
+<pre>
+ssh core@192.168.1.2
 </pre>
 
 ### CoreOS Production Cloud Installation 
