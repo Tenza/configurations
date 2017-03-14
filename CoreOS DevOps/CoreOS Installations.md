@@ -69,8 +69,7 @@ https://raw.githubusercontent.com/coreos/scripts/master/contrib/create-basic-con
 <b>Create a new VM in VirtualBox.</b>
     Choose Linux 2.6 / 3.x / 4.x (64 bit).
     Give at least 1024MB of memory.
-    Create a virtual hard disk.
-    Choose the native <a href="https://superuser.com/questions/360517/what-disk-image-should-i-use-with-virtualbox-vdi-vmdk-vhd-or-hdd">VDI</a> format.
+    Select the generated VDI file.
 <b>Go to the VM settings.</b>
     Go to the Network tab.
     Make the VM visible on the local network by choosing <b><a href="https://www.howtogeek.com/122641/how-to-forward-ports-to-a-virtual-machine-and-use-it-as-a-server/">Bridged Mode</a></b>.
