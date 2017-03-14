@@ -4,7 +4,7 @@ CoreOS is a distribution that targets container enviroments. Unlike other distri
 
 After installing CoreOS, all commands will be run through SSH, even locally on the VirtualBox installation. This way it will be possible to simply copy-paste commands, with any SSH client, and have the host keyboard layout working as intended. 
 
-### CoreOS Development VirtualBox Installation under Linux
+### CoreOS VirtualBox Installation under Linux
 
 This installation approach is automated by bash scripts provided by CoreOS, and it will be targed to Arch Linux.
 
@@ -23,11 +23,11 @@ Install the packages needed to SSH and execute the scripts.
 pacman -S wget openssh cdrtools
 </pre>
 
-Activate the following VirtualBox modules uppon boot.
-`vboxdrv` is the only mandatory virtualbox module, which must be loaded before any virtual machines can run.
-`vboxnetadp` is needed to create the host interface in the VirtualBox global preferences. 
-`vboxnetflt` is needed to launch a virtual machine using that network interface.
-`vboxpci` is needed to pass through PCI device on your host.
+Activate the following VirtualBox modules uppon boot.  
+`vboxdrv` is the only mandatory virtualbox module, which must be loaded before any virtual machines can run.  
+`vboxnetadp` is needed to create the host interface in the VirtualBox global preferences.  
+`vboxnetflt` is needed to launch a virtual machine using that network interface.  
+`vboxpci` is needed to pass through PCI device on your host.  
 
 <pre>
 sudo nano /etc/modules-load.d/virtualbox.conf
@@ -37,7 +37,7 @@ sudo nano /etc/modules-load.d/virtualbox.conf
 	vboxpci
 </pre>
 
-### CoreOS Development VirtualBox Installation under Windows
+### CoreOS VirtualBox Installation under Windows
 
 This installation approach can be reproduced under Windows or Linux. The downside of this method is that it cannot be fully automated using the bash scripts, and a few commands will have to be typed directly on the VitualBox installation, not through SSH.
 
@@ -68,7 +68,11 @@ It will now be necessary to add a `cloud-config.yaml` file to the machine. This 
 curl -O https://raw.githubusercontent.com/Tenza/configurations/master/CoreOS%20DevOps/cloud-config.yaml
 </pre>
 
-**(Optional)** The MD5 password in the file was generated with the `openssl passwd -1` command. An SSH Key could also be used, to do so, generate a new pair with `ssh-keygen`. Then build your `cloud-config.yaml` with the public key, like below, [validate the file](https://coreos.com/validate/), upload the file to somewhere, and finally download it inside the VM.
+###### (Optional) SSH Key
+
+The MD5 `core` password in the file above was generated using `openssl passwd -1`, and it can be replaced at will.
+
+It is also possible to use an SSH Key. To do so, start by generating a new key-pair with `ssh-keygen`, and then simply add the public-key to your `cloud-config.yaml`. Don't forget to [validate the file](https://coreos.com/validate/), before transfering it into the VM.
 
 <pre>
 #cloud-config
