@@ -6,9 +6,9 @@ After installing CoreOS, all commands will be run through SSH, even locally on t
 
 ### CoreOS VirtualBox Installation under Linux
 
-This installation approach is automated by bash scripts provided by CoreOS, and it will be targed to Arch Linux.
+This installation approach is automated by bash scripts provided by CoreOS, and it will be targed to ArchLinux. This approach also has the advantage of using a ConfigDrive, that makes it easier to update the `cloud-config` file in use.
 
-#### Installations
+#### VirtualBox Installation
 
 Install VirtualBox and it's optional dependencies.
 
@@ -36,6 +36,32 @@ sudo nano /etc/modules-load.d/virtualbox.conf
     vboxnetflt
     vboxpci
 </pre>
+
+#### Create VirtualBox VDI File and ConfigDrive
+
+The following chain of commands will download and execute the scripts copied from CoreOS repo. The result should be a `CoreOS-VDI` folder with the files `coreos_production_stable.vdi` and `coreos_configdrive.iso`.
+
+Before execution, make sure your public key is at `~/.ssh/id_rsa.pub`. To generate one, simply run `ssh-keygen`.
+
+<pre>
+mkdir CoreOS-VDI &&
+cd CoreOS-VDI/ &&
+curl -O https://raw.githubusercontent.com/Tenza/configurations/master/CoreOS%20DevOps/create-coreos-vdi &&
+chmod +x create-coreos-vdi &&
+./create-coreos-vdi -V stable &&
+find . -name '*.vdi' -exec mv {} coreos_production_stable.vdi \; &&
+curl -O https://raw.githubusercontent.com/Tenza/configurations/master/CoreOS%20DevOps/create-basic-configdrive &&
+chmod +x create-basic-configdrive &&
+./create-basic-configdrive -H coreos_configdrive -S <b>~/.ssh/id_rsa.pub</b> &&
+rm create-basic-configdrive &&
+rm create-coreos-vdi
+</pre>
+
+<sub><sup>
+Original Links:  
+https://raw.githubusercontent.com/coreos/scripts/master/contrib/create-coreos-vdi  
+https://raw.githubusercontent.com/coreos/scripts/master/contrib/create-basic-configdrive  
+</sup></sub>
 
 ### CoreOS VirtualBox Installation under Windows
 
