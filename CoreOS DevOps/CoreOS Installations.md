@@ -53,7 +53,7 @@ find . -name '*.vdi' -exec mv {} coreos_production_stable.vdi \; &&
 curl -O https://raw.githubusercontent.com/Tenza/configurations/master/CoreOS%20DevOps/create-basic-configdrive &&
 chmod +x create-basic-configdrive &&
 ./create-basic-configdrive -H coreos-01 -S <b>~/.ssh/id_rsa.pub</b> &&
-find . -name '*.iso' -exec mv {} coreos_configdrive.vdi \; &&
+find . -name '*.iso' -exec mv {} coreos_configdrive.iso \; &&
 rm create-basic-configdrive &&
 rm create-coreos-vdi
 </pre>
