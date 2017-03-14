@@ -161,7 +161,3 @@ The SSH server should be up and running.
 <pre>
 ssh core@192.168.1.2
 </pre>
-
-### CoreOS Production Cloud Installation 
-
-The majority of cloud providers will install CoreOS for you, and you will only have to parse the cloud-config file upon creation. Simply copy and paste the content of the cloud-config-production.yaml file.
