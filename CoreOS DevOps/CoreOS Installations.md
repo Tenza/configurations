@@ -63,6 +63,29 @@ https://raw.githubusercontent.com/coreos/scripts/master/contrib/create-coreos-vd
 https://raw.githubusercontent.com/coreos/scripts/master/contrib/create-basic-configdrive  
 </sup></sub>
 
+#### VirtualBox Setup
+
+<pre>
+<b>Create a new VM in VirtualBox.</b>
+    Choose Linux 2.6 / 3.x / 4.x (64 bit).
+    Give at least 1024MB of memory.
+    Create a virtual hard disk.
+    Choose the native <a href="https://superuser.com/questions/360517/what-disk-image-should-i-use-with-virtualbox-vdi-vmdk-vhd-or-hdd">VDI</a> format.
+<b>Go to the VM settings.</b>
+    Go to the Network tab.
+    Make the VM visible on the local network by choosing <b><a href="https://www.howtogeek.com/122641/how-to-forward-ports-to-a-virtual-machine-and-use-it-as-a-server/">Bridged Mode</a></b>.
+    Storage tab.
+    Add a new optical drive and select the generated .iso file.
+</pre>
+
+#### SSH Into that Box
+
+Power on the VM, and SSH into the IP displayed at the top of the VM screen.
+
+<pre>
+ssh core@192.168.1.2
+</pre>
+
 ### CoreOS VirtualBox Installation under Windows
 
 This installation approach can be reproduced under Windows or Linux. The downside of this method is that it cannot be fully automated using the bash scripts, and a few commands will have to be typed directly on the VitualBox installation, not through SSH.
