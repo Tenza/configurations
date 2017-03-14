@@ -31,10 +31,10 @@ Activate the following VirtualBox modules uppon boot.
 
 <pre>
 sudo nano /etc/modules-load.d/virtualbox.conf
-	vboxdrv
-	vboxnetadp
-	vboxnetflt
-	vboxpci
+    vboxdrv
+    vboxnetadp
+    vboxnetflt
+    vboxpci
 </pre>
 
 ### CoreOS VirtualBox Installation under Windows
@@ -55,9 +55,9 @@ This installation approach can be reproduced under Windows or Linux. The downsid
     Make the VM visible on the local network by choosing <b><a href="https://www.howtogeek.com/122641/how-to-forward-ports-to-a-virtual-machine-and-use-it-as-a-server/">Bridged Mode</a></b>.
 <b>Start the VM and select the downloaded ISO.</b>
     If you are not prompted to select the ISO.
-    	Go to Settings.
-		Storage tab.
-		Add a new optical drive with the ISO image.
+        Go to Settings.
+	Storage tab.
+	Add a new optical drive with the ISO image.
 </pre>
 
 #### Cloud-config file
@@ -95,8 +95,8 @@ Once the following message is displayed, the machine should be powered off, and 
 poweroff
 
 Go to the VM settings.
-	Storage tab.
-	Remove the optical drive with the ISO image.
+Storage tab.
+Remove the optical drive with the ISO image.
 </pre>
 
 #### SSH Into that Box
