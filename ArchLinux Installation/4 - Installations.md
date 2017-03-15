@@ -580,6 +580,29 @@ chmod 711 /home/filipe/Scripts/CryFSUnmount
 (Add the script to shutdown (symlink) with KDE)
 </pre>
 
+#### VirtualBox
+
+Install VirtualBox and it's optional dependencies.
+
+<pre>
+pacman -S virtualbox virtualbox-guest-iso virtualbox-host-modules-arch virtualbox-guest-utils
+pacman -S vde2 net-tools virtualbox-ext-vnc
+</pre>
+
+Activate the following VirtualBox modules upon boot.  
+`vboxdrv` is the only mandatory virtualbox module, which must be loaded before any virtual machines can run.  
+`vboxnetadp` is needed to create the host interface in the VirtualBox global preferences.  
+`vboxnetflt` is needed to launch a virtual machine using that network interface.  
+`vboxpci` is needed to pass through PCI device on your host.  
+
+<pre>
+sudo nano /etc/modules-load.d/virtualbox.conf
+    vboxdrv
+    vboxnetadp
+    vboxnetflt
+    vboxpci
+</pre>
+
 ### Simple Installations
 
 #### File Manager
@@ -825,6 +848,31 @@ Check if the checkbox has you a blue tick or a little `A` next to the language, 
 
 <pre>
 Tools -> Options -> Language Settings -> Languages -> Default language for document
+</pre>
+
+#### DnsCrypt not working after resume
+
+Sometimes the network is comes down after a resume from sleep, this can be a problem with dnscrypt. Restarting the service at resume time, will solve the problem.
+
+<pre>
+nano /lib/systemd/system-sleep/dnscrypt-reboot
+    #!/bin/sh
+    case $1/$2 in
+      pre/*)
+        echo "Going to $2..."
+        # Place your pre suspend commands here, or `exit 0` if no pre suspend action required
+        ;;
+      post/*)
+        echo "Waking up from $2..."
+        # Place your post suspend (resume) commands here, or `exit 0` if no post suspend action required
+        systemctl restart dnscrypt-proxy.service
+        ;;
+    esac
+
+chmod a+x /lib/systemd/system-sleep/dnscrypt-reboot
+
+Check the messages with:
+  journalctl -b -u systemd-suspend
 </pre>
 
 ### Look & feel
