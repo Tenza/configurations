@@ -86,7 +86,7 @@ Power on the VM, and SSH into the IP displayed at the top of the VM screen.
 ssh core@192.168.1.2
 </pre>
 
-Finnaly, if you know the IP the VM will take, it can be started without a visual interface.
+Finally, if you know the IP assigned to the VM, it can be started without a visual interface.
 
 <pre>
 VBoxManage list vms
