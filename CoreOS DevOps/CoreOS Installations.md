@@ -86,6 +86,16 @@ Power on the VM, and SSH into the IP displayed at the top of the VM screen.
 ssh core@192.168.1.2
 </pre>
 
+Finnaly, if you know the IP the VM will take, it can be started without a visual interface.
+
+<pre>
+VBoxManage list vms
+    "CoreOS VDI" {0dce53bf-b921-403e-b5ef-be66e0466dd5}
+    
+VBoxHeadless -startvm "CoreOS VDI" &
+ssh core@192.168.1.2
+</pre>
+
 # CoreOS VirtualBox Installation under Windows
 
 This installation approach can be reproduced under Windows or Linux. The downside of this method is that it cannot be fully automated using the bash scripts, and a few commands will have to be typed directly on the VitualBox installation, not through SSH.
