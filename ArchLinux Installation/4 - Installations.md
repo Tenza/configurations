@@ -493,22 +493,31 @@ Replace the CryFS password and appropriate directories, create and set the mount
 nano /home/filipe/Scripts/CryFS
   #!/bin/bash
 
+  #Mount directories
   dir_cloud="/dados/Dropbox/Privado/Trabalho/"
   dir_cryfs="/dados/Trabalho/.CryFS/"
   dir_raw="/dados/Trabalho/Trabalho/"
 
+  #RSync log and execution delay of 3 days.
   log_rsync="/dados/Trabalho/RSync.log"
+  execution_delay=$((60*60*24*3))
 
   password="YOUR_CRYFS_PASSWORD"
+
+  #Mount and RSync only if execution_delay has passed before last execution.
+  if test "$(($(date "+%s")-$(date -r "$0" "+%s")))" -lt "$execution_delay" ; then
+    printf "Bypassing CryFS Script Execution.\n\n"
+    exit 0;
+  fi
 
   #Check connectivity
   while true
   do
       if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
-          echo "Online"
+          printf "Online\n"
           break
       else
-          echo "Offline"
+          printf "Offline\n"
           sleep 10
       fi
   done
@@ -529,14 +538,18 @@ nano /home/filipe/Scripts/CryFS
       expect EOF
   CRYFS
 
-    #Check if was mounted with success, and start RSync Synchronization with logs and delete flag.
+    #Check if was mounted with success.
       if mount | grep cryfs > /dev/null; then
-          printf "\nCryFS Mounted\n"
-          printf "\nStarting RSync Synchronization\n"
+      printf "\nCryFS Mounted\n"
+      printf "\nStarting RSync Synchronization\n"
 
-          rsync -avh --delete --log-file=$log_rsync $dir_raw* $dir_cryfs
+      #Start RSync Synchronization with logs and delete flag.
+      rsync -avh --delete --log-file=$log_rsync $dir_raw* $dir_cryfs
 
-          printf "\nRSync Complete\n"
+      # Store last execution as modification timestamp.
+      touch -m -- "$0"
+
+      printf "\nRSync Complete\n"
       else
           printf "\nCryFS NOT Mounted\n"
       fi
