@@ -506,8 +506,8 @@ nano /home/filipe/Scripts/CryFS
 
   #Mount and RSync only if execution_delay has passed before last execution.
   if test "$(($(date "+%s")-$(date -r "$0" "+%s")))" -lt "$execution_delay" ; then
-    printf "Bypassing CryFS Script Execution.\n\n"
-    exit 0;
+      printf "Bypassing CryFS Script Execution.\n\n"
+      exit 0;
   fi
 
   #Check connectivity
@@ -538,18 +538,18 @@ nano /home/filipe/Scripts/CryFS
       expect EOF
   CRYFS
 
-    #Check if was mounted with success.
+      #Check if was mounted with success.
       if mount | grep cryfs > /dev/null; then
-      printf "\nCryFS Mounted\n"
-      printf "\nStarting RSync Synchronization\n"
+          printf "\nCryFS Mounted\n"
+          printf "\nStarting RSync Synchronization\n"
 
-      #Start RSync Synchronization with logs and delete flag.
-      rsync -avh --delete --log-file=$log_rsync $dir_raw* $dir_cryfs
+          #Start RSync Synchronization with logs and delete flag.
+          rsync -avh --delete --log-file=$log_rsync $dir_raw* $dir_cryfs
 
-      # Store last execution as modification timestamp.
-      touch -m -- "$0"
+          # Store last execution as modification timestamp.
+          touch -m -- "$0"
 
-      printf "\nRSync Complete\n"
+          printf "\nRSync Complete\n"
       else
           printf "\nCryFS NOT Mounted\n"
       fi
