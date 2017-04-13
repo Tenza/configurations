@@ -158,9 +158,17 @@ Storage tab.
 Remove the optical drive with the ISO image.
 </pre>
 
+#### Power on the VM
+
+Start the virtualbox machine in console mode, use the following command:
+
+<pre>
+VBoxHeadless -startvm "CoreOS VDI" &
+</pre>
+
 #### SSH Into that Box
 
-Power on the VM, and login with the username `core` and password `core` to enable to SSH daemon.  
+After the VM powered, login with the username `core` and password `core` to enable to SSH daemon.  
 
 <pre>
 systemctl start/status/enable sshd
