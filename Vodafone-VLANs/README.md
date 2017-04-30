@@ -1,5 +1,8 @@
 # Vodafone VLans Configuration
 
+***THESE NOTES ARE NOW OUTDATED.***  
+***MERLIN FIRMWARE CAN APPLY THESE SETTINGS BY SIMPLY SELECTING VODAFONE IPTV***
+
 #### TL;DR  
 1. Flash Merlin on the router.
 2. Configurate:
