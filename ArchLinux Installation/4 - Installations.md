@@ -244,11 +244,11 @@ https://wiki.archlinux.org/index.php/acpid
 To activate the hibernate functionality, some kernel parameters have to be added, as well as the `resume` hook to initramfs. The parameters values differ depending on the configuration used. For example if using a partition/file and with/without encryption.
 
 Start by adding the `resume` hook to the initramfs.
-This hook needs to be after `udev` because the swap is referred to with a udev device node.
+This hook needs to be after `udev` because the swap is referred to with a udev device node. And also after the `encrypt` hook, because the system can only be resumed if successfully unlocked.
 
 <pre>
 nano /etc/mkinitcpio.conf  
-  HOOKS="base udev <b>resume</b> autodetect modconf block mdadm_udev filesystems keyboard fsck"
+  HOOKS="base udev autodetect modconf block mdadm_udev encrypt <b>resume</b> filesystems keyboard fsck"
 </pre>
 
 ##### Using a Swapfile
@@ -277,7 +277,7 @@ The `resume_offset` kernel parameter can be omitted if using a swap partition.
 
 <pre>
 nano /etc/default/grub  
-  GRUB_CMDLINE_LINUX_DEFAULT="resume=/dev/md125p3 resume_offset=34816"
+  GRUB_CMDLINE_LINUX="resume=/dev/md125p3 resume_offset=34816"
 </pre>
 
 ###### With Encryption
@@ -287,7 +287,7 @@ The `resume_offset` kernel parameter can be omitted if using a swap partition.
 
 <pre>
 nano /etc/default/grub  
-  GRUB_CMDLINE_LINUX_DEFAULT="resume=/dev/mapper/ArchCrypt resume_offset=34816"
+  GRUB_CMDLINE_LINUX="resume=/dev/mapper/ArchCrypt resume_offset=34816"
 </pre>
 
 ##### Apply Changes
