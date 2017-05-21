@@ -203,7 +203,7 @@ The `i915` kernel module of the Intel graphics, allows for configuration via ker
 <pre>
 modinfo -p i915
 nano /etc/default/grub
-  GRUB_CMDLINE_LINUX_DEFAULT="i915.enable_rc6=1 i915.enable_fbc=1 i915.semaphores=1 915.lvds_downclock=1"
+  GRUB_CMDLINE_LINUX_DEFAULT="i915.enable_rc6=1 i915.enable_fbc=1 i915.semaphores=1 i915.lvds_downclock=1"
 
 grub-mkconfig -o /boot/grub/grub.cfg 
 </pre>
@@ -213,7 +213,7 @@ grub-mkconfig -o /boot/grub/grub.cfg
 | i915.enable_rc6=1 | The Intel i915 RC6 feature allows the Graphics Processing Unit (GPU) to enter a lower power state during GPU idle. The i915 RC6 feature applies to Intel Sandybridge and later processors. | 
 | i915.enable_fbc=1 | Framebuffer compression reduces the memory bandwidth on screen refreshes and depending on the image in the framebuffer can reduce power consumption. This option is not enabled by default as on some hardware framebuffer compression causes artifacts when repainting when using composites. Some users report this breaks when using Unity 3D.  | 
 | i915.semaphores=1 | Use semaphores for inter-ring sync. |
-| 915.lvds_downclock=1 | This kernel option will down-clock the LVDS refresh rate, and this in theory will save power. For systems that do not support LVDS down-clocking the screen can flicker. |
+| i915.lvds_downclock=1 | This kernel option will down-clock the LVDS refresh rate, and this in theory will save power. For systems that do not support LVDS down-clocking the screen can flicker. |
 
 <sub><sup>
 References:  
@@ -248,7 +248,7 @@ This hook needs to be after `udev` because the swap is referred to with a udev d
 
 <pre>
 nano /etc/mkinitcpio.conf  
-  HOOKS="base udev `resume` autodetect modconf block mdadm_udev filesystems keyboard fsck"
+  HOOKS="base udev <b>resume</b> autodetect modconf block mdadm_udev filesystems keyboard fsck"
 </pre>
 
 ##### Using a Swapfile
