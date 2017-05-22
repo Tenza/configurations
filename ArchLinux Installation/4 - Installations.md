@@ -482,11 +482,13 @@ pacman -S virtualbox virtualbox-guest-iso virtualbox-host-modules-arch
 pacman -S vde2 net-tools virtualbox-ext-vnc
 </pre>
 
-The following VirtualBox modules are now automatically loaded upon boot.  
+The following VirtualBox modules are now automatically loaded upon boot. 
 `vboxdrv` is the only mandatory virtualbox module, which must be loaded before any virtual machines can run.  
 `vboxnetadp` is needed to create the host interface in the VirtualBox global preferences.  
 `vboxnetflt` is needed to launch a virtual machine using that network interface.  
 `vboxpci` is needed to pass through PCI device on your host.  
+
+> The modules are now located in `/usr/lib/modules-load.d/virtualbox-host-modules-arch.conf`.
 
 > Do not install `virtualbox-guest-modules-arch` and `virtualbox-host-modules-arch` at the same time. This will cause some kernel modules to fail at boot.
 
