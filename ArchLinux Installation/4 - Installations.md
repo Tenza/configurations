@@ -595,7 +595,7 @@ pacman -S cmake gdb valgrind
 #### Teamviewer
 
 <pre>
-paraur -S teamviewer
+pacaur -S teamviewer
 systemctl start teamviewerd.service
 </pre>
 
