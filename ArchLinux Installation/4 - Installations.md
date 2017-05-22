@@ -478,23 +478,17 @@ chmod 711 /home/filipe/Scripts/CryFSUnmount
 Install VirtualBox and it's optional dependencies.
 
 <pre>
-pacman -S virtualbox virtualbox-guest-iso virtualbox-host-modules-arch virtualbox-guest-utils
+pacman -S virtualbox virtualbox-guest-iso virtualbox-host-modules-arch
 pacman -S vde2 net-tools virtualbox-ext-vnc
 </pre>
 
-Activate the following VirtualBox modules upon boot.  
+The following VirtualBox modules are now automatically loaded upon boot.  
 `vboxdrv` is the only mandatory virtualbox module, which must be loaded before any virtual machines can run.  
 `vboxnetadp` is needed to create the host interface in the VirtualBox global preferences.  
 `vboxnetflt` is needed to launch a virtual machine using that network interface.  
 `vboxpci` is needed to pass through PCI device on your host.  
 
-<pre>
-sudo nano /etc/modules-load.d/virtualbox.conf
-    vboxdrv
-    vboxnetadp
-    vboxnetflt
-    vboxpci
-</pre>
+> Do not install `virtualbox-guest-modules-arch` and `virtualbox-host-modules-arch` at the same time. This will cause some kernel modules to fail at boot.
 
 ### Simple Installations
 
@@ -775,6 +769,20 @@ chmod a+x /lib/systemd/system-sleep/dnscrypt-reboot
 
 Check the messages with:
   journalctl -b -u systemd-suspend
+</pre>
+
+#### Fail to load Text-to-Speech modules
+
+Check the current boot error messages, and install the missing packages.
+
+<pre>
+journalctl -b -p err
+Error loading text-to-speech plug-in "flite"
+Error loading text-to-speech plug-in "speechd"
+</pre>
+
+<pre>
+pacman -S flite speech-dispatcher
 </pre>
 
 ### Look & feel
