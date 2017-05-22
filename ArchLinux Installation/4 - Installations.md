@@ -324,7 +324,6 @@ Steam is not officially supported in ArchLinux, as such some fixes are needed to
 
 <pre>
 pacman -S steam
-
 </pre>
 
 > On 64bit systems, make sure multilib is enabled, and the 32bit variants of the graphics and sound drivers are installed.
@@ -562,7 +561,7 @@ pacman -S meld
 #### Image Editor
 
 <pre>
-pacaur -S gimp
+pacman -S gimp
 </pre>
 
 > WARNING: GIMP will probably override your Image Viewer by default.
