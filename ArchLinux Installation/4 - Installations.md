@@ -520,6 +520,7 @@ pacman -S ark p7zip zip unzip unrar
 
 <pre>
 pacman -S firefox firefox-i18n-pt-pt
+pacaur -S google-chrome kdialog libunity
 </pre>
 
 #### Chat client
@@ -585,11 +586,19 @@ pacman -S clementine gst-plugins-base gst-plugins-good gst-libav
 
 > Clementine restores it's state at boot, no need to add to the startup menu.
 
-#### Qt
+#### IDE's and Tools
 
 <pre>
 pacman -S qt5-base qt5-doc qt5-tools qt5-examples qtcreator
 pacman -S cmake gdb valgrind
+</pre>
+
+<pre>
+pacman -S eclipse-java
+</pre>
+
+<pre>
+pacaur -S visual-studio-code
 </pre>
 
 #### Teamviewer
