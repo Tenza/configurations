@@ -316,48 +316,7 @@ Skype no longer needs to be in complete lockdown mode, because there is a web ve
 pacaur -S skypeforlinux-bin
 </pre>
 
-> Skype uses the gnome-keyring to store the credentials. Make sure it is properly configured.
-
-###### Skype startup in tray
-
-Skype is able to `Close to tray`, but it always starts with the main window visible. Closing to tray at startup is not yet available, and command line parameters like `--silent` are also not available. To force this behavior, I created a simple script using `xdotool` to close the main window of skype at startup. The script also checks for the network status before opening, because sometimes skype displays that it wasn't able to connect, (and it will not reconnect) if the network connection isn't already established when it opens.
-
-<pre>
-pacman -S xdotool
-  nano /home/filipe/Scripts/Skype
-  #!/bin/bash
-
-  #Check connectivity
-  while true
-  do
-      if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
-          echo "Online"
-          break
-      else
-          echo "Offline"
-          sleep 10
-      fi
-  done
-
-  #Start Skype and sleep 1 second so xdotool can take effect
-  /usr/bin/skypeforlinux
-  sleep 1
-
-  # Close window
-  if [[ -n `pidof skypeforlinux` ]];then
-      WID=`xdotool search --name "Skype for Linux Alpha"`
-      xdotool windowactivate --sync $WID
-      xdotool key --clearmodifiers ALT+F4
-  fi
-
-chmod 711 /home/filipe/Scripts/Skype
-(Add the script to startup (symlink) with KDE)
-</pre>
-
-<sub><sup>
-References:  
-http://unix.stackexchange.com/questions/85205/is-there-a-way-to-simulate-a-close-event-on-various-windows-using-the-terminal   http://how-to.wikia.com/wiki/How_to_gracefully_kill_(close)_programs_and_processes_via_command_line
-</sup></sub>
+> Skype uses the gnome-keyring to store the credentials. Make sure it is properly installed and configured.
 
 #### Steam
 
@@ -365,6 +324,7 @@ Steam is not officially supported in ArchLinux, as such some fixes are needed to
 
 <pre>
 pacman -S steam
+
 </pre>
 
 > On 64bit systems, make sure multilib is enabled, and the 32bit variants of the graphics and sound drivers are installed.
@@ -373,97 +333,18 @@ pacman -S steam
 
 One of the most common errors is due to broken/missing libraries, and Steam may fail to start. Steam installs its own older versions of some libraries collectively called the "Steam Runtime". These can conflict with the libraries included in Arch Linux.
 
-<pre>
-libGL error: unable to load driver: i965_dri.so
-libGL error: driver pointer missing
-libGL error: failed to load driver: i965
-libGL error: unable to load driver: i965_dri.so
-libGL error: driver pointer missing
-libGL error: failed to load driver: i965
-libGL error: unable to load driver: swrast_dri.so
-libGL error: failed to load driver: swrast
-</pre>
-
-There a few ways to fix this, forcing Steam to load the up-to-date system libraries with a dynamic linker, or to force Steam to use only the system libraries, or to simply use the steam-runtime.
-
-To use the dynamic linker, the variable `LD_PRELOAD` has to be set before calling Steam. Setting `LD_PRELOAD` to the path of a shared object, ensures that the passed files will be loaded before any other library, including the C runtime. 
+Most of these problems can now be solved by installing the following package.
 
 <pre>
-<b>LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so'</b> /usr/bin/steam %U
-</pre>
-
-To run natively, simply set the variable `STEAM_RUNTIME=0`, keep in mind that this method possibly requires the installation of additional 32bit libraries, if you are missing any libraries from the Steam runtime.
-
-<pre>
-<b>STEAM_RUNTIME=0</b> /usr/bin/steam %U
-</pre>
-
-Run steam on it's own runtime, with older, but accurate libriaries. 
-
-<pre>
-<b>/usr/bin/steam-runtime %U</b> 
-</pre>
-
-##### Close to tray
-
-By default steam closes when the main window is closed. To enable the "close to tray" behavior, the variable `STEAM_FRAME_FORCE_CLOSE` has to be set.
-
-<pre>
-<b>STEAM_FRAME_FORCE_CLOSE=1</b> /usr/bin/steam-runtime %U
+pacman -S steam-native-runtime
 </pre>
 
 ##### Start silently
 
-By default steam opens the main window when it starts. This can be inconvenient if steam is set to start at boot. To disable this behavior, and hide the main window the `-silent` parameters has to be passed.
+By default steam opens the main window when it starts. This can be inconvenient if steam is set to start at boot. To disable this behavior, simply append the `-silent` parameter to the startup command in the system settings.
 
 <pre>
-STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam-runtime %U <b>-silent</b>
-</pre>
-
-##### Tray icon
-
-Steam default tray icon cannot be seen very well with a white taskbar, to replace it with the default icon use the following commands. First backup the current mono icon, and then copy the default icon with the same name.
-
-<pre>
-mv /usr/share/pixmaps/steam_tray_mono.png  /usr/share/pixmaps/steam_tray_mono_bak.png 
-cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
-</pre>
-
-> These change might be lost once steam updates itself.
-
-##### All together
-
-For me the easiest way to have this all together is to create a simple script. It is possible to simply edit the `.desktop` file of steam, but it will probably not survive updates. Additionally, this script will only start steam when the network is active.
-
-Keep in mind that KDE copies the file `/usr/share/applications/steam.desktop` to your home dir `/home/filipe/.local/share/applications/steam.desktop` with the modifications when editing manually.
-
-<pre>
-nano /home/filipe/Scripts/Steam
-  #!/bin/bash
-
-  #Check connectivity
-  while true
-  do
-    if ping -w 1 -c 1 google.com >> /dev/null 2>&1; then
-      echo "Online"
-      break
-    else
-      echo "Offline"
-      sleep 10
-    fi
-  done
-
-  #Replace icon file to survive steam updates
-  cp /usr/share/pixmaps/steam.png /usr/share/pixmaps/steam_tray_mono.png
-
-  #Use Steam runtime
-  STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam-runtime %U -silent
-
-  #Use Steam Native with Dynamic Linker
-  #LD_PRELOAD='/usr/$LIB/libstdc++.so.6 /usr/$LIB/libgcc_s.so.1 /usr/$LIB/libxcb.so.1 /usr/$LIB/libgpg-error.so' STEAM_FRAME_FORCE_CLOSE=1 /usr/bin/steam %U -silent
-  
-chmod 711 /home/filipe/Scripts/Steam
-(Add the script to startup (symlink) with KDE)
+/usr/bin/steam-runtime %U <b>-silent</b>
 </pre>
 
 #### Dropbox with CryFS
