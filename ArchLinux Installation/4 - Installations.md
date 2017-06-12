@@ -674,8 +674,8 @@ The DNS can be set in the `/etc/resolv.conf` file, and this can hold up to three
 
 <pre>
 systemctl stop NetworkManager.service
-nano /etc/NetworkManager/NetworkManager.conf
-  dns=none
+nano /etc/resolvconf.conf
+  name_servers=127.0.0.1
 </pre>
 
 ##### Without DNSCrypt
@@ -686,15 +686,15 @@ To simply set DNS resolvers, without any authentication of the DNS traffic betwe
 nano /etc/resolv.conf
   nameserver dns.ip.address
   nameserver dns.ip.address
-  
-systemctl start NetworkManager.service 
+
+systemctl start NetworkManager.service
 </pre>
 
 ##### With DNSCrypt
 
 DNSCrypt encrypts and authenticates DNS traffic between user and DNS resolver. It prevents local spoofing of DNS queries, ensuring DNS responses are sent by the server of choice.
 
-Select one of the resolvers provided by the [upstream](https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv) and add it to the variable 'ResolverName' on the `dnscrypt-proxy.conf` file.
+Select one of the resolvers provided by the [upstream](https://github.com/jedisct1/dnscrypt-proxy/blob/master/dnscrypt-resolvers.csv) and add it to the variable 'ResolverName' on the `dnscrypt-proxy.conf` file. Alternatively, use `random` to pick any resolver from the list.
 
 <pre>
 pacman -S dnscrypt-proxy
@@ -703,7 +703,7 @@ nano /etc/resolv.conf
   nameserver 127.0.0.1
   
 nano /etc/dnscrypt-proxy.conf
-  ResolverName dnscrypt.eu-nl
+  ResolverName random
   
 systemctl enable dnscrypt-proxy.service
 reboot
