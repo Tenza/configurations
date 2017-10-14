@@ -1,13 +1,3 @@
-##### MS Fonts
-
-To install Microsoft fonts we will use the Legacy packages, because the new packages require us to have a mounted Windows partition or access to a setup or installation media, and I dont really want to waste time with this BS.
-
-> sudo packer -S ttf-ms-fonts ttf-vista-fonts
-
-<sub><sup>
-References:
-https://wiki.archlinux.org/index.php/MS_fonts
-</sup></sub>
 
 ##### CD/DVD/Bluray Drive
 
@@ -28,26 +18,6 @@ Adjust commands to all other storage drives.
 
 After we reset these permissions, we might have problems on the Windows side.  
 If we get "Access Denied" to the disk, just change the permissions of the "Everyone" user.
-
-##### Change Kernel I/O scheduler
-
-When using only SSD's for the OS, one setting that can boost your storage performance dramatically is changing the I/O scheduler.
-
-> sudo nano /etc/default/grub  
-Change the line:  
-GRUB_CMDLINE_LINUX_DEFAULT="quiet"  
-To:  
-GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash elevator=noop"  
-sudo grub-mkconfig -o /boot/grub/grub.cfg  
-
-The quiet and splash parameters is just to show the systemd startup and shutdown code. The elevator is the kernel paremeter that changes the I/O scheduler.
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/Solid_State_Drives#I.2FO_Scheduler  
-http://blog.nashcom.de/nashcomblog.nsf/dx/linux-io-performance-tweek.htm?opendocument&comments  
-https://wiki.archlinux.org/index.php/Solid_State_Drives#Kernel_parameter_.28for_a_single_device.29  
-</sup></sub>
 
 ##### SSD Alignment
 
@@ -126,67 +96,6 @@ sudo grub-mkconfig -o /boot/grub/grub.cfg
 References: 
 https://wiki.archlinux.org/index.php/webcam_setup#linux-uvc
 </sup></sub>
-
-##### Hibernate
-
-To have the hibernate functionality we have to add some kernel parameters as well as some hooks to the initramfs.  
-But first, because I'm using a file swap intead of a partition, I have to find out where the file stars on disk.
-
-> sudo filefrag -v /swapfile
-
-```
-Filesystem type is: ef53
-File size of /swapfile is 6442450944 (1572864 blocks of 4096 bytes)
- ext:     logical_offset:        physical_offset: length:   expected: flags:
-   0:        0..       0:      34816..     34816:      1:            
-   1:        1..   30719:      34817..     65535:  30719:             unwritten
-   2:    30720..   61439:      65536..     96255:  30720:             unwritten
-   3:    61440..   63487:      96256..     98303:   2048:             unwritten
-   ...
-```
-
-The value that i'm looking for is `34816` for the `resume_offset` parameter.  
-`resume` parameter is the partition where the swapfile is located, not the swapfile itself.
-
-Add the needed kernel parameters:
-> sudo nano /etc/default/grub  
-GRUB_CMDLINE_LINUX_DEFAULT="noquiet nosplash uvcvideo `resume=/dev/md125p3 resume_offset=34816` elevator=noop ...
-
-Now to add the `resume` hook to the initramfs.
->  sudo nano /etc/mkinitcpio.conf  
-HOOKS="base udev `resume` autodetect modconf block mdadm_udev filesystems keyboard fsck"
-
-The `resume` hook needs to be after `udev` because the swap partition is referred to with a udev device node.
-
-Finaly apply the changes by rebuilding the initramfs with the mkinitcpio script, as well as re-generate the grub.cfg file:
-> sudo mkinitcpio -p linux  
-sudo grub-mkconfig -o /boot/grub/grub.cfg
-
-<sub><sup>
-References: 
-https://wiki.archlinux.org/index.php/Power_management/Suspend_and_hibernate#Hibernation  
-https://wiki.archlinux.org/index.php/Mkinitcpio#Image_creation_and_activation  
-https://wiki.archlinux.org/index.php/Kernel_parameters#GRUB  
-</sup></sub>
-
-##### Bootloader theme
-
-I use the following bootloader theme:
-https://github.com/Generator/Grub2-themes
-
-Check the page before following these instructions:
-> git clone git://github.com/Generator/Grub2-themes.git # cp -r Grub2-themes/{Archlinux,Archxion} /boot/grub/themes/  
-> sudo nano /etc/default/grub  
-Change: #GRUB_THEME="/path/to/gfxtheme"   
-To: GRUB_THEME="/boot/grub/themes/Archxion/theme.txt"   
-Or: GRUB_THEME="/boot/grub/themes/Archlinux/theme.txt"  
-
-> To center the theme, change:  
-Change: GRUB_GFXMODE=auto  
-To: GRUB_GFXMODE=1024x768  
-
-> Apply changes:  
-sudo grub-mkconfig -o /boot/grub/grub.cfg  
 
 ##### Samba
 
@@ -315,17 +224,6 @@ http://askubuntu.com/questions/196473/setting-sata-hdd-spindown-time
 http://www.spencerstirling.com/computergeek/powersaving.html#harddrive  
 </sup></sub>
 
-##### Android MTP protocol
-
-To use the Media Transfer Protocol which is used by many mobile phones and media players we need to give dolphin this ability. To do so, we simply have to install the following package:
-
-> sudo pacman -S kio-mtp
-
-<sub><sup>
-References:
-https://wiki.archlinux.org/index.php/MTP 
-</sup></sub>
-
 ### Installs
 
 ##### Firefox and H.264 codec support:
@@ -350,51 +248,6 @@ Set as default browser on xdg-open:
 xdg-mime default firefox.desktop x-scheme-handler/https  
 xdg-mime default firefox.desktop text/html  
 xdg-settings set default-web-browser firefox.desktop
-
-##### Firewall:
-> sudo pacman -S ufw  
-sudo packer -S kcm-ufw  
-sudo ufw enable  
-sudo systemctl enable ufw.service  
-sudo systemctl start ufw.service
-
-##### Antivirus:
-> sudo pacman -S clamav  
-sudo packer -S clamtk  
-sudo freshclam  
-sudo systemctl enable clamd.service  
-sudo systemctl start clamd.service  
-
-##### XScreensaver:
-> sudo pacman -S kdeartwork-kscreensaver xscreensaver  
-
-##### Screenshots
-> sudo pacman -S kdegraphics-ksnapshot 
-
-##### PDF Reader
-> sudo pacman -S kdegraphics-okular 
-
-##### Notepad
-> sudo pacman -S kdesdk-kate 
-
-Configurations:
-> Kate > Configurations > Activate console plugin.   
-Kate > Configurations > Appearence > Borders > Activate all 
-
-##### Calculator
-> packer -S extcalc
-
-##### Visual Studio
-
-> packer -S visual-studio-code
-
-##### Brackets
-
-I prefer `brackets` over `sublimetext` because it is open source.  
-`brackets` also has emmet support, an essencial plugin.  
-Other alternative would be to use `vim` or `emacs`, but I like GUI.
-
-> sudo packer -S brackets-bin
 
 ##### LAMP
 
@@ -693,16 +546,6 @@ http://serverfault.com/questions/528210/bind-apache-ssl-port-with-different-port
 https://doc.owncloud.org/server/8.0/admin_manual/installation/installation_wizard.html#setting-strong-directory-permissions  
 </sup></sub>
 
-##### Dropbox
-
-> sudo packer -S dropbox
-
-On a multiboot configuration it would be best to choose a partition that is common to all installed OS.
-
-Specific folders on different disks with symlink:  
-> sudo ln -s /media/Dados1/Músicas/ /home/filipe/Dropbox/Privado/Músicas  
-Warning: the forlder “Musicas” on the destination (dropbox) should NOT be already created.  
-
 ##### Syncthing
 
 Syncthing replaces proprietary sync and cloud services with something open, trustworthy and decentralized.  
@@ -820,70 +663,11 @@ Nice game launcher/installer
 
 > packer -S lutris
 
-##### Clementine
-
-> sudo pacman –S clementine
-
-Configurations:  
-> Add library.  
-Make the image on the left bigger. (Start a music and right-click)  
-Preferences > Reproduction > Disable animations, Fade-in, Fade-out  
-Preferences > Notifications > Personalized, 3 seconds, bottom right corner.   
-
 ##### Diagrams
 
 There are programs like DIA or Violet for UML diagrams.  
 But I prefer to use the https://www.draw.io/ website.  
 To me, has better usability, there is no need for account and supports offline mode.
-
-##### VirtualBox
-
-> sudo pacman -S virtualbox virtualbox-host-modules virtualbox-guest-iso
-
-To enable the necessary kernel modules at boot we need to create a static config file under `/etc/modules-load.d/`, these files will be automatically loaded by [udev](https://wiki.archlinux.org/index.php/Udev)
-
-> sudo nano /etc/modules-load.d/virtualbox.conf  
-vboxdrv  
-vboxnetadp  
-vboxnetflt  
-vboxpci  
-
-The only obrigatory module is `vboxdrv` but we need the other modules to use aditional functionalities like bridged networking and PCI passthrough.
-
-At every kernel update we will have to reload the modules manually by doing:
-
-> sudo modprobe vboxdrv
-
-Alternatively, install DKMS along with the DKMS version of virtualbox.
-
-To use shared folders, first, we create a folder on the host OS and select the folder on the VM settings.
-Once we start our Linux VM we need to mount the folder. To do so, we can use the following command:
-
-> sudo mount -t vboxsf -o rw,uid=1000,gid=1000 share '/home/filipe/Shared'
-
-Find the user uid with `cat /etc/passwd` and the gui with `cat /etc/groups` or `group username`  
-
-To enable at boot, simply copy the above command to the file `/etc/rc.local`. Remember to change the uid and gid if needed, this is to give your user permission to read and write on this folder.
-
-Finally, if you use the aforementioned "Host-only" or "bridge networking" feature, make sure net-tools is installed. VirtualBox actually uses `ifconfig` and `route `to assign the IP and route to the host interface configured with VBoxManage hostonlyif or via the GUI in Settings > Network > Host-only Networks > Edit host-only network (space) > Adapter. 
-
-> sudo pacman -S net-tools
-
-<sub><sup>
-References:  
-https://wiki.archlinux.org/index.php/VirtualBox  
-https://forums.virtualbox.org/viewtopic.php?t=15868
-</sup></sub>
-
-##### Themes
-
-Caledonia: https://aur.archlinux.org/packages/caledonia-bundle/  
-Logon: http://kde-look.org/content/show.php/ArchPrecise-KDM-Theme?content=161886  
-Splash: http://kde-look.org/content/show.php/modern+Arch+Linux?content=164279
-
-Other:  
-http://kde-look.org/content/show.php/Modern+KDM+Archlinux?content=163475  
-http://kde-look.org/content/show.php/Modern+KDE+4+Splash+Screen?content=163449
 
 ##### Video Editor
 
@@ -909,16 +693,6 @@ https://wiki.archlinux.org/index.php/List_of_applications/Multimedia#Graphical_3
 > sudo packer -S caffeine-ng
 
 Used to prevent the screensaver to kickin due to inactivity, like watching an online video.
-
-##### Image Editor 
-
-> sudo packer -S gimp imagemagick
-
-Imagemagick is a command line tool, some examples here:  
-http://askubuntu.com/questions/246647/jpeg-files-to-pdf  
-http://forum.linuxcareer.com/threads/1644-Batch-image-resize-using-linux-command-line
-
-Activate single window mode on gimp.
 
 ##### Partition manager
 
@@ -1083,19 +857,6 @@ Edit the `Exec:` line.
 
 https://wiki.archlinux.org/index.php/Desktop_entries
 
-##### Install gstreamer0.10-good-plugins
-
-```
-(gconftool-2:2335): GConf-WARNING **: Client failed to connect to the D-BUS daemon:
-/usr/bin/dbus-launch terminated abnormally with the following error: No protocol specified
-Autolaunch error: X11 initialization failed.
-```
-https://bbs.archlinux.org/viewtopic.php?pid=1188169#p1188169
-
-##### Dolphin console
-
-Keep it hidden, otherwise it will litter the console history with `cd` commands.
-
 ##### Watchdog
 
 At shutdown the system prints: kernel: watchdog watchdog0: watchdog did not stop!  
@@ -1117,10 +878,6 @@ Select sound card with F6
 Select record devices  
 Make the value of PCM 0  
 
-##### Clementine does not close
-
-https://github.com/clementine-player/Clementine/issues/1728
-
 ##### Remmina closes VNC connection without notice
 
 This might be because the color preferences are not the same on the server and on the client.  
@@ -1135,26 +892,6 @@ But, if I dont have a floppy drive, why is this here? Simple, the floopy drive h
 So you need to go into your BIOS and tell it that you have no floppy.
 
 UNTESTED: Another way around this is to blacklist the floppy drive in the kernel modules.
-
-##### KDE restores volume to 100%
-
-> https://bugs.kde.org/show_bug.cgi?id=324975
-
-##### GRUB Message
-
-If GRUB flashes a message for a split second at boot, it is possible that the message is like the following:  
-> Welcome to Grub!  
-error: file '/boot/grub/locale/pt.mo' not found
-
-To fix this we simply need to copy one of the existing configs to the missing one:  
-
-> sudo cp /boot/grub/locale/pt_BR.mo /boot/grub/locale/pt.mo
-
-##### Kernel Missing firmwares
-
-Search for it and simply install:
-
-> packer -S aic94xx-firmware wd719x-firmware
 
 ##### MySQL Workbench Warning
 
@@ -1220,10 +957,6 @@ Since this script is only aimed to work uppon exit, use restart to test:
 References: 
 http://unix.stackexchange.com/questions/39226/how-to-run-a-script-with-systemd-right-before-shutdown
 </sup></sub>
-
-##### Give pacman some color
-
-> Uncomment the "Color" line in /etc/pacman.conf
 
 ##### Owner, group, permissions summary
 
