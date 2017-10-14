@@ -516,7 +516,7 @@ pacman -S ark p7zip zip unzip unrar
 
 <pre>
 pacman -S firefox firefox-i18n-pt-pt
-pacaur -S google-chrome kdialog libunity
+pacaur -S google-chrome kdialog libunity gtk3-print-backends
 </pre>
 
 #### Chat client
@@ -558,7 +558,7 @@ pacman -S meld
 #### Image Editor
 
 <pre>
-pacman -S gimp
+pacman -S gimp poppler-glib
 </pre>
 
 > WARNING: GIMP will probably override your Image Viewer by default.
@@ -587,6 +587,7 @@ pacman -S clementine gst-plugins-base gst-plugins-good gst-libav
 <pre>
 pacman -S qt5-base qt5-doc qt5-tools qt5-examples qtcreator
 pacman -S cmake gdb valgrind
+pacman -S postgresql-libs libmariadbclient unixodbc freetds openmpi 
 </pre>
 
 <pre>
